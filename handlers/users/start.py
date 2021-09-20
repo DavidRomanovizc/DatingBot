@@ -56,6 +56,7 @@ async def change_language(call: CallbackQuery):
 
 @dp.callback_query_handler(text_contains="info")
 async def information(call: CallbackQuery):
+    await call.answer(cache_time=60)
     await call.message.answer("<b>Made by: </b>\n"
                               "\n"
                               "@DRomanovizc - Team lead\n"
