@@ -33,14 +33,14 @@ async def register_user(message: types.Message):
                                 apartment=None)
     except asyncpg.exceptions.UniqueViolationError:
         user = await db.select_user(telegram_id=message.from_user.id)
-        await bot.send_message(chat_id=message.from_user.id, text=f'С возвращением, {message.from_user.full_name}!')
-
-    count_users = await db.count_users()
-
-    await message.reply(text=_(f"Приветствую вас, {message.from_user.full_name}!!\n"
-                               f"Сейчас в нашем боте <b>{count_users}</b> пользователей\n\n"
-                               f"Чтобы увидеть полный список команд - воспользуйтесь командой /help\n\n"),
-                        reply_markup=languages_markup)
+        if user.get('is_banned') is not True:
+            count_users = await db.count_users()
+            await message.reply(text=_(f"Приветствую вас, {message.from_user.full_name}!!\n"
+                                       f"Сейчас в нашем боте <b>{count_users}</b> пользователей\n\n"
+                                       f"Чтобы увидеть полный список команд - воспользуйтесь командой /help\n\n"),
+                                reply_markup=languages_markup)
+        elif user.get('is_banned') is True:
+            await message.answer(f'Вы заблокированы навсегда! За разбл')
 
 
 # Альтернативно можно использовать фильтр text_contains, он улавливает то, что указано в call.data
