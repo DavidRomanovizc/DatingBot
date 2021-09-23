@@ -1,7 +1,7 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-languages_markup = InlineKeyboardMarkup(row_width=2,
-                                        inline_keyboard=
+inline_start = InlineKeyboardMarkup(row_width=2,
+                                    inline_keyboard=
                                         [
                                             [
                                                 InlineKeyboardButton(text="Русский", callback_data="lang_ru"),
@@ -15,7 +15,7 @@ languages_markup = InlineKeyboardMarkup(row_width=2,
                                                 InlineKeyboardButton(text="Зарегистрироваться",
                                                                      callback_data="registration"),
                                                 InlineKeyboardButton(text="Меню бота",
-                                                                     callback_data="menusion")
+                                                                     callback_data="menu")
                                             ],
                                             [
                                                 InlineKeyboardButton(text="Поддержка проекта", callback_data="Donation")

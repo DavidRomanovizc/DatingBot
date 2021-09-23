@@ -1,3 +1,4 @@
+from keyboards.inline.inline_start_menu import inline_start
 from keyboards.inline.menu_inline import menu_inline_kb, btn_pref
 from aiogram.types import CallbackQuery
 from loader import dp, db, bot
@@ -5,11 +6,11 @@ from aiogram import types
 import logging
 
 
-@dp.callback_query_handler(text_contains="menusion")
+@dp.callback_query_handler(text_contains="menu")
 async def open_menu(call: CallbackQuery):
     await call.answer(cache_time=60)
-    await call.message.answer(f"Меню: ",
-                              reply_markup=menu_inline_kb)
+    await call.message.edit_text(f"Меню: ",
+                                 reply_markup=menu_inline_kb)
 
 
 @dp.callback_query_handler(text_contains="my_profile")
@@ -80,7 +81,7 @@ async def get_male(call: CallbackQuery):
 
     logging.info(f"{callback_data}=")
     await db.update_user_need_partner_sex(need_partner_sex='Мужской', telegram_id=call.from_user.id)
-    await call.message.answer("Вы выбрали мужчин", reply_markup=types.ReplyKeyboardRemove())
+    await call.message.edit_text("Вы выбрали мужчин", reply_markup=menu_inline_kb)
 
 
 @dp.callback_query_handler(text_contains="g_fe")
@@ -90,12 +91,10 @@ async def get_male(call: CallbackQuery):
 
     logging.info(f"{callback_data}=")
     await db.update_user_need_partner_sex(need_partner_sex='Женский', telegram_id=call.from_user.id)
-    await call.message.answer("Вы выбрали женщин", reply_markup=types.ReplyKeyboardRemove())
+    await call.message.edit_text("Вы выбрали женщин", reply_markup=menu_inline_kb)
 
 
 @dp.callback_query_handler(text="cancel")
 async def cancel_buying(call: CallbackQuery):
-    await call.answer(f"Рад был помочь, {call.from_user.full_name}!\n"
-                      f"Надеюсь, ты нашел кого-то благодаря мне", show_alert=True)
-
-    await call.message.edit_reply_markup(reply_markup=None)
+    await call.message.edit_text(f"Рад был помочь, {call.from_user.full_name}!\n"
+                                 f"Надеюсь, ты нашел кого-то благодаря мне", reply_markup=inline_start)

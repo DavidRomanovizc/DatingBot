@@ -1,5 +1,5 @@
 from aiogram.dispatcher.filters.builtin import CommandStart
-from keyboards.inline.language import languages_markup
+from keyboards.inline.inline_start_menu import inline_start
 from aiogram.types import CallbackQuery
 from loader import dp, db, bot, _
 from aiogram import types
@@ -38,7 +38,7 @@ async def register_user(message: types.Message):
             await message.reply(text=_(f"Приветствую вас, {message.from_user.full_name}!!\n"
                                        f"Сейчас в нашем боте <b>{count_users}</b> пользователей\n\n"
                                        f"Чтобы увидеть полный список команд - воспользуйтесь командой /help\n\n"),
-                                reply_markup=languages_markup)
+                                reply_markup=inline_start)
         elif user.get('is_banned') is True:
             await message.answer(f'Вы заблокированы навсегда! За разбл')
 
@@ -57,18 +57,20 @@ async def change_language(call: CallbackQuery):
 @dp.callback_query_handler(text_contains="info")
 async def information(call: CallbackQuery):
     await call.answer(cache_time=60)
-    await call.message.answer("<b>Made by: </b>\n"
-                              "\n"
-                              "@DRomanovizc - Team lead\n"
-                              "@mroshalom - Python developer\n"
-                              "@M_O_D_E_R - Python developer \n"
-                              "\n"
-                              "<i>BotScience © 2021</i>")
+    await call.message.edit_text("<b>Made by: </b>\n"
+                                 "\n"
+                                 "@DRomanovizc - Team lead\n"
+                                 "@mroshalom - Python developer\n"
+                                 "@M_O_D_E_R - Python developer \n"
+                                 "\n"
+                                 "<i>BotScience © 2021</i>",
+                                 reply_markup=inline_start)
 
 
 @dp.callback_query_handler(text_contains="instruction")
 async def get_inst(call: CallbackQuery):
     await call.answer(cache_time=60)
-    await call.message.answer(f"<b>Инструкция: </b>\n\n"
-                              f"Тут нужно написать инструкцию\n\n"
-                              f"Если вы нашли баг, то можете сообщить нам, написав сюда\n - @DRomanovizc или @mroshalom")
+    await call.message.edit_text(f"<b>Инструкция: </b>\n\n"
+                                 f"Тут нужно написать инструкцию\n\n"
+                                 f"Если вы нашли баг, то можете сообщить нам, написав сюда\n - @DRomanovizc или @mroshalom",
+                                 reply_markup=inline_start)
