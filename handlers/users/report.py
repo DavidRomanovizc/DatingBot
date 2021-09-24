@@ -25,7 +25,7 @@ async def report_user(call: CallbackQuery):
     await Report.first()
 
 
-@dp.callback_query_handler(text_contains="eighteen_plus_content", state=Report.first)
+@dp.callback_query_handler(text="eighteen_plus_content", state=Report.first)
 async def report_user(call: CallbackQuery, message: types.Message, state: FSMContext):
     await call.answer(cache_time=60)
     display_name = get_display_name(message.reply_to_message.from_user)
@@ -44,7 +44,7 @@ async def report_user(call: CallbackQuery, message: types.Message, state: FSMCon
         data["report_us"] = display_name
 
 
-@dp.callback_query_handler(text_contains="cancel_3")
+@dp.callback_query_handler(text="cancel_3")
 async def cancel_3(call: CallbackQuery):
     await call.answer(cache_time=60)
     await call.message.answer(f"Отмена")

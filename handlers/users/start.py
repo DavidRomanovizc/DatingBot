@@ -59,9 +59,8 @@ async def information(call: CallbackQuery):
     await call.answer(cache_time=60)
     await call.message.edit_text("<b>Made by: </b>\n"
                                  "\n"
-                                 "@DRomanovizc - Team lead\n"
-                                 "@mroshalom - Python developer\n"
-                                 "@M_O_D_E_R - Python developer \n"
+                                 "@DRomanovizc - Python Developer\n"
+                                 "@mroshalom - Python Developer\n"
                                  "\n"
                                  "<i>BotScience © 2021</i>",
                                  reply_markup=inline_start)
@@ -72,5 +71,6 @@ async def get_inst(call: CallbackQuery):
     await call.answer(cache_time=60)
     await call.message.edit_text(f"<b>Инструкция: </b>\n\n"
                                  f"Тут нужно написать инструкцию\n\n"
-                                 f"Если вы нашли баг, то можете сообщить нам, написав сюда\n - @DRomanovizc или @mroshalom",
+                                 f"Если вы нашли баг, то можете сообщить нам, написав сюда\n - @DRomanovizc или "
+                                 f"@mroshalom",
                                  reply_markup=inline_start)

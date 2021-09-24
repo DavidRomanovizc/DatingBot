@@ -25,9 +25,9 @@ async def create_questionnaire(user_list, need_sex, message):
     city = user_data.get('city')
     commentary = user_data.get('commentary')
     photo_random_user = user_data.get('photo_id')
-    description_random_user=f'{varname}, {age}, {sex}\n' \
-                            f'{city}\n' \
-                            f'{commentary}\n\n'
+    description_random_user = f'{varname}, {age}, {sex}\n' \
+                              f'{city}\n' \
+                              f'{commentary}\n\n'
     await bot.send_photo(chat_id=message.from_user.id, photo=photo_random_user,
                          caption=description_random_user, reply_markup=questionnaires_inline_kb)
 
