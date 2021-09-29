@@ -1,7 +1,6 @@
 from pathlib import Path
 from environs import Env
 
-# Теперь используем вместо библиотеки python-dotenv библиотеку environs
 env = Env()
 env.read_env()
 
@@ -17,7 +16,6 @@ DB_NAME = env.str('DB_NAME')
 I18N_DOMAIN = "testbot"
 BASE_DIR = Path(__file__).parent
 LOCALES_DIR = BASE_DIR / "locales"  # тут хранятся переводы
-
 
 # Новые переменные для библиотеки QiwiApi
 QIWI_TOKEN = env.str("qiwi")

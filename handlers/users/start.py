@@ -43,14 +43,12 @@ async def register_user(message: types.Message):
             await message.answer(f'Вы заблокированы навсегда! За разбл')
 
 
-# Альтернативно можно использовать фильтр text_contains, он улавливает то, что указано в call.data
 @dp.callback_query_handler(text_contains="lang")
 async def change_language(call: CallbackQuery):
     await call.message.edit_reply_markup()
     # Достаем последние 2 символа (например ru)
     lang = call.data[-2:]
 
-    # После того, как мы поменяли язык, в этой функции все еще указан старый, поэтому передаем locale=lang
     await call.message.answer(_("Ваш язык был изменен", locale=lang))
 
 

@@ -1,10 +1,7 @@
-import random
-
-from aiogram import types
-from aiogram.types import CallbackQuery
-
 from keyboards.inline.questionnaires_inline import questionnaires_inline_kb
 from loader import dp, db, bot
+from aiogram import types
+import random
 
 
 async def select_all_users_list():
