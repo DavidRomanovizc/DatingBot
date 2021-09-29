@@ -1,8 +1,7 @@
-from keyboards.inline.inline_start_menu import inline_start
 from keyboards.inline.menu_inline import menu_inline_kb, btn_pref
+from keyboards.inline.inline_start_menu import inline_start
 from aiogram.types import CallbackQuery
 from loader import dp, db, bot
-from aiogram import types
 import logging
 
 
@@ -19,34 +18,33 @@ async def my_profile_menu(call: CallbackQuery):
     callback_data = call.data
     user = await db.select_user(telegram_id=call.from_user.id)
 
-    username = user.get('varname')
-    userage = user.get('age')
-    usersex = user.get('sex')
-    usernational = user.get('national')
-    usereducation = user.get('education')
-    usercity = user.get('city')
+    user_name = user.get('varname')
+    user_age = user.get('age')
+    user_sex = user.get('sex')
+    user_national = user.get('national')
+    user_education = user.get('education')
+    user_city = user.get('city')
 
     usercar = user.get('car')
-    if usercar == True:
+    if usercar:
         usercar = 'Есть машина'
-    elif usercar == False:
+    else:
         usercar = 'Нет машины'
-    #::::::::::::::::::::::::#
-    #::::::::::::::::::::::::#
-    userapart = user.get('apartment')
-    if userapart == True:
-        userapart = 'Есть квартира'
-    elif userapart == False:
-        userapart = 'Нет квартиры'
 
-    userlifestyle = user.get('lifestyle')
+    user_apart = user.get('apartment')
+    if user_apart:
+        user_apart = 'Есть квартира'
+    else:
+        user_apart = 'Нет квартиры'
 
-    userkids = user.get('kids')
-    if userkids == True:
-        userkids = 'Есть дети'
-    elif userkids == False:
-        userkids = 'Нет детей'
-    usercomm = user.get('commentary')
+    user_lifestyle = user.get('lifestyle')
+
+    user_kids = user.get('kids')
+    if user_kids:
+        user_kids = 'Есть дети'
+    else:
+        user_kids = 'Нет детей'
+    user_comm = user.get('commentary')
     user_photo = user.get('photo_id')
     if user_photo:
         user_photo = user.get('photo_id')
@@ -54,14 +52,14 @@ async def my_profile_menu(call: CallbackQuery):
         user_photo = 'https://www.pngfind.com/pngs/m/110-1102775_download-empty-profile-hd-png-download.png'
 
     logging.info(f"{callback_data}=")
-    await bot.send_photo(chat_id=call.from_user.id, caption=f'{str(username)}, {str(userage)}\n\n'
-                                                            f'{usersex}, {str(usercity)}, {str(usernational)}\n\n'
-                                                            f'{usereducation}\n'
+    await bot.send_photo(chat_id=call.from_user.id, caption=f'{str(user_name)}, {str(user_age)}\n\n'
+                                                            f'{user_sex}, {str(user_city)}, {str(user_national)}\n\n'
+                                                            f'{user_education}\n'
                                                             f'{usercar}\n'
-                                                            f'{userapart}\n'
-                                                            f'{userkids}\n\n'
-                                                            f'{userlifestyle}\n\n'
-                                                            f'Обо мне: {str(usercomm)}',
+                                                            f'{user_apart}\n'
+                                                            f'{user_kids}\n\n'
+                                                            f'{user_lifestyle}\n\n'
+                                                            f'Обо мне: {str(user_comm)}',
                          photo=user_photo)
 
 
