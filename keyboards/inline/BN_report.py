@@ -23,7 +23,7 @@ report_inline_kb = InlineKeyboardMarkup(row_width=5,
                                             ],
                                             [
                                                 InlineKeyboardButton(text='❌',
-                                                                     callback_data='cancel_3')
+                                                                     callback_data='cancel_report')
                                             ],
 
                                         ])
