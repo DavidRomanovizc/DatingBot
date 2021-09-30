@@ -1,6 +1,7 @@
+from aiogram.types import CallbackQuery
+
 from keyboards.inline.questionnaires_inline import questionnaires_inline_kb
 from loader import dp, db, bot
-from aiogram import types
 import random
 
 
@@ -30,6 +31,7 @@ async def create_questionnaire(user_list, need_sex, message):
 
 
 @dp.callback_query_handler(text='find_ancets')
-async def start_finding(message: types.Message):
+async def start_finding(call: CallbackQuery):
+    await call.answer(cache_time=60)
     user_list = await select_all_users_list()
-    await create_questionnaire(user_list=user_list, need_sex=None, message=message)
+    await create_questionnaire(user_list=user_list, need_sex=None, message=call)
