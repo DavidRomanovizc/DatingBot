@@ -1,7 +1,7 @@
 from aiogram.dispatcher.filters.builtin import CommandStart
 from keyboards.inline.inline_start_menu import inline_start
 from aiogram.types import CallbackQuery
-from loader import dp, db, bot, _
+from loader import dp, db, _
 from aiogram import types
 import asyncpg
 
@@ -46,7 +46,6 @@ async def register_user(message: types.Message):
 @dp.callback_query_handler(text_contains="lang")
 async def change_language(call: CallbackQuery):
     await call.message.edit_reply_markup()
-    # Достаем последние 2 символа (например ru)
     lang = call.data[-2:]
 
     await call.message.answer(_("Ваш язык был изменен", locale=lang))
@@ -68,7 +67,11 @@ async def information(call: CallbackQuery):
 async def get_inst(call: CallbackQuery):
     await call.answer(cache_time=60)
     await call.message.edit_text(f"<b>Инструкция: </b>\n\n"
-                                 f"Тут нужно написать инструкцию\n\n"
+                                 f"<b>1. Навигация по анкетам\n\n</b>"
+                                 f"👍 - <i>вам понравилась анкета другого пользователя</i>\n"
+                                 f"👎 - <i>вам не понравилась анкета</i>\n"
+                                 f"💌 - <i>отправить через бота сообщение</i>\n"
+                                 f"🛑 - <i>пожаловаться на анкету/пользователя</i>\n\n"
                                  f"Если вы нашли баг, то можете сообщить нам, написав сюда\n - @DRomanovizc или "
                                  f"@mroshalom",
                                  reply_markup=inline_start)
