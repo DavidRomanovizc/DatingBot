@@ -6,7 +6,7 @@ from aiogram.types import (
 
 async def generate_keyboard(liked, disliked):
     view_keyboard = InlineKeyboardMarkup()
-    like_btn = InlineKeyboardButton(text=f"👍 - {liked}", callback_data="like")
+    like_btn = InlineKeyboardButton(text=f"👍", callback_data="like")
     dislike_btn = InlineKeyboardButton(text=f"👎 - {disliked}", callback_data="dislike")
     chat_btn = InlineKeyboardButton(text="📝 Написать 📝", callback_data="write_to")
     report_btn = InlineKeyboardButton(text="🛑 Пожаловаться 🛑", callback_data="report")

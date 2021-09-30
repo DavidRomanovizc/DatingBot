@@ -53,23 +53,17 @@ async def send_mailing(message: types.Message, state: FSMContext):
     count_usersers = await db.count_users()
     async with state.proxy() as data:
         data['mailing'] = answer
-    # users = await db.select_all_users_id()
-    # for i in users:
-    #     id = i.get('telegram_id')
-    #     await bot.send_message(chat_id=id, text='{сосать}')
     await message.answer(f'Отправьте любое сообщение для подтверждения отправки следующего сообщения: \n\n'
                          f'<b>{answer}</b>\n\n'
                          f'Сообщение получат: <b>{count_usersers}</b> человек', parse_mode='HTML')
     await Mailing.stage2.set()
-    # print(users)
 
 
 @dp.message_handler(state=Mailing.stage2)
-async def mailing_final(message: types.Message, state: FSMContext):
+async def mailing_final(state: FSMContext):
     data1 = await state.get_data()
     answer1 = str(data1.get('mailing'))
     users = await db.select_all_users()
-    print(users)
     for i in users:
         id_chat = i.get('telegram_id')
         await bot.send_message(chat_id=id_chat, text=f'Вы получили следующую рассылку: \n\n'
@@ -194,7 +188,6 @@ async def complete_ban(message: types.Message, state: FSMContext):
         await bot.send_message(message.from_user.id, f'Пользователь {fullname} был успешно забанен!')
         await state.reset_state()
     except:
-        # await db.update_user_ban_status(is_banned=True, telegram_id=need_ban_id)
         await bot.send_message(f'Произошла неизвестная ошибка! Попробуйте изменить id в формате целочисленного числа')
         await state.reset_state()
 
@@ -219,6 +212,5 @@ async def complete_unban(message: types.Message, state: FSMContext):
         await bot.send_message(message.from_user.id, f'Пользователь {fullname} был успешно разбанен!')
         await state.reset_state()
     except:
-        # await db.update_user_ban_status(is_banned=True, telegram_id=need_ban_id)
         await bot.send_message(f'Произошла неизвестная ошибка! Попробуйте изменить id в формате целочисленного числа')
         await state.reset_state()

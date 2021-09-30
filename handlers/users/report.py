@@ -9,6 +9,7 @@ from loader import dp, bot
 
 
 # TODO: Доделать репорты
+# FIXME: Почините
 
 # @dp.callback_query_handler(text="report") #пока не робит
 async def report_user(call: CallbackQuery):
