@@ -1,6 +1,8 @@
+from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery
 
+from keyboards.inline.menu_inline import menu_inline_kb
 from keyboards.inline.questionnaires_inline import questionnaires_inline_kb
 from loader import dp, db, bot
 import random
@@ -46,6 +48,7 @@ async def start_finding(call: CallbackQuery, state: FSMContext):
 # TODO Давид: сделать лимит, дизлайки, сообщение, жалобу
 @dp.callback_query_handler(text='like_questionnaire', state='finding')
 async def like_questionnaire(call: CallbackQuery, state: FSMContext):
+    await call.answer(cache_time=60)
     like_from_user = call.from_user.id
     liked_user = await state.get_data('questionnaire_owner')
     liked_user = liked_user.get('questionnaire_owner')
@@ -54,12 +57,14 @@ async def like_questionnaire(call: CallbackQuery, state: FSMContext):
     try:
         await create_questionnaire(random_user=like_from_user, chat_id=liked_user)
         await create_questionnaire(random_user=random_user, chat_id=call.from_user.id)
+
     except:
         await call.message.answer(f'Лайк не дошел! Посмотреть анкеты дальше?')
         await state.reset_state()
 
 
-# TODO изменение клавы на отмене
-@dp.callback_query_handler(text='stop_finding')
+@dp.callback_query_handler(text='stop_finding', state='finding')
 async def stop_finding(call: CallbackQuery, state: FSMContext):
+    await call.answer(cache_time=60)
+    await call.message.answer("Вы вернулись в меню", reply_markup=menu_inline_kb)
     await state.reset_state()

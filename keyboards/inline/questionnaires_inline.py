@@ -10,9 +10,9 @@ questionnaires_inline_kb = InlineKeyboardMarkup(row_width=4,
 
                                                     ],
                                                     [
-                                                        InlineKeyboardButton(text='💌Написать',
+                                                        InlineKeyboardButton(text='💌',
                                                                              callback_data='send_message_questionnaire'),
-                                                        InlineKeyboardButton(text='🛑ЖАЛОБА',
+                                                        InlineKeyboardButton(text='Жалоба',
                                                                              callback_data='report'),
                                                     ],
                                                     [
