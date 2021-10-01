@@ -4,6 +4,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery
 from loader import dp, db, bot
 import random
+from loguru import logger
 
 
 async def select_all_users_list():
@@ -15,7 +16,7 @@ async def select_all_users_list():
     return list_id
 
 
-async def create_questionnaire(random_user, chat_id):
+async def create_questionnaire(state, random_user, chat_id, add_text=None):
     user_data = await db.select_user(telegram_id=random_user)
     varname = user_data.get('varname')
     age = user_data.get('age')
@@ -26,20 +27,23 @@ async def create_questionnaire(random_user, chat_id):
     if photo_random_user is None:
         photo_random_user = "https://www.meme-arsenal.com/memes/5eae5104f379baa355e031fa1ded886c.jpg"
 
-    description_random_user = f'{varname}, {age}, {sex}\n' \
+    description_random_user = f'{add_text}\n\n' \
+                              f'{varname}, {age}, {sex}\n' \
                               f'{city}\n' \
                               f'{commentary}\n\n'
     await bot.send_photo(chat_id=chat_id, photo=photo_random_user,
                          caption=description_random_user, reply_markup=questionnaires_inline_kb)
+    await state.update_data(data={'questionnaire_owner': random_user})
 
 
 @dp.callback_query_handler(text='find_ancets')
 async def start_finding(call: CallbackQuery, state: FSMContext):
     await call.answer(cache_time=60)
     user_list = await select_all_users_list()
+    user_list.remove(call.from_user.id)
     random_user = random.choice(user_list)
-    await state.update_data(data={'questionnaire_owner': random_user})
-    await create_questionnaire(random_user=random_user, chat_id=call.from_user.id)
+
+    await create_questionnaire(random_user=random_user, chat_id=call.from_user.id, state=state)
     await state.set_state('finding')
 
 
@@ -47,22 +51,27 @@ async def start_finding(call: CallbackQuery, state: FSMContext):
 @dp.callback_query_handler(text='like_questionnaire', state='finding')
 async def like_questionnaire(call: CallbackQuery, state: FSMContext):
     await call.answer(cache_time=60)
+    user_list = await select_all_users_list()
+    user_list.remove(call.from_user.id)
+    random_user = random.choice(user_list)
+
+    await state.update_data(data={'questionnaire_owner': random_user})
     like_from_user = call.from_user.id
     liked_user = await state.get_data('questionnaire_owner')
     liked_user = liked_user.get('questionnaire_owner')
-    user_list = await select_all_users_list()
-    random_user = random.choice(user_list)
     try:
-        await create_questionnaire(random_user=like_from_user, chat_id=liked_user)
-        await create_questionnaire(random_user=random_user, chat_id=call.from_user.id)
+        await create_questionnaire(random_user=like_from_user, chat_id=liked_user,
+                                   add_text='ВАМИ ЗАИНТЕРЕСОВАЛСЯ ПОЛЬЗОВАТЕЛЬ', state=state)
+        await create_questionnaire(random_user=random_user, chat_id=call.from_user.id, state=state)
 
+        await state.reset_data()
     except:
-        await call.message.answer(f'Лайк не дошел! Посмотреть анкеты дальше?')
-        await state.reset_state()
+        await create_questionnaire(random_user=random_user, chat_id=call.from_user.id, state=state)
 
 
 @dp.callback_query_handler(text='stop_finding', state='finding')
 async def stop_finding(call: CallbackQuery, state: FSMContext):
     await call.answer(cache_time=60)
+    await call.message.delete()
     await call.message.answer("Вы вернулись в меню", reply_markup=menu_inline_kb)
     await state.reset_state()
