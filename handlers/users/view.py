@@ -69,6 +69,46 @@ async def like_questionnaire(call: CallbackQuery, state: FSMContext):
         await create_questionnaire(random_user=random_user, chat_id=call.from_user.id, state=state)
 
 
+@dp.callback_query_handler(text='dislike_questionnaire', state='finding')
+async def like_questionnaire(call: CallbackQuery, state: FSMContext):
+    await call.answer(cache_time=60)
+    dislike_from_user = call.from_user.id
+    disliked_user = await state.get_data('questionnaire_owner')
+    disliked_user = disliked_user.get('questionnaire_owner')
+    user_list = await select_all_users_list()
+    random_user = random.choice(user_list)
+    try:
+        await create_questionnaire(random_user=dislike_from_user, chat_id=disliked_user)
+        await create_questionnaire(random_user=random_user, chat_id=call.from_user.id)
+
+    except:
+        await state.reset_state()
+
+
+# ***************************************************************************
+@dp.callback_query_handler(text='send_message_questionnaire', state='finding')
+async def like_questionnaire(call: CallbackQuery, state: FSMContext):
+    await call.answer(cache_time=60)
+    answer_from_user = call.from_user.id
+    answered_user = await state.get_data('questionnaire_owner')
+    answered_user = answered_user.get('questionnaire_owner')
+    user_list = await select_all_users_list()
+    random_user = random.choice(user_list)
+    await call.message.answer("Напиши сообщение для этого пользователя")
+    answer = call.message.text
+    async with state.proxy() as data:
+        data["message"] = answer
+    try:
+        await create_questionnaire(random_user=answer_from_user, chat_id=answered_user,
+                                   add_text=f"{answer}", state=state)
+    except:
+        await state.reset_state()
+    # TODO:  Здесь нам нужно сделать так, чтобы это сообщение отправлялось владельцу анкеты
+
+
+# ***************************************************************************
+
+
 @dp.callback_query_handler(text='stop_finding', state='finding')
 async def stop_finding(call: CallbackQuery, state: FSMContext):
     await call.answer(cache_time=60)
