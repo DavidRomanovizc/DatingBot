@@ -59,7 +59,8 @@ async def information(call: CallbackQuery):
                                  "@DRomanovizc - Python Developer\n"
                                  "@mroshalom - Python Developer\n"
                                  "\n"
-                                 "<i>BotScience © 2021</i>",
+                                 "ПОЛЬЗУЯСЬ БОТОМ ВЫ АВТОМАТИЧЕСКИ СОГЛАШАЕТЕСЬ НА ОБРАБОТКУ ПЕРСОНАЛЬНЫХ ДАННЫХ\n"
+                                 "<i>Dslango© 2021</i>",
                                  reply_markup=inline_start)
 
 
