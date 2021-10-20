@@ -12,7 +12,7 @@ questionnaires_inline_kb = InlineKeyboardMarkup(row_width=5,
                                                     [
                                                         InlineKeyboardButton(text='💌',
                                                                              callback_data='send_message_questionnaire'),
-                                                        InlineKeyboardButton(text='Жалоба',
+                                                        InlineKeyboardButton(text='🛑',
                                                                              callback_data='send_report'),
 
                                                     ],
