@@ -1,16 +1,13 @@
-import random
-
-from handlers.users.view import select_all_users_list, create_questionnaire
 from keyboards.inline.BN_report import report_inline_kb
+from keyboards.inline.menu_inline import menu_inline_kb
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery
 from states.Reports import Report
 from data.config import ADMINS
-
 from loader import dp, bot
 
 
-@dp.callback_query_handler(text="report")
+@dp.callback_query_handler(text="send_report", state='finding')
 async def report_user(call: CallbackQuery):
     await call.answer(cache_time=60)
     await call.message.answer(
@@ -49,8 +46,7 @@ async def report_user(call: CallbackQuery, state: FSMContext):
 
 @dp.callback_query_handler(text="cancel_report", state=Report.R1)
 async def cancel_report(call: CallbackQuery, state: FSMContext):
+    await call.answer(cache_time=60)
     await call.message.delete()
-    user_list = await select_all_users_list()
-    random_user = random.choice(user_list)
-    await create_questionnaire(random_user=random_user, chat_id=call.from_user.id)
-    await state.reset_state()
+    await call.message.answer("Вы вернулись в меню", reply_markup=menu_inline_kb)
+    await state.finish()
