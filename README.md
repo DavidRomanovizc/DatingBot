@@ -8,6 +8,6 @@ The best dating bot in Telegram
 
 
 ### Preparing for launch
-- Clone this repository via `git clone https://github.com/DavidRomanovizc/aiogram_bot.git`
+- Clone this repository via `https://github.com/DavidRomanovizc/DatingBot.git`
 - Rename `.env.dist` to `.env` and replace the token with your own
 - Start the bot: run --> `app.py`
