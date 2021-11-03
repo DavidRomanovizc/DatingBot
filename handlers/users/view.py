@@ -48,7 +48,7 @@ async def start_finding(call: CallbackQuery, state: FSMContext):
     await state.set_state('finding')
 
 
-# TODO Давид: сделать лимит, дизлайки, сообщение, жалобу
+# TODO сделать лимит, дизлайки, сообщение, жалобу
 @dp.callback_query_handler(text='like_questionnaire', state='finding')
 async def like_questionnaire(call: CallbackQuery, state: FSMContext):
     await call.answer(cache_time=60)
@@ -57,12 +57,14 @@ async def like_questionnaire(call: CallbackQuery, state: FSMContext):
     random_user = random.choice(user_list)
 
     await state.update_data(data={'questionnaire_owner': random_user})
+    username = call.from_user.username
     like_from_user = call.from_user.id
     liked_user = await state.get_data('questionnaire_owner')
     liked_user = liked_user.get('questionnaire_owner')
     try:
         await create_questionnaire(random_user=like_from_user, chat_id=liked_user,
-                                   add_text='ВАМИ ЗАИНТЕРЕСОВАЛСЯ ПОЛЬЗОВАТЕЛЬ', state=state)
+                                   add_text=f'Вами заинтересовался пользователь \n https://t.me/{username}',
+                                   state=state)
         await create_questionnaire(random_user=random_user, chat_id=call.from_user.id, state=state)
 
         await state.reset_data()

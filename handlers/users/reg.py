@@ -1,7 +1,7 @@
 from keyboards.inline.lifestyle_choice_inline import lifestyle_inline_kb
 from keyboards.inline.profile_bt import reg_profile
 from aiogram.types import CallbackQuery, ContentType
-from keyboards.inline.menu_inline import btn_pref
+from keyboards.inline.menu_inline import btn_pref, back_to_menu
 from aiogram.dispatcher import FSMContext
 from states.reg_state import RegData
 from loader import dp, bot, db
@@ -350,5 +350,5 @@ async def get_photo(message: types.Message, state: FSMContext):
                                       f"10. Наличие детей - {str(user_kids)}\n"
                                       f"11. Семейное положение - {str(user_marital)}\n\n"
                                       f"12. О себе - {str(user_comm)}",
-        photo=user.get('photo_id')
+        photo=user.get('photo_id'), reply_markup=back_to_menu
     )
