@@ -69,7 +69,7 @@ async def get_preferences(call: CallbackQuery):
     callback_data = call.data
 
     logging.info(f"{callback_data}=")
-    await call.message.answer("Кого вы ищете? ", reply_markup=btn_pref)
+    await call.message.edit_text("Кого вы ищете? ", reply_markup=btn_pref)
 
 
 @dp.callback_query_handler(text_contains="male")
@@ -96,3 +96,8 @@ async def get_male(call: CallbackQuery):
 async def cancel_buying(call: CallbackQuery):
     await call.message.edit_text(f"Рад был помочь, {call.from_user.full_name}!\n"
                                  f"Надеюсь, ты нашел кого-то благодаря мне", reply_markup=inline_start)
+
+
+@dp.callback_query_handler(text="in_menu")
+async def back_to_menu(call: CallbackQuery):
+    await call.message.edit_text("Вы были возвращены в меню: ", reply_markup=menu_inline_kb)

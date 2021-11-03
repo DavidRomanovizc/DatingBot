@@ -33,5 +33,15 @@ btn_pref = InlineKeyboardMarkup(row_width=2,
                                         InlineKeyboardButton(text='Женщин',
                                                              callback_data='g_fe'),
                                     ],
+                                    [
+                                        InlineKeyboardButton(text="В меню", callback_data="in_menu")
+                                    ]
                                 ]
                                 )
+
+back_to_menu = InlineKeyboardMarkup(row_width=1,
+                                    inline_keyboard=[
+                                        [
+                                            InlineKeyboardButton(text="В меню", callback_data="in_menu")
+                                        ]
+                                    ])
