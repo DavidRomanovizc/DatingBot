@@ -1,3 +1,4 @@
+from keyboards.inline.inline_start_menu import inline_start
 from utils.misc.QIWI import Payment, NoPaymentFound, NotEnoughMoney
 from keyboards.inline.Primer import paid_keyboard, prime_buy
 from aiogram.utils.markdown import hcode, hlink
@@ -9,8 +10,9 @@ from data import config
 from loader import dp
 
 
-@dp.callback_query_handler(text_contains="Donation")
+@dp.callback_query_handler(text_contains="qiwi_pay")
 async def show_items(call: CallbackQuery):
+    await call.answer(cache_time=60)
     caption = """
 Название продукта: {title}
 <i>Описание:</i>
@@ -56,7 +58,7 @@ async def create_invoice(call: types.CallbackQuery, state: FSMContext):
 
     @dp.callback_query_handler(text="cancel_2", state="qiwi")
     async def cancel_payment(call: types.CallbackQuery, state: FSMContext):
-        await call.message.edit_text("Отменено")
+        await call.message.edit_text("Отменено. Вы были автоматически возвращены в меню", reply_markup=inline_start)
         await state.finish()
 
     @dp.callback_query_handler(text="paid", state="qiwi")

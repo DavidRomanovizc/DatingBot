@@ -26,3 +26,23 @@ paid_keyboard = InlineKeyboardMarkup(
         ],
     ]
 )
+
+choice_payment = InlineKeyboardMarkup(row_width=2,
+                                      inline_keyboard=[
+                                          [
+                                              InlineKeyboardButton(text="Qiwi", callback_data="qiwi_pay")
+                                          ],
+                                          [
+                                              InlineKeyboardButton(text="ЮKassa", callback_data="ykassa_pay")
+                                          ],
+                                          [
+                                              InlineKeyboardButton(text="Назад", callback_data="cancel")
+                                          ]
+                                      ])
+
+sub_inline = InlineKeyboardMarkup(row_width=1,
+                                  inline_keyboard=[
+                                      [
+                                          InlineKeyboardButton(text="Месяц - 50₽", callback_data="sub")
+                                      ]
+                                  ])
