@@ -1,3 +1,9 @@
+import asyncio
+import random
+
+from aiogram import types
+
+from handlers.users.view import create_questionnaire, select_all_users_list
 from keyboards.inline.BN_report import report_inline_kb
 from keyboards.inline.menu_inline import menu_inline_kb
 from aiogram.dispatcher import FSMContext
@@ -29,19 +35,28 @@ async def report_user(call: CallbackQuery):
 async def report_user(call: CallbackQuery, state: FSMContext):
     await call.answer(cache_time=60)
     display_name = call.from_user.full_name
-
-    await call.answer(
-        f"Репорт на пользователя успешно отправлен.\n"
-        "Администрация предпримет все необходимые меры"
-    )
+    user_list = await select_all_users_list()
+    random_user = random.choice(user_list)
 
     for admin_id in ADMINS:
         await bot.send_message(
             admin_id,
-            f"Кинут репорт на пользователя "
+            f"Кинут репорт на пользователя.\n"
         )
+
+    await call.message.answer(
+        f"Репорт на пользователя успешно отправлен.\nАдминистрация предпримет все необходимые меры",
+        reply_markup=types.ReplyKeyboardRemove())
+    await asyncio.sleep(3)
     async with state.proxy() as data:
         data["report_us"] = display_name
+        try:
+
+            await create_questionnaire(random_user=random_user, chat_id=call.from_user.id, state=state)
+            await state.reset_data()
+
+        except:
+            await create_questionnaire(random_user=random_user, chat_id=call.from_user.id, state=state)
 
 
 @dp.callback_query_handler(text="cancel_report", state=Report.R1)
