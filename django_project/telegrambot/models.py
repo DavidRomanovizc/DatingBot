@@ -69,3 +69,4 @@ class User(TimeBasedModel):
     marital = models.BooleanField(verbose_name='Наличие партнера у пользователя', default=False)
     marital_target = models.BooleanField(verbose_name='Наличие партнера у целевого пользователя', default=False)
     locale = models.CharField(verbose_name='Язык пользователя', choices=LOCALE_GROUPS)
+    user_var_name = models.CharField(verbose_name='Произвольное имя пользователя')
