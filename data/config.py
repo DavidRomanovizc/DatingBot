@@ -18,11 +18,10 @@ BASE_DIR = Path(__file__).parent
 LOCALES_DIR = BASE_DIR / "locales"  # тут хранятся переводы
 
 # Переменные для ЮKassa
-UTOKEN = env.str("yootoken")
+# UTOKEN = env.str("yootoken")
 
 # Новые переменные для библиотеки QiwiApi
 QIWI_TOKEN = env.str("qiwi")
 WALLET_QIWI = env.str("wallet")  # номер телефона
 QIWI_PUBKEY = env.str("qiwi_p_pub")  # Публичный ключ для генерации ссылки на оплаты
 
-DJANGO_SECRET_KEY = env.str('DJANGO_SECRET_KEY')

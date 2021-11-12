@@ -13,7 +13,7 @@ async def on_startup(dp):
     middlewares.setup(dp)
 
     await db.create()
-
+    await db.create_table_users()
     from utils.notify_admins import on_startup_notify
 
     await on_startup_notify(dp)
