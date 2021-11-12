@@ -10,7 +10,7 @@ bot = Bot(token=config.BOT_TOKEN, parse_mode=types.ParseMode.HTML)
 storage = MemoryStorage()
 dp = Dispatcher(bot, storage=storage)
 db = Database()
-# Настроим i18n middleware для работы с многоязычностью
+# Configure i18n middleware to work with multilingualism
 i18n = setup_middleware(dp)
-# Создадим псевдоним для метода gettext
+# Creating an alias for the gettext method
 _ = i18n.gettext
