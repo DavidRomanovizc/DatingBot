@@ -8,7 +8,7 @@ from keyboards.inline.BN_report import report_inline_kb
 from keyboards.inline.menu_inline import menu_inline_kb
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery
-from states.Reports import Report
+from states.reports import Report
 from data.config import ADMINS
 from loader import dp, bot
 

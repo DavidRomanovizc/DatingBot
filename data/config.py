@@ -24,3 +24,5 @@ UTOKEN = env.str("yootoken")
 QIWI_TOKEN = env.str("qiwi")
 WALLET_QIWI = env.str("wallet")  # номер телефона
 QIWI_PUBKEY = env.str("qiwi_p_pub")  # Публичный ключ для генерации ссылки на оплаты
+
+DJANGO_SECRET_KEY = env.str('DJANGO_SECRET_KEY')

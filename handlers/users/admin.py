@@ -3,7 +3,7 @@ from states.ban_user_states import BanUser
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery
 from states.find_user import FindUser
-from states.Mailing import Mailing
+from states.mailing import Mailing
 from loader import dp, db, bot
 from data.config import ADMINS
 from asyncio import sleep

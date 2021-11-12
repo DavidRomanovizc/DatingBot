@@ -273,7 +273,7 @@ async def get_marital(call: CallbackQuery, state=FSMContext):
 
 @dp.callback_query_handler(text_contains=['true'], state=RegData.child)
 @dp.callback_query_handler(text_contains=['false'], state=RegData.child)
-async def get_childs(call: CallbackQuery, state=FSMContext):
+async def get_children(call: CallbackQuery, state=FSMContext):
     await call.answer(cache_time=60)
     if call.data == 'true':
         try:
@@ -293,7 +293,7 @@ async def get_childs(call: CallbackQuery, state=FSMContext):
 
 @dp.message_handler(content_types=ContentType.PHOTO, state=RegData.photo)
 async def get_photo(message: types.Message, state: FSMContext):
-    file_id = message.photo[0].file_id
+    file_id = message.photo[-1].file_id
     try:
         await db.update_user_photo_id(photo_id=file_id, telegram_id=message.from_user.id)
         await message.reply(f'Фото принято!')

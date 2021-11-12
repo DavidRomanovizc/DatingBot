@@ -88,9 +88,10 @@ class Database:
         ])
         return sql, tuple(parameters.values())
 
-    async def add_user_Users(self, full_name, username, telegram_id, email, national, education, sex, city, age,
-                             kids, car, apartment, marital, language, varname, lifestyle, is_banned, photo_id, commentary,
-                             need_partner_sex, likes, dislikes):
+    async def add_user_Users(self, full_name, username, telegram_id, email=None, national=None, education=None,
+                             sex=None, city=None, age=None, kids=None, car=None, apartment=None, marital=None,
+                             language=None, varname=None, lifestyle=None, is_banned=False, photo_id=None,
+                             commentary=None, need_partner_sex=None, likes=None, dislikes=None):
         sql = '''INSERT INTO users (full_name, username, telegram_id, email, national, education, sex, city, age,
                        kids, car, apartment, marital, language, varname, lifestyle, is_banned, photo_id, commentary, 
                        need_partner_sex, likes, dislikes) 
