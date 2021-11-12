@@ -11,14 +11,14 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 import sys
 from pathlib import Path
-
+# for windows
+sys.path.append('C:\\Users\\LisaL\\PycharmProjects\\dietolog_rebuild')
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 from data import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# for windows
-sys.path.append('C:\\Users\\LisaL\\PycharmProjects\\dietolog_rebuild')
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
