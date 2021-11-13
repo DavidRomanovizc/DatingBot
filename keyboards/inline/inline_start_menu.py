@@ -17,4 +17,5 @@ inline_start = InlineKeyboardMarkup(row_width=2,
                                             InlineKeyboardButton(text="Спонсорство", callback_data="Donation"),
                                             InlineKeyboardButton(text="Инструкция", callback_data="instruction")
                                         ]
-                                    ])
+                                    ]
+                                    )
