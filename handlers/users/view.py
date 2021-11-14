@@ -48,7 +48,6 @@ async def start_finding(call: CallbackQuery, state: FSMContext):
     await state.set_state('finding')
 
 
-# TODO сделать лимит, дизлайки, сообщение, жалобу
 @dp.callback_query_handler(text='like_questionnaire', state='finding')
 async def like_questionnaire(call: CallbackQuery, state: FSMContext):
     await call.answer(cache_time=60)
@@ -76,9 +75,9 @@ async def like_questionnaire(call: CallbackQuery, state: FSMContext):
 async def like_questionnaire(call: CallbackQuery, state: FSMContext):
     await call.answer(cache_time=60)
     user_list = await select_all_users_list()
+    user_list.remove(call.from_user.id)
     random_user = random.choice(user_list)
     try:
-
         await create_questionnaire(random_user=random_user, chat_id=call.from_user.id, state=state)
         await state.reset_data()
 
@@ -89,6 +88,8 @@ async def like_questionnaire(call: CallbackQuery, state: FSMContext):
 @dp.callback_query_handler(text='send_message_questionnaire', state='finding')
 async def like_questionnaire(call: CallbackQuery, state: FSMContext):
     await call.answer(cache_time=60)
+    user_list = await select_all_users_list()
+    user_list.remove(call.from_user.id)
     await call.message.answer("Напиши сообщение для этого пользователя")
     await state.reset_data()
 
@@ -99,6 +100,7 @@ async def like_questionnaire(message: types.Message, state: FSMContext):
     answered_user = await state.get_data('questionnaire_owner')
     answered_user = answered_user.get('questionnaire_owner')
     user_list = await select_all_users_list()
+    user_list.remove(message.from_user.id)
     random_user = random.choice(user_list)
     answer = message.text
     async with state.proxy() as data:
