@@ -17,13 +17,13 @@ There will be: a photo of the questionnaire, like, dislike, send a message to th
 
 
 ## Used technology
-- Python (tested with 3.9, should work on 3.7+)
+- Python (tested with 3.8 and 3.9, should work on 3.7+)
 - Aiogram
 - Docker and Docker Compose
 - PostgreSQL
 
 ## Preparing for launch
-1. Clone this repository via `https://github.com/DavidRomanovizc/DatingBot.git`
+1. Clone this repository via `git clone https://github.com/DavidRomanovizc/DatingBot.git`
 
 2. Setting up a virtual environment\
    `python -m venv venv`
@@ -31,7 +31,7 @@ There will be: a photo of the questionnaire, like, dislike, send a message to th
 3. Activate the virtual environment and set the requirements\
    `pip install -r requirements.txt`
    
-4. Rename `.env.dist` to `.env` and replace the token with your own
+4. Rename example environment file `.env.dist` to active environment file`.env` and replace the token with your own
 
 5. Run bot \
    `python app.py`
