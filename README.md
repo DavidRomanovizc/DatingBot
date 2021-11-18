@@ -35,3 +35,7 @@ There will be: a photo of the questionnaire, like, dislike, send a message to th
 
 5. Run bot \
    `python app.py`
+   
+## Soon...
+
+```Django ORM```
