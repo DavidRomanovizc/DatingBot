@@ -18,7 +18,7 @@ BASE_DIR = Path(__file__).parent
 LOCALES_DIR = BASE_DIR / "locales"  # тут хранятся переводы
 
 # Переменные для ЮKassa
-# UTOKEN = env.str("yootoken")
+UTOKEN = env.str("yootoken")
 
 # Новые переменные для библиотеки QiwiApi
 QIWI_TOKEN = env.str("qiwi")
