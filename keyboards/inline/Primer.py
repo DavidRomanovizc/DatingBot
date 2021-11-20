@@ -1,3 +1,8 @@
+##############################################
+#                FROZEN                     ##
+#             INDEFINITELY                  ##
+#############################################
+
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 
@@ -39,10 +44,3 @@ choice_payment = InlineKeyboardMarkup(row_width=2,
                                               InlineKeyboardButton(text="Назад", callback_data="cancel")
                                           ]
                                       ])
-
-sub_inline = InlineKeyboardMarkup(row_width=1,
-                                  inline_keyboard=[
-                                      [
-                                          InlineKeyboardButton(text="Месяц - 50₽", callback_data="sub")
-                                      ]
-                                  ])
