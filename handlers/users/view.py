@@ -1,7 +1,7 @@
 from aiogram import types
 
 from keyboards.inline.questionnaires_inline import questionnaires_inline_kb
-from keyboards.inline.menu_inline import menu_inline_kb
+from keyboards.inline.second_menu import menu_inline_kb
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery
 from loader import dp, db, bot
