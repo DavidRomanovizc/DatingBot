@@ -1,4 +1,10 @@
-from keyboards.inline.inline_start_menu import inline_start
+##############################################
+#                FROZEN                     ##
+#             INDEFINITELY                  ##
+#############################################
+
+
+from keyboards.inline.main_menu import inline_start
 from utils.misc.qiwi import Payment, NoPaymentFound, NotEnoughMoney
 from keyboards.inline.Primer import paid_keyboard, prime_buy
 from aiogram.utils.markdown import hcode, hlink
