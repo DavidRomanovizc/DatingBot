@@ -25,7 +25,7 @@ async def change_name(message: types.Message, state: FSMContext):
         await message.reply(f'Ваше новое имя: <b>{message.text}</b>')
         await state.reset_state()
     except:
-        await message.reply(f'Произошла незвестная ошибка')
+        await message.reply(f'Произошла неизвестная ошибка')
         await state.reset_state()
 
     await state.reset_state()
@@ -45,7 +45,7 @@ async def change_name(message: types.Message, state: FSMContext):
         await state.reset_state()
 
     except:
-        await message.reply(f'Произошла незвестная ошибка')
+        await message.reply(f'Произошла неизвестная ошибка')
         await state.reset_state()
 
     await state.reset_state()
@@ -64,7 +64,7 @@ async def change_name(message: types.Message, state: FSMContext):
         await message.reply(f'Ваша новая национальность: <b>{message.text}</b>')
         await state.reset_state()
     except:
-        await message.reply(f'Произошла незвестная ошибка')
+        await message.reply(f'Произошла неизвестная ошибка')
         await state.reset_state()
 
     await state.reset_state()
@@ -83,7 +83,7 @@ async def change_city(message: types.Message, state: FSMContext):
         await message.reply(f'Ваш новый город: <b>{message.text}</b>')
         await state.reset_state()
     except:
-        await message.reply(f'Произошла незвестная ошибка')
+        await message.reply(f'Произошла неизвестная ошибка')
         await state.reset_state()
 
     await state.reset_state()
@@ -109,7 +109,7 @@ async def change_sex(call: CallbackQuery, state: FSMContext):
             await bot.send_message(call.from_user.id, f'Ваш новый пол: <b>Мужской</b>')
             await state.reset_state()
         except:
-            await bot.send_message(call.from_user.id, f'Произошла незвестная ошибка')
+            await bot.send_message(call.from_user.id, f'Произошла неизвестная ошибка')
             await state.reset_state()
     if call.data == 'female':
         try:
@@ -117,7 +117,7 @@ async def change_sex(call: CallbackQuery, state: FSMContext):
             await bot.send_message(call.from_user.id, f'Ваш новый пол: <b>Женский</b>')
             await state.reset_state()
         except:
-            await bot.send_message(call.from_user.id, f'Произошла незвестная ошибка')
+            await bot.send_message(call.from_user.id, f'Произошла неизвестная ошибка')
             await state.reset_state()
 
     await state.reset_state()
@@ -143,7 +143,7 @@ async def change_car(call: CallbackQuery, state: FSMContext):
             await bot.send_message(call.from_user.id, f'Теперь у вас: <b>есть</b> машина')
             await state.reset_state()
         except:
-            await bot.send_message(call.from_user.id, f'Произошла незвестная ошибка')
+            await bot.send_message(call.from_user.id, f'Произошла неизвестная ошибка')
             await state.reset_state()
     if call.data == 'false':
         try:
@@ -151,7 +151,7 @@ async def change_car(call: CallbackQuery, state: FSMContext):
             await bot.send_message(call.from_user.id, f'Теперь у вас: <b>нет</b> машины')
             await state.reset_state()
         except:
-            await bot.send_message(call.from_user.id, f'Произошла незвестная ошибка')
+            await bot.send_message(call.from_user.id, f'Произошла неизвестная ошибка')
             await state.reset_state()
 
     await state.reset_state()
@@ -177,7 +177,7 @@ async def change_name(call: CallbackQuery, state: FSMContext):
             await bot.send_message(call.from_user.id, f'Теперь у вас: <b>есть</b> дети')
             await state.reset_state()
         except:
-            await bot.send_message(call.from_user.id, f'Произошла незвестная ошибка')
+            await bot.send_message(call.from_user.id, f'Произошла неизвестная ошибка')
             await state.reset_state()
     if call.data == 'false':
         try:
@@ -185,7 +185,7 @@ async def change_name(call: CallbackQuery, state: FSMContext):
             await bot.send_message(call.from_user.id, f'Теперь у вас: <b>нет</b> детей')
             await state.reset_state()
         except:
-            await bot.send_message(call.from_user.id, f'Произошла незвестная ошибка')
+            await bot.send_message(call.from_user.id, f'Произошла неизвестная ошибка')
             await state.reset_state()
 
     await state.reset_state()
@@ -211,7 +211,7 @@ async def change_name(call: CallbackQuery, state: FSMContext):
             await bot.send_message(call.from_user.id, f'Теперь у вас: <b>есть</b> квартира')
             await state.reset_state()
         except:
-            await bot.send_message(call.from_user.id, f'Произошла незвестная ошибка')
+            await bot.send_message(call.from_user.id, f'Произошла неизвестная ошибка')
             await state.reset_state()
     if call.data == 'false':
         try:
@@ -219,7 +219,7 @@ async def change_name(call: CallbackQuery, state: FSMContext):
             await bot.send_message(call.from_user.id, f'Теперь у вас: <b>нет</b> квартиры')
             await state.reset_state()
         except:
-            await bot.send_message(call.from_user.id, f'Произошла незвестная ошибка')
+            await bot.send_message(call.from_user.id, f'Произошла неизвестная ошибка')
             await state.reset_state()
 
     await state.reset_state()
@@ -245,7 +245,7 @@ async def change_name(call: CallbackQuery, state: FSMContext):
             await bot.send_message(call.from_user.id, f'Теперь у вас: <b>Высшее</b> образование')
             await state.reset_state()
         except:
-            await bot.send_message(call.from_user.id, f'Произошла незвестная ошибка')
+            await bot.send_message(call.from_user.id, f'Произошла неизвестная ошибка')
             await state.reset_state()
     if call.data == 'secondary_edu':
         try:
@@ -253,7 +253,7 @@ async def change_name(call: CallbackQuery, state: FSMContext):
             await bot.send_message(call.from_user.id, f'Теперь у вас: <b>Среднее</b> образование')
             await state.reset_state()
         except:
-            await bot.send_message(call.from_user.id, f'Произошла незвестная ошибка')
+            await bot.send_message(call.from_user.id, f'Произошла неизвестная ошибка')
             await state.reset_state()
 
     await state.reset_state()
@@ -280,7 +280,7 @@ async def change_name(call: CallbackQuery, state: FSMContext):
             await bot.send_message(call.from_user.id, f'Теперь вы учитесь!')
             await state.reset_state()
         except:
-            await bot.send_message(call.from_user.id, f'Произошла незвестная ошибка')
+            await bot.send_message(call.from_user.id, f'Произошла неизвестная ошибка')
             await state.reset_state()
     elif call.data == 'work_lifestyle':
         try:
@@ -288,7 +288,7 @@ async def change_name(call: CallbackQuery, state: FSMContext):
             await bot.send_message(call.from_user.id, f'Теперь вы работаете!')
             await state.reset_state()
         except:
-            await bot.send_message(call.from_user.id, f'Произошла незвестная ошибка')
+            await bot.send_message(call.from_user.id, f'Произошла неизвестная ошибка')
             await state.reset_state()
     elif call.data == 'job_find_lifestyle':
         try:
@@ -296,7 +296,7 @@ async def change_name(call: CallbackQuery, state: FSMContext):
             await bot.send_message(call.from_user.id, f'Теперь вы ищете работу!')
             await state.reset_state()
         except:
-            await bot.send_message(call.from_user.id, f'Произошла незвестная ошибка')
+            await bot.send_message(call.from_user.id, f'Произошла неизвестная ошибка')
             await state.reset_state()
     elif call.data == 'householder_lifestyle':
         try:
@@ -304,7 +304,7 @@ async def change_name(call: CallbackQuery, state: FSMContext):
             await bot.send_message(call.from_user.id, f'Теперь вы домохозяин/домохозяйка!')
             await state.reset_state()
         except:
-            await bot.send_message(call.from_user.id, f'Произошла незвестная ошибка')
+            await bot.send_message(call.from_user.id, f'Произошла неизвестная ошибка')
             await state.reset_state()
 
     await state.reset_state()
