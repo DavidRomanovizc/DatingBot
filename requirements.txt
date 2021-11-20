@@ -7,7 +7,6 @@ gino
 Django==3.1.13
 psycopg2-binary
 jsonfield
-pipfile.lock, setup.py*
 asgiref~=3.4.1
 uuid~=1.30
 qiwipy
