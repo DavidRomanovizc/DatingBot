@@ -128,7 +128,7 @@ async def initialize_me(call: CallbackQuery):
 
 @dp.callback_query_handler(text='find_user')
 async def start_find(call: CallbackQuery):
-    await bot.send_message(call.from_user.id, f'Введите айди пользователя, которого хотите найти')
+    await bot.send_message(call.from_user.id, f'Введите ID пользователя, которого хотите найти')
     await FindUser.process_find1.set()
 
 
