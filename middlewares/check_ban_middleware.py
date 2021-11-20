@@ -1,11 +1,10 @@
+# мы не знаем, что это такое @mroshalom
 from aiogram import types
 from aiogram.dispatcher.handler import CancelHandler, current_handler
 from aiogram.dispatcher.middlewares import BaseMiddleware
-#
-# from utils.db_api.models import User
 
 
-class CheckBan(BaseMiddleware): # хуй знает что это пока не ебу как работать с этим но пусть будет @mroshalom
+class CheckBan(BaseMiddleware):
     allowed_updates = ["callback_query", "message"]
 
     async def trigger(self, action, arg):
