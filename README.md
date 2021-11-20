@@ -1,5 +1,5 @@
 # DatingBot
-
+ ![visits](https://img.shields.io/github/search/DavidRomanovizc/DatingBot/⠀?logoColor=yellow&style=flat-square)
 
 
 ## Bot functionality
