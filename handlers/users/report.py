@@ -5,7 +5,7 @@ from aiogram import types
 
 from handlers.users.view import create_questionnaire, select_all_users_list
 from keyboards.inline.BN_report import report_inline_kb
-from keyboards.inline.menu_inline import menu_inline_kb
+from keyboards.inline.second_menu import menu_inline_kb
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery
 from states.reports import Report
