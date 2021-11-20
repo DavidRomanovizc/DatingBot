@@ -3,22 +3,22 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 menu_inline_kb = InlineKeyboardMarkup(row_width=3,
                                       inline_keyboard=[
                                           [
-                                              InlineKeyboardButton(text='Моя анекта',
+                                              InlineKeyboardButton(text='💬 Моя анекта',
                                                                    callback_data='my_profile'),
 
-                                              InlineKeyboardButton(text='Изменить анкету',
+                                              InlineKeyboardButton(text='⬆️ Изменить анкету',
                                                                    callback_data='change_profile')
                                           ],
 
                                           [
-                                              InlineKeyboardButton(text='Смотреть анкеты',
+                                              InlineKeyboardButton(text='🧐 Смотреть анкеты',
                                                                    callback_data='find_ancets'),
-                                              InlineKeyboardButton(text='Мои предпочтения',
+                                              InlineKeyboardButton(text='♻️ Мои предпочтения',
                                                                    callback_data='preferences')
                                           ],
 
                                           [
-                                              InlineKeyboardButton(text='Я больше не хочу никого искать',
+                                              InlineKeyboardButton(text='⏪️ Я больше не хочу никого искать',
                                                                    callback_data='cancel')
                                           ],
 
@@ -38,10 +38,3 @@ btn_pref = InlineKeyboardMarkup(row_width=2,
                                     ]
                                 ]
                                 )
-
-back_to_menu = InlineKeyboardMarkup(row_width=1,
-                                    inline_keyboard=[
-                                        [
-                                            InlineKeyboardButton(text="В меню", callback_data="in_menu")
-                                        ]
-                                    ])
