@@ -1,11 +1,11 @@
-from keyboards.inline.menu_inline import menu_inline_kb, btn_pref
-from keyboards.inline.inline_start_menu import inline_start
+from keyboards.inline.second_menu import menu_inline_kb, btn_pref
+from keyboards.inline.main_menu import inline_start
 from aiogram.types import CallbackQuery
 from loader import dp, db, bot
 import logging
 
 
-@dp.callback_query_handler(text_contains="menu")
+@dp.callback_query_handler(text_contains="second_m")
 async def open_menu(call: CallbackQuery):
     await call.answer(cache_time=60)
     await call.message.edit_text(f"Меню: ",
@@ -91,13 +91,3 @@ async def get_male(call: CallbackQuery):
     await db.update_user_need_partner_sex(need_partner_sex='Женский', telegram_id=call.from_user.id)
     await call.message.edit_text("Вы выбрали женщин", reply_markup=menu_inline_kb)
 
-
-@dp.callback_query_handler(text="cancel")
-async def cancel_buying(call: CallbackQuery):
-    await call.message.edit_text(f"Рад был помочь, {call.from_user.full_name}!\n"
-                                 f"Надеюсь, ты нашел кого-то благодаря мне", reply_markup=inline_start)
-
-
-@dp.callback_query_handler(text="in_menu")
-async def back_to_menu(call: CallbackQuery):
-    await call.message.edit_text("Вы были возвращены в меню: ", reply_markup=menu_inline_kb)
