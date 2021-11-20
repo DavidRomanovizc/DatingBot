@@ -1,9 +1,13 @@
+##############################################
+#                FROZEN                     ##
+#             INDEFINITELY                  ##
+#############################################
 from aiogram import types
 from aiogram.types import CallbackQuery, ContentTypes
 
 from data.config import UTOKEN
-from keyboards.inline.Primer import sub_inline, choice_payment
-from keyboards.inline.inline_start_menu import inline_start
+from keyboards.inline.Primer import choice_payment
+from keyboards.inline.main_menu import inline_start
 from loader import dp, bot
 
 
