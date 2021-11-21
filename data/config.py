@@ -8,10 +8,10 @@ BOT_TOKEN = env.str("BOT_TOKEN")  # Забираем значение типа s
 ADMINS = env.list("ADMINS")  # Тут у нас будет список из админов
 IP = env.str("ip")  # Тоже str, но для айпи адреса хоста
 
-DB_USER = env.str('DB_USER')
-DB_PASS = env.str('DB_PASS')
+DB_USER = env.str('DB_USER')  # Имя пользователя db
+DB_PASS = env.str('DB_PASS')  # Пароль от db
 DB_HOST = env.str('DB_HOST')
-DB_NAME = env.str('DB_NAME')
+DB_NAME = env.str('DB_NAME')  # Название db
 
 I18N_DOMAIN = "testbot"
 BASE_DIR = Path(__file__).parent
