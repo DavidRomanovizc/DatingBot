@@ -1,8 +1,8 @@
-from keyboards.inline.back_bnt import go_back_to_the_menu
+from keyboards.inline.back_bnt import go_bac_to_second_menu
 from keyboards.inline.lifestyle_choice_inline import lifestyle_inline_kb
 from keyboards.inline.profile_bt import reg_profile
 from aiogram.types import CallbackQuery, ContentType
-from keyboards.inline.second_menu import btn_pref
+from keyboards.inline.second_menu import btn_pref, menu_inline_kb
 from aiogram.dispatcher import FSMContext
 from states.reg_state import RegData
 from loader import dp, bot, db
@@ -351,5 +351,6 @@ async def get_photo(message: types.Message, state: FSMContext):
                                       f"10. Наличие детей - {str(user_kids)}\n"
                                       f"11. Семейное положение - {str(user_marital)}\n\n"
                                       f"12. О себе - {str(user_comm)}",
-        photo=user.get('photo_id'), reply_markup=go_back_to_the_menu
+        photo=user.get('photo_id')
     )
+    await message.answer("Меню: ", reply_markup=menu_inline_kb)

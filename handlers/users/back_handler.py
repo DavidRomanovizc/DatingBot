@@ -1,6 +1,7 @@
 from aiogram.types import CallbackQuery
 
 from keyboards.inline.main_menu import inline_start
+from keyboards.inline.second_menu import menu_inline_kb
 from loader import dp
 
 
@@ -13,3 +14,8 @@ async def cancel_buying(call: CallbackQuery):
 @dp.callback_query_handler(text="submenu")
 async def back_to_menu(call: CallbackQuery):
     await call.message.edit_text("Вы были возвращены в меню: ", reply_markup=inline_start)
+
+
+@dp.callback_query_handler(text="go_bac_to_second_menu")
+async def back_second_menu(call: CallbackQuery):
+    await call.message.edit_text("Вы были возвращены в меню: ", reply_markup=menu_inline_kb)
