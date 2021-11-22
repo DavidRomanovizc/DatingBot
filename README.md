@@ -8,7 +8,7 @@
  [![Qiwipy](https://img.shields.io/badge/Qiwipy-2.1.6-important?style=flat-square)](https://pypi.org/project/aiogram/)
 
 
-## Bot functionality
+## Bot functionality 🔍️
 ```/start``` - welcome message with main menu
 
 There are 5 buttons in the main menu\
@@ -22,13 +22,13 @@ The main functionality you can find in second menu on button ```View other profi
 There will be: a photo of the questionnaire, like, dislike, send a message to the user via the bot, complain and leave the viewing of questionnaires, if you stop viewing questionnaires, then you move to the main menu
 
 
-## Used technology
+## Used technology 📝
 - Python (tested with 3.8 and 3.9, should work on 3.7+)
 - Aiogram
 - Docker and Docker Compose
 - PostgreSQL
 
-## Preparing for launch
+## Preparing for launch 🚀
 1. Clone this repository via `git clone https://github.com/DavidRomanovizc/DatingBot.git`
 
 2. Setting up a virtual environment\
@@ -42,7 +42,7 @@ There will be: a photo of the questionnaire, like, dislike, send a message to th
 5. Run bot \
    `python app.py`
    
-## Pull requests - a guide to action
+## Pull requests - a guide to action 💡
 
 If you suddenly write a pull request to any segment of the bot, please leave comments on the key points of your code.
 
