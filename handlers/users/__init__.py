@@ -1,6 +1,6 @@
 from . import start
 from . import report
-from . import reg
+from . import registration
 from . import admin
 from . import change_datas
 from . import menu
