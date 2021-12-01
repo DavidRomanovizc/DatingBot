@@ -1,5 +1,4 @@
 from keyboards.inline.second_menu import menu_inline_kb, btn_pref
-from keyboards.inline.main_menu import inline_start
 from aiogram.types import CallbackQuery
 from loader import dp, db, bot
 import logging
@@ -61,6 +60,7 @@ async def my_profile_menu(call: CallbackQuery):
                                                             f'{user_lifestyle}\n\n'
                                                             f'Обо мне: {str(user_comm)}',
                          photo=user_photo)
+    await call.message.answer("Меню: ", reply_markup=menu_inline_kb)
 
 
 @dp.callback_query_handler(text_contains="preferences")
@@ -90,4 +90,3 @@ async def get_male(call: CallbackQuery):
     logging.info(f"{callback_data}=")
     await db.update_user_need_partner_sex(need_partner_sex='Женский', telegram_id=call.from_user.id)
     await call.message.edit_text("Вы выбрали женщин", reply_markup=menu_inline_kb)
-
