@@ -4,6 +4,8 @@ from keyboards.inline.profile_bt import reg_profile
 from aiogram.types import CallbackQuery, ContentType
 from keyboards.inline.second_menu import btn_pref, menu_inline_kb
 from aiogram.dispatcher import FSMContext
+
+from keyboards.inline.sex_partner import btn_partner
 from states.reg_state import RegData
 from loader import dp, bot, db
 from aiogram import types
@@ -56,15 +58,15 @@ async def commentary_reg(message: types.Message):
     except:
         await message.reply(f'Произошла неизвестная ошибка! Попробуйте изменить комментарий позже в разделе '
                             f'"Меню"')
-    await bot.send_message(message.from_user.id, f'Выберите, кого вы хотите найти: ', reply_markup=btn_pref)
+    await bot.send_message(message.from_user.id, f'Выберите, кого вы хотите найти: ', reply_markup=btn_partner)
     await RegData.need_partner_sex.set()
 
 
-@dp.callback_query_handler(text='male', state=RegData.need_partner_sex)
+@dp.callback_query_handler(text='gen_male', state=RegData.need_partner_sex)
 @dp.callback_query_handler(text='g_fe', state=RegData.need_partner_sex)
 async def sex_reg(call: CallbackQuery):
     await call.answer(cache_time=60)
-    if call.data == 'male':
+    if call.data == 'gen_male':
         try:
             await db.update_user_need_partner_sex(telegram_id=call.from_user.id, need_partner_sex='Мужской')
         except asyncpg.exceptions.UniqueViolationError as err:
