@@ -2,4 +2,4 @@ from django.apps import AppConfig
 
 
 class UsersmanageConfig(AppConfig):
-    name = 'usersmanage'
+    name = 'django_project.telegrambot.usersmanage'
