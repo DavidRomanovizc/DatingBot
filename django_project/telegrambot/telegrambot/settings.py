@@ -15,7 +15,7 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 import sys
 
-sys.path.append("D:\Code\DatingBot_3")
+sys.path.append("D:\\Code\\DatingBot_3")
 from data import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -53,7 +53,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'telegrambot.urls'
+ROOT_URLCONF = 'django_project.telegrambot.telegrambot.urls'
 
 TEMPLATES = [
     {
@@ -71,7 +71,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'telegrambot.wsgi.application'
+WSGI_APPLICATION = 'django_project.telegrambot.telegrambot.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
