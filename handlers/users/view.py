@@ -23,15 +23,17 @@ async def create_questionnaire(state, random_user, chat_id, add_text=None):
     age = user_data.get('age')
     sex = user_data.get('sex')
     city = user_data.get('city')
+    need_partner_sex = user_data.get('need_partner_sex')
     commentary = user_data.get('commentary')
     photo_random_user = user_data.get('photo_id')
     if photo_random_user is None:
         photo_random_user = "https://www.meme-arsenal.com/memes/5eae5104f379baa355e031fa1ded886c.jpg"
 
     description_random_user = f'{add_text}\n\n' \
-                              f'{varname}, {age}, {sex}\n' \
-                              f'{city}\n' \
-                              f'{commentary}\n\n'
+                              f'<b>Имя</b> - {varname},\n<b>Возраст</b> - {age},\n<b>Пол</b> - {sex}\n' \
+                              f'<b>Город</b> - {city}\n' \
+                              f'<b>Ищу</b> - {need_partner_sex}\n\n' \
+                              f'<b>О себе:</b>\n{commentary}\n\n'
     await bot.send_photo(chat_id=chat_id, photo=photo_random_user,
                          caption=description_random_user, reply_markup=questionnaires_inline_kb)
     await state.update_data(data={'questionnaire_owner': random_user})
@@ -43,7 +45,6 @@ async def start_finding(call: CallbackQuery, state: FSMContext):
     user_list = await select_all_users_list()
     user_list.remove(call.from_user.id)
     random_user = random.choice(user_list)
-
     await create_questionnaire(random_user=random_user, chat_id=call.from_user.id, state=state)
     await state.set_state('finding')
 
