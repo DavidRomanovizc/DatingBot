@@ -6,7 +6,7 @@ btn_partner = InlineKeyboardMarkup(row_width=2,
                                            InlineKeyboardButton(text='Мужчин',
                                                                 callback_data='gen_male'),
                                            InlineKeyboardButton(text='Женщин',
-                                                                callback_data='female'),
+                                                                callback_data='g_fe'),
                                        ]
                                    ]
                                    )

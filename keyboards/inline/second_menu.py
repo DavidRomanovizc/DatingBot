@@ -34,7 +34,7 @@ btn_pref = InlineKeyboardMarkup(row_width=2,
                                                              callback_data='g_fe'),
                                     ],
                                     [
-                                        InlineKeyboardButton(text="В меню", callback_data="in_menu")
+                                        InlineKeyboardButton(text="В меню", callback_data="go_bac_to_second_menu")
                                     ]
                                 ]
                                 )
