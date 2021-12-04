@@ -18,9 +18,12 @@ async def register_user(message: types.Message):
         user = await db.select_user(telegram_id=message.from_user.id)
         if user.get('is_banned') is not True:
             count_users = await db.count_users()
-            await message.reply(text=_(f"Приветствую вас, {message.from_user.full_name}!!\n"
-                                       f"Сейчас в нашем боте <b>{count_users}</b> пользователей\n\n"
-                                       f"Чтобы увидеть полный список команд - воспользуйтесь командой /help\n\n"),
+            await message.reply(text=_(f"Приветствую вас, {message.from_user.full_name}!!\n\n"
+                                       "<b>❤️️ DATE_BOT</b> - платформа для поиска новых знакомств.\n\n"
+                                       "<b>🤝 Сотрудничество: </b>\n"
+                                       "Если у вас есть предложение о сотрудничестве, пишите сюда"
+                                       "@DRomanovizc",
+                                       ),
                                 reply_markup=inline_start)
         elif user.get('is_banned') is True:
             await message.answer(f'Вы заблокированы навсегда! За разблокировкой пишите админу')
