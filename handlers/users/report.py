@@ -34,14 +34,14 @@ async def report_user(call: CallbackQuery):
 @dp.callback_query_handler(text="another", state=Report.R1)
 async def report_user(call: CallbackQuery, state: FSMContext):
     await call.answer(cache_time=60)
-    display_name = call.from_user.full_name
+    display_name = call.message.from_user.id
     user_list = await select_all_users_list()
     random_user = random.choice(user_list)
 
     for admin_id in ADMINS:
         await bot.send_message(
             admin_id,
-            f"Кинут репорт на пользователя.\n"
+            f"Кинут репорт на пользователя {display_name}\n"
         )
 
     await call.message.answer(
@@ -50,13 +50,8 @@ async def report_user(call: CallbackQuery, state: FSMContext):
     await asyncio.sleep(3)
     async with state.proxy() as data:
         data["report_us"] = display_name
-        try:
-
-            await create_questionnaire(random_user=random_user, chat_id=call.from_user.id, state=state)
-            await state.reset_data()
-
-        except:
-            await create_questionnaire(random_user=random_user, chat_id=call.from_user.id, state=state)
+        await create_questionnaire(random_user=random_user, chat_id=call.from_user.id, state=state)
+        await state.set_state('finding')
 
 
 @dp.callback_query_handler(text="cancel_report", state=Report.R1)
