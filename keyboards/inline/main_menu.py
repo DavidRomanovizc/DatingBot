@@ -10,13 +10,13 @@ inline_start = InlineKeyboardMarkup(row_width=2,
                                                                  callback_data="second_m")
                                         ],
                                         [
-                                            InlineKeyboardButton(text="📝 Информация", callback_data="info")
+                                            InlineKeyboardButton(text="🌐 Информация", callback_data="info")
                                         ],
 
                                         [
                                             InlineKeyboardButton(text="💚 Спонсорство",
                                                                  url="https://www.donationalerts.com/r/david_romanov"),
-                                            InlineKeyboardButton(text="🌐 Инструкция", callback_data="instruction")
+                                            InlineKeyboardButton(text="📈 Статистика", callback_data="statistics")
                                         ]
                                     ]
                                     )
