@@ -14,7 +14,7 @@ async def cancel_buying(call: CallbackQuery):
 async def back_to_menu(call: CallbackQuery):
     await call.message.edit_text("<b>❤️️ DATE_BOT</b> - платформа для поиска новых знакомств\n\n"
                                  "<b>🤝 Сотрудничество: </b>\n"
-                                 "Если у вас есть предложение о сотрудничестве, пишите сюда"
+                                 "Если у вас есть предложение о сотрудничестве, пишите сюда - "
                                  "@DRomanovizc", reply_markup=inline_start)
 
 
@@ -29,5 +29,5 @@ async def get_close_everything(call: CallbackQuery):
     await bot.delete_message(chat_id=call.from_user.id, message_id=call.message.message_id)
     await call.message.answer("<b>❤️️ DATE_BOT</b> - платформа для поиска новых знакомств.\n\n"
                               "<b>🤝 Сотрудничество: </b>\n"
-                              "Если у вас есть предложение о сотрудничестве, пишите сюда"
+                              "Если у вас есть предложение о сотрудничестве, пишите сюда - "
                               "@DRomanovizc", reply_markup=inline_start)
