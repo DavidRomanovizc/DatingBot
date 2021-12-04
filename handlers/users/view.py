@@ -17,7 +17,7 @@ async def select_all_users_list():
     return list_id
 
 
-async def create_questionnaire(state, random_user, chat_id, add_text=None):
+async def create_questionnaire(state, random_user, chat_id):
     user_data = await db.select_user(telegram_id=random_user)
     varname = user_data.get('varname')
     age = user_data.get('age')
@@ -29,11 +29,11 @@ async def create_questionnaire(state, random_user, chat_id, add_text=None):
     if photo_random_user is None:
         photo_random_user = "https://www.meme-arsenal.com/memes/5eae5104f379baa355e031fa1ded886c.jpg"
 
-    description_random_user = f'{add_text}\n\n' \
-                              f'<b>Имя</b> - {varname},\n<b>Возраст</b> - {age},\n<b>Пол</b> - {sex}\n' \
+    description_random_user = f'<b>Имя</b> - {varname},\n<b>Возраст</b> - {age},\n<b>Пол</b> - {sex}\n' \
                               f'<b>Город</b> - {city}\n' \
                               f'<b>Ищу</b> - {need_partner_sex}\n\n' \
                               f'<b>О себе:</b>\n{commentary}\n\n'
+
     await bot.send_photo(chat_id=chat_id, photo=photo_random_user,
                          caption=description_random_user, reply_markup=questionnaires_inline_kb)
     await state.update_data(data={'questionnaire_owner': random_user})
@@ -81,7 +81,6 @@ async def like_questionnaire(call: CallbackQuery, state: FSMContext):
     try:
         await create_questionnaire(random_user=random_user, chat_id=call.from_user.id, state=state)
         await state.reset_data()
-
     except:
         await create_questionnaire(random_user=random_user, chat_id=call.from_user.id, state=state)
 
