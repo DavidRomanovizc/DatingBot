@@ -1,3 +1,4 @@
+from aiogram.utils.exceptions import UserDeactivated, MessageToReplyNotFound, InvalidUserId, MessageError
 from keyboards.inline.admin_inline import admin_mode_kb
 from states.ban_user_states import BanUser
 from aiogram.dispatcher import FSMContext
@@ -20,7 +21,7 @@ async def open_admin_mode(message: types.Message):
 async def create_base_users(call: CallbackQuery):
     try:
         await db.create_table_users()
-    except:
+    except MessageError:
         await call.answer(f'Ошибка! Вполне возможно, база уже есть', show_alert=True)
 
     await call.answer(text=f'Таблица пользователей создана со следующими параметрами: \n\n'
@@ -32,7 +33,7 @@ async def create_base_users(call: CallbackQuery):
 async def create_base_users(call: CallbackQuery):
     try:
         await db.create_table_payments()
-    except:
+    except MessageError:
         await call.answer(f'Ошибка! Вполне возможно, база уже есть', show_alert=True)
 
     await call.answer(text=f'Таблица оплаты создана со следующими параметрами: \n\n'
@@ -50,12 +51,12 @@ async def mailing_start(callback_query: CallbackQuery):
 @dp.message_handler(state=Mailing.stage1)
 async def send_mailing(message: types.Message, state: FSMContext):
     answer = message.text
-    count_usersers = await db.count_users()
+    count_users = await db.count_users()
     async with state.proxy() as data:
         data['mailing'] = answer
     await message.answer(f'Отправьте любое сообщение для подтверждения отправки следующего сообщения: \n\n'
                          f'<b>{answer}</b>\n\n'
-                         f'Сообщение получат: <b>{count_usersers}</b> человек', parse_mode='HTML')
+                         f'Сообщение получат: <b>{count_users}</b> человек', parse_mode='HTML')
     await Mailing.stage2.set()
 
 
@@ -150,7 +151,7 @@ async def delete_users_db(message: types.Message, state: FSMContext):
         user = await db.select_user(telegram_id=telegram_id)
         await bot.send_message(message.from_user.id, f'Пользователь найден, вот данные о нем:\n\n'
                                                      f'{list(user)}')
-    except:
+    except UserDeactivated:
         await bot.send_message(message.from_user.id, f'Пользователь не найден, попробуйте изменить ID')
 
     await state.reset_state()
@@ -179,7 +180,7 @@ async def complete_ban(message: types.Message, state: FSMContext):
     need_ban_id = message.text
     try:
         full_name_banned_user = await db.select_user(telegram_id=int(need_ban_id))
-    except:
+    except InvalidUserId:
         full_name_banned_user = 0
 
     fullname = full_name_banned_user.get('full_name')
@@ -187,7 +188,7 @@ async def complete_ban(message: types.Message, state: FSMContext):
         await db.update_user_ban_status(is_banned=True, telegram_id=int(need_ban_id))
         await bot.send_message(message.from_user.id, f'Пользователь {fullname} был успешно забанен!')
         await state.reset_state()
-    except:
+    except InvalidUserId:
         await bot.send_message(f'Произошла неизвестная ошибка! Попробуйте изменить id в формате целочисленного числа')
         await state.reset_state()
 
@@ -203,7 +204,7 @@ async def complete_unban(message: types.Message, state: FSMContext):
     need_unban_id = message.text
     try:
         full_name_unbanned_user = await db.select_user(telegram_id=int(need_unban_id))
-    except:
+    except InvalidUserId:
         full_name_unbanned_user = 0
 
     fullname = full_name_unbanned_user.get('full_name')
@@ -211,6 +212,6 @@ async def complete_unban(message: types.Message, state: FSMContext):
         await db.update_user_ban_status(is_banned=False, telegram_id=int(need_unban_id))
         await bot.send_message(message.from_user.id, f'Пользователь {fullname} был успешно разбанен!')
         await state.reset_state()
-    except:
+    except InvalidUserId:
         await bot.send_message(f'Произошла неизвестная ошибка! Попробуйте изменить id в формате целочисленного числа')
         await state.reset_state()
