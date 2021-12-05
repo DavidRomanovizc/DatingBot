@@ -17,7 +17,7 @@ async def select_all_users_list():
     return list_id
 
 
-async def create_questionnaire(state, random_user, chat_id):
+async def create_questionnaire(state, random_user, chat_id, add_text=None):
     user_data = await db.select_user(telegram_id=random_user)
     varname = user_data.get('varname')
     age = user_data.get('age')

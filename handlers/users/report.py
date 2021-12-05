@@ -34,16 +34,31 @@ async def report_user(call: CallbackQuery):
 @dp.callback_query_handler(text="another", state=Report.R1)
 async def report_user(call: CallbackQuery, state: FSMContext):
     await call.answer(cache_time=60)
-    display_name = call.message.from_user.id
+    display_name = call.from_user.full_name
     user_list = await select_all_users_list()
     random_user = random.choice(user_list)
 
     for admin_id in ADMINS:
-        await bot.send_message(
-            admin_id,
-            f"Кинут репорт на пользователя {display_name}\n"
-        )
-
+        if call.data == "content":
+            await bot.send_message(
+                admin_id,
+                f"Кинут репорт на пользователя за 18+ контент\n"
+            )
+        elif call.data == "drugs":
+            await bot.send_message(
+                admin_id,
+                f"Кинут репорт на пользователя за публикацию/продажу и т.д наркотиков\n"
+            )
+        elif call.data == "scam":
+            await bot.send_message(
+                admin_id,
+                f"Кинут репорт на пользователя за мошенничество\n"
+            )
+        elif call.data == "another":
+            await bot.send_message(
+                admin_id,
+                f"Кинут репорт на пользователя за другое\n"
+            )
     await call.message.answer(
         f"Репорт на пользователя успешно отправлен.\nАдминистрация предпримет все необходимые меры",
         reply_markup=types.ReplyKeyboardRemove())
