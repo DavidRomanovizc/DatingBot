@@ -36,6 +36,8 @@ third_str = InlineKeyboardMarkup(row_width=3,
                                      [
                                          InlineKeyboardButton(text='⬅️ Назад',
                                                               callback_data='backward_th'),
+                                         InlineKeyboardButton(text='➡️ Вперед',
+                                                              callback_data='forward_th')
                                      ],
 
                                      [
@@ -44,3 +46,17 @@ third_str = InlineKeyboardMarkup(row_width=3,
                                      ],
                                  ]
                                  )
+
+fourth_str = InlineKeyboardMarkup(row_width=3,
+                                  inline_keyboard=[
+                                      [
+                                          InlineKeyboardButton(text='⬅️ Назад',
+                                                               callback_data='backward_four'),
+                                      ],
+
+                                      [
+                                          InlineKeyboardButton(text='❌ Закрыть',
+                                                               callback_data='close_everything')
+                                      ],
+                                  ]
+                                  )
