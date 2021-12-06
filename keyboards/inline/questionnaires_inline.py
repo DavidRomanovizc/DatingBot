@@ -17,7 +17,7 @@ questionnaires_inline_kb = InlineKeyboardMarkup(row_width=5,
 
                                                     ],
                                                     [
-                                                        InlineKeyboardButton(text=f'Остановить просмотр анкет',
+                                                        InlineKeyboardButton(text=f'⏪️ Я больше не хочу никого искать',
                                                                              callback_data='stop_finding'),
                                                     ],
                                                 ]
