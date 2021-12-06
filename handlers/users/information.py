@@ -1,4 +1,4 @@
-from keyboards.inline.guide_btn import first_str, second_str, third_str
+from keyboards.inline.guide_btn import first_str, second_str, third_str, fourth_str
 from aiogram.types import CallbackQuery, InputMediaPhoto
 from loader import dp, bot
 
@@ -11,7 +11,6 @@ async def get_information(call: CallbackQuery):
     await bot.send_photo(chat_id=call.from_user.id,
                          photo=photo,
                          caption="Руководство по боту: \n<b>Страница №1</b>", reply_markup=first_str)
-
 
 
 @dp.callback_query_handler(text="forward_f")
@@ -50,3 +49,23 @@ async def get_backward_f(call: CallbackQuery):
         caption="Руководство по боту: \n<b>Страница №2</b>"
     )
     await call.message.edit_media(photo, reply_markup=second_str)
+
+
+@dp.callback_query_handler(text="forward_th")
+async def get_backward_f(call: CallbackQuery):
+    await call.answer(cache_time=60)
+    photo = InputMediaPhoto(
+        "https://sun9-58.userapi.com/impg/9c8V5OPSMiEHmHXSHMEYcjkxLGYNCtcEhXbddw/58PJ7C2ZoM0.jpg?size=2166x2160&quality=96&sign=4e8859f03f06ed6cc6f7c42e84453362&type=album",
+        caption="Руководство по боту: \n<b>Страница №4</b>"
+    )
+    await call.message.edit_media(photo, reply_markup=fourth_str)
+
+
+@dp.callback_query_handler(text="backward_four")
+async def get_backward_f(call: CallbackQuery):
+    await call.answer(cache_time=60)
+    photo = InputMediaPhoto(
+        "https://sun9-37.userapi.com/impg/jVNgiTMNgqY6obppE8sgPyWV4gEcVN7963sYdw/PJcospk0cLM.jpg?size=1086x1083&quality=96&sign=ce373d4b07baad45680ddad5c697781a&type=album",
+        caption="Руководство по боту: \n<b>Страница №3</b>"
+    )
+    await call.message.edit_media(photo, reply_markup=third_str)
