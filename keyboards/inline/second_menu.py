@@ -18,7 +18,7 @@ menu_inline_kb = InlineKeyboardMarkup(row_width=3,
                                           ],
 
                                           [
-                                              InlineKeyboardButton(text='⏪️ Я больше не хочу никого искать',
+                                              InlineKeyboardButton(text='⏪️ Вернуться в меню',
                                                                    callback_data='cancel')
                                           ],
 
