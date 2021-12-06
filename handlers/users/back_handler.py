@@ -6,8 +6,10 @@ from loader import dp, bot, db
 
 @dp.callback_query_handler(text="cancel")
 async def cancel_buying(call: CallbackQuery):
-    await call.message.edit_text(f"Рад был помочь, {call.from_user.full_name}!\n"
-                                 f"Надеюсь, ты нашел кого-то благодаря мне", reply_markup=inline_start)
+    await call.message.edit_text("<b>❤️️ DATE_BOT</b> - платформа для поиска новых знакомств\n\n"
+                                 "<b>🤝 Сотрудничество: </b>\n"
+                                 "Если у вас есть предложение о сотрудничестве, пишите сюда - "
+                                 "@DRomanovizc", reply_markup=inline_start)
 
 
 @dp.callback_query_handler(text="submenu")
