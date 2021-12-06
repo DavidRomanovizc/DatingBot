@@ -1,5 +1,6 @@
 from aiogram import types
 
+from keyboards.inline.main_menu import inline_start
 from keyboards.inline.questionnaires_inline import questionnaires_inline_kb
 from keyboards.inline.second_menu import menu_inline_kb
 from aiogram.dispatcher import FSMContext
@@ -118,5 +119,6 @@ async def like_questionnaire(message: types.Message, state: FSMContext):
 async def stop_finding(call: CallbackQuery, state: FSMContext):
     await call.answer(cache_time=60)
     await call.message.delete()
-    await call.message.answer("Вы вернулись в меню", reply_markup=menu_inline_kb)
+    await call.message.answer(f"Рад был помочь, {call.from_user.full_name}!\n"
+                              f"Надеюсь, ты нашел кого-то благодаря мне", reply_markup=inline_start)
     await state.reset_state()
