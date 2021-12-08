@@ -12,8 +12,8 @@ async def get_inst(call: CallbackQuery):
                                  f"└Сейчас в нашем боте <b>{count_users} пользователей</b>"
                                  f"└Дата создания бота - <b>10.08.2021</b>"
                                  )
-    photo = "https://sun9-47.userapi.com/impg/DYtebbMPsbK46Xx8bVHtKF3FCAfZ7-ws5q6mOg/hjPVNFAU0EU.jpg?size=800x400&quality=96&sign=043c95dfca1009f94d9ba8b8812dbdb1&type=album"
-    photo_1 = "https://sun9-11.userapi.com/impg/FLc62X1Hp7WNW9p5w5jo3OnDEHbxF6hzsrMQwA/xaj4cTYYcYU.jpg?size=800x400&quality=96&sign=419b95999f4a74993fd46974d8cce309&type=album"
+    photo = "https://sun9-61.userapi.com/impg/Vz77VNXBjaNFFsr4-E07tjuHXu305GubZ_MJWA/hUiQ16DFuTU.jpg?size=800x400&quality=96&sign=ffbfe0b11238b9da1432b7919869fedf&type=album"
+    photo_1 = "https://sun9-69.userapi.com/impg/TNeTmZN9VKO1jdUPQXWCmP7cHN7Jg-Rsl53smQ/7KCMcEA3-qk.jpg?size=800x400&quality=96&sign=386d4199a1c5f77286d233b4ea7a972c&type=album"
     await bot.send_photo(chat_id=call.from_user.id, photo=photo, caption="Нагрузка пользователями на бота в день: ")
     await bot.send_photo(chat_id=call.from_user.id, photo=photo_1, caption="Показатели по гендеру (мужчины/женщины): ")
     await asyncio.sleep(1)
