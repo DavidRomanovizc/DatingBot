@@ -1,18 +1,27 @@
+from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
-from aiogram import types
+from aiogram.utils.markdown import hcode
+
 from loader import dp
 
 
 @dp.message_handler(state=None)
 async def bot_echo(message: types.Message):
-    await message.answer(f"Эхо без состояния."
-                         f"Сообщение:\n"
-                         f"{message.text}")
+    text = [
+        "Эхо без состояния.",
+        "Сообщение:",
+        message.text
+    ]
+
+    await message.answer('\n'.join(text))
 
 
-@dp.message_handler(state="*", content_types=types.ContentTypes.ANY)
+@dp.message_handler(state=None)
 async def bot_echo_all(message: types.Message, state: FSMContext):
-    state = await state.get_state()
-    await message.answer(f"Эхо в состоянии <code>{state}</code>.\n"
-                         f"\nСодержание сообщения:\n"
-                         f"<code>{message}</code>")
+    state_name = await state.get_state()
+    text = [
+        f'Эхо в состоянии {hcode(state_name)}',
+        'Содержание сообщения:',
+        hcode(message.text)
+    ]
+    await message.answer('\n'.join(text))
