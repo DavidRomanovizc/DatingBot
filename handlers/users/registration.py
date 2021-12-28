@@ -1,11 +1,9 @@
-from keyboards.inline.back_bnt import go_bac_to_second_menu
 from keyboards.inline.lifestyle_choice_inline import lifestyle_inline_kb
-from keyboards.inline.profile_bt import reg_profile
+from keyboards.inline.second_menu import menu_inline_kb
 from aiogram.types import CallbackQuery, ContentType
-from keyboards.inline.second_menu import btn_pref, menu_inline_kb
-from aiogram.dispatcher import FSMContext
-
 from keyboards.inline.sex_partner import btn_partner
+from keyboards.inline.profile_bt import reg_profile
+from aiogram.dispatcher import FSMContext
 from states.reg_state import RegData
 from loader import dp, bot, db
 from aiogram import types
