@@ -1,11 +1,9 @@
-from aiogram import types
-
-from keyboards.inline.main_menu import inline_start
 from keyboards.inline.questionnaires_inline import questionnaires_inline_kb
-from keyboards.inline.second_menu import menu_inline_kb
+from keyboards.inline.main_menu import inline_start
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery
 from loader import dp, db, bot
+from aiogram import types
 import random
 
 
