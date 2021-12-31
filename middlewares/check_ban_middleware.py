@@ -1,7 +1,7 @@
 # мы не знаем, что это такое @mroshalom
-from aiogram import types
 from aiogram.dispatcher.handler import CancelHandler, current_handler
 from aiogram.dispatcher.middlewares import BaseMiddleware
+from aiogram import types
 
 
 class CheckBan(BaseMiddleware):
@@ -15,10 +15,10 @@ class CheckBan(BaseMiddleware):
         ):
             return
 
-        if not action.startswith("process_"):
+        elif not action.startswith("process_"):
             return
         handler = current_handler.get()
-        if not handler:
+        elif not handler:
             return
 
         allow = getattr(handler, "allow", False)
