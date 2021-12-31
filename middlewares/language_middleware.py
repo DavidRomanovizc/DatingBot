@@ -1,9 +1,7 @@
-from typing import Tuple, Any, Optional
-
-from aiogram import types
 from aiogram.contrib.middlewares.i18n import I18nMiddleware
-
 from data.config import LOCALES_DIR, I18N_DOMAIN
+from typing import Tuple, Any, Optional
+from aiogram import types
 
 
 class ACLMiddleware(I18nMiddleware):
