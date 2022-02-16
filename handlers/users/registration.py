@@ -13,7 +13,8 @@ import asyncpg
 @dp.callback_query_handler(text='registration')
 async def registration(call: CallbackQuery):
     await call.answer(cache_time=60)
-    await bot.send_message(call.from_user.id, f"Пройдите опрос, чтобы зарегистрироваться", reply_markup=reg_profile)
+    text = f"Пройдите опрос, чтобы зарегистрироваться"
+    await bot.send_message(call.from_user.id, text, reply_markup=reg_profile)
 
 
 @dp.callback_query_handler(text_contains="survey")
