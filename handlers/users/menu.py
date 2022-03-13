@@ -1,20 +1,20 @@
 from keyboards.inline.second_menu import menu_inline_kb, btn_pref
-from aiogram.types import CallbackQuery
+from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup
 from loader import dp, db, bot
 import logging
 
 
-@dp.callback_query_handler(text_contains="second_m")
+@dp.callback_query_handler(text="second_m")
 async def open_menu(call: CallbackQuery):
-    await call.answer(cache_time=60)
     await call.message.edit_text(f"Меню: ",
                                  reply_markup=menu_inline_kb)
 
 
-@dp.callback_query_handler(text_contains="my_profile")
+@dp.callback_query_handler(text="my_profile")
 async def my_profile_menu(call: CallbackQuery):
-    await call.answer(cache_time=60)
-    callback_data = call.data
+    keyboard = InlineKeyboardMarkup()
+    btn1 = InlineKeyboardButton(text="Назад", callback_data="back_with_delete")
+    keyboard.add(btn1)
     user = await db.select_user(telegram_id=call.from_user.id)
 
     user_name = user.get('varname')
@@ -50,17 +50,15 @@ async def my_profile_menu(call: CallbackQuery):
     elif user_photo is None:
         user_photo = 'https://www.pngfind.com/pngs/m/110-1102775_download-empty-profile-hd-png-download.png'
 
-    logging.info(f"{callback_data}=")
-    await bot.send_photo(chat_id=call.from_user.id, caption=f'{str(user_name)}, {str(user_age)}\n\n'
-                                                            f'{user_sex}, {str(user_city)}, {str(user_national)}\n\n'
-                                                            f'{user_education}\n'
-                                                            f'{usercar}\n'
-                                                            f'{user_apart}\n'
-                                                            f'{user_kids}\n\n'
-                                                            f'{user_lifestyle}\n\n'
-                                                            f'Обо мне: {str(user_comm)}',
-                         photo=user_photo)
-    await call.message.answer("Меню: ", reply_markup=menu_inline_kb)
+    await call.message.answer_photo(caption=f'{str(user_name)}, {str(user_age)}\n\n'
+                                            f'{user_sex}, {str(user_city)}, {str(user_national)}\n\n'
+                                            f'{user_education}\n'
+                                            f'{usercar}\n'
+                                            f'{user_apart}\n'
+                                            f'{user_kids}\n\n'
+                                            f'{user_lifestyle}\n\n'
+                                            f'Обо мне: {str(user_comm)}',
+                                    photo=user_photo, reply_markup=keyboard)
 
 
 @dp.callback_query_handler(text_contains="preferences")
@@ -74,7 +72,6 @@ async def get_preferences(call: CallbackQuery):
 
 @dp.callback_query_handler(text_contains="male")
 async def get_male(call: CallbackQuery):
-    await call.answer(cache_time=60)
     callback_data = call.data
 
     logging.info(f"{callback_data}=")
@@ -84,7 +81,6 @@ async def get_male(call: CallbackQuery):
 
 @dp.callback_query_handler(text_contains="g_fe")
 async def get_male(call: CallbackQuery):
-    await call.answer(cache_time=60)
     callback_data = call.data
 
     logging.info(f"{callback_data}=")
