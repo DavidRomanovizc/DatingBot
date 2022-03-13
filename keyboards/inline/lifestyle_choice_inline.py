@@ -1,6 +1,6 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-lifestyle_inline_kb = InlineKeyboardMarkup(row_width=3,
+lifestyle_inline_kb = InlineKeyboardMarkup(row_width=2,
                                            inline_keyboard=[
                                                [
                                                    InlineKeyboardButton(text='Учусь',
