@@ -22,11 +22,6 @@ async def on_startup(dp):
     await set_default_commands(dp)
 
 
-async def on_shutdown():
-    await bot.close()
-    await storage.close()
-
-
 def setup_django():
     os.environ.setdefault(
         "DJANGO_SETTINGS_MODULE",
