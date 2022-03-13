@@ -28,10 +28,7 @@ async def report_user(call: CallbackQuery):
     await Report.R1.set()
 
 
-@dp.callback_query_handler(text="content", state=Report.R1)
-@dp.callback_query_handler(text="drugs", state=Report.R1)
-@dp.callback_query_handler(text="scam", state=Report.R1)
-@dp.callback_query_handler(text="another", state=Report.R1)
+@dp.callback_query_handler(state=Report.R1)
 async def report_user(call: CallbackQuery, state: FSMContext):
     await call.answer(cache_time=60)
     display_name = call.from_user.full_name
@@ -71,7 +68,6 @@ async def report_user(call: CallbackQuery, state: FSMContext):
 
 @dp.callback_query_handler(text="cancel_report", state=Report.R1)
 async def cancel_report(call: CallbackQuery, state: FSMContext):
-    await call.answer(cache_time=60)
     await call.message.delete()
     await call.message.answer("Вы вернулись в меню", reply_markup=menu_inline_kb)
     await state.finish()
