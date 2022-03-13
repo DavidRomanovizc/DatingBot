@@ -19,7 +19,7 @@ menu_inline_kb = InlineKeyboardMarkup(row_width=3,
 
                                           [
                                               InlineKeyboardButton(text='⏪️ Вернуться в меню',
-                                                                   callback_data='cancel')
+                                                                   callback_data='start_menu')
                                           ],
 
                                       ]
@@ -34,7 +34,7 @@ btn_pref = InlineKeyboardMarkup(row_width=2,
                                                              callback_data='g_fe'),
                                     ],
                                     [
-                                        InlineKeyboardButton(text="В меню", callback_data="go_bac_to_second_menu")
+                                        InlineKeyboardButton(text="В меню", callback_data="second_m")
                                     ]
                                 ]
                                 )

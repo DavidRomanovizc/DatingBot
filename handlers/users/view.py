@@ -1,3 +1,5 @@
+from loguru import logger
+
 from keyboards.inline.questionnaires_inline import questionnaires_inline_kb
 from keyboards.inline.main_menu import inline_start
 from aiogram.dispatcher import FSMContext
@@ -40,7 +42,6 @@ async def create_questionnaire(state, random_user, chat_id, add_text=None):
 
 @dp.callback_query_handler(text='find_ancets')
 async def start_finding(call: CallbackQuery, state: FSMContext):
-    await call.answer(cache_time=60)
     user_list = await select_all_users_list()
     user_list.remove(call.from_user.id)
     random_user = random.choice(user_list)
@@ -50,7 +51,6 @@ async def start_finding(call: CallbackQuery, state: FSMContext):
 
 @dp.callback_query_handler(text='like_questionnaire', state='finding')
 async def like_questionnaire(call: CallbackQuery, state: FSMContext):
-    await call.answer(cache_time=60)
     user_list = await select_all_users_list()
     user_list.remove(call.from_user.id)
     random_user = random.choice(user_list)
@@ -67,26 +67,26 @@ async def like_questionnaire(call: CallbackQuery, state: FSMContext):
         await create_questionnaire(random_user=random_user, chat_id=call.from_user.id, state=state)
 
         await state.reset_data()
-    except:
+    except Exception as err:
+        logger.error(err)
         await create_questionnaire(random_user=random_user, chat_id=call.from_user.id, state=state)
 
 
 @dp.callback_query_handler(text='dislike_questionnaire', state='finding')
 async def like_questionnaire(call: CallbackQuery, state: FSMContext):
-    await call.answer(cache_time=60)
     user_list = await select_all_users_list()
     user_list.remove(call.from_user.id)
     random_user = random.choice(user_list)
     try:
         await create_questionnaire(random_user=random_user, chat_id=call.from_user.id, state=state)
         await state.reset_data()
-    except:
+    except Exception as err:
+        logger.error(err)
         await create_questionnaire(random_user=random_user, chat_id=call.from_user.id, state=state)
 
 
 @dp.callback_query_handler(text='send_message_questionnaire', state='finding')
 async def like_questionnaire(call: CallbackQuery, state: FSMContext):
-    await call.answer(cache_time=60)
     user_list = await select_all_users_list()
     user_list.remove(call.from_user.id)
     await call.message.answer("Напиши сообщение для этого пользователя")
@@ -109,13 +109,13 @@ async def like_questionnaire(message: types.Message, state: FSMContext):
                                        add_text=f"{answer}", state=state)
             await create_questionnaire(random_user=random_user, chat_id=message.from_user.id, state=state)
             await state.reset_data()
-        except:
+        except Exception as err:
+            logger.error(err)
             await create_questionnaire(random_user=random_user, chat_id=message.from_user.id, state=state)
 
 
 @dp.callback_query_handler(text='stop_finding', state='finding')
 async def stop_finding(call: CallbackQuery, state: FSMContext):
-    await call.answer(cache_time=60)
     await call.message.delete()
     await call.message.answer(f"Рад был помочь, {call.from_user.full_name}!\n"
                               f"Надеюсь, ты нашел кого-то благодаря мне", reply_markup=inline_start)
