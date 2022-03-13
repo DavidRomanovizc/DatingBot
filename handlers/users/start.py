@@ -15,18 +15,25 @@ async def register_user(message: types.Message):
                                 telegram_id=message.from_user.id,
                                 username=message.from_user.username)
     except UniqueViolationError:
-        user = await db.select_user(telegram_id=message.from_user.id)
-        if user.get('is_banned') is not True:
-            count_users = await db.count_users()
-            await message.reply(text=_(f"Приветствую вас, {message.from_user.full_name}!!\n\n"
-                                       f"<b>❤️️ DATE_BOT</b> - платформа для поиска новых знакомств.\n\n"
-                                       f"<b>🤝 Сотрудничество: </b>\n"
-                                       f"Если у вас есть предложение о сотрудничестве, пишите сюда - "
-                                       f"@DRomanovizc\n\n"
-                                       ),
-                                reply_markup=inline_start)
-        elif user.get('is_banned') is True:
-            await message.answer(_(f'Вы заблокированы навсегда! За разблокировкой пишите админу'))
+        pass
+    await message.reply(text=_(f"Приветствую вас, {message.from_user.full_name}!!\n\n"
+                               f"<b>❤️️ DATE_BOT</b> - платформа для поиска новых знакомств.\n\n"
+                               f"<b>🤝 Сотрудничество: </b>\n"
+                               f"Если у вас есть предложение о сотрудничестве, пишите сюда - "
+                               f"@DRomanovizc\n\n"
+                               ),
+                        reply_markup=inline_start)
+
+
+@dp.callback_query_handler(text="start_menu")
+async def start_menu(call: CallbackQuery):
+    await call.message.edit_text(text=_(f"Приветствую вас, {call.from_user.full_name}!!\n\n"
+                                        f"<b>❤️️ DATE_BOT</b> - платформа для поиска новых знакомств.\n\n"
+                                        f"<b>🤝 Сотрудничество: </b>\n"
+                                        f"Если у вас есть предложение о сотрудничестве, пишите сюда - "
+                                        f"@DRomanovizc\n\n"
+                                        ),
+                                 reply_markup=inline_start)
 
 
 @dp.callback_query_handler(text_contains="lang")
