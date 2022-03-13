@@ -9,7 +9,7 @@ first_str = InlineKeyboardMarkup(row_width=3,
 
                                      [
                                          InlineKeyboardButton(text='❌ Закрыть',
-                                                              callback_data='close_everything')
+                                                              callback_data='back_with_delete')
                                      ],
                                  ]
                                  )
@@ -26,7 +26,7 @@ second_str = InlineKeyboardMarkup(row_width=3,
 
                                       [
                                           InlineKeyboardButton(text='❌ Закрыть',
-                                                               callback_data='close_everything')
+                                                               callback_data='back_with_delete')
                                       ],
                                   ]
                                   )
@@ -42,7 +42,7 @@ third_str = InlineKeyboardMarkup(row_width=3,
 
                                      [
                                          InlineKeyboardButton(text='❌ Закрыть',
-                                                              callback_data='close_everything')
+                                                              callback_data='back_with_delete')
                                      ],
                                  ]
                                  )
@@ -56,7 +56,7 @@ fourth_str = InlineKeyboardMarkup(row_width=3,
 
                                       [
                                           InlineKeyboardButton(text='❌ Закрыть',
-                                                               callback_data='close_everything')
+                                                               callback_data='back_with_delete')
                                       ],
                                   ]
                                   )
