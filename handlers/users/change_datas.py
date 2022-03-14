@@ -1,7 +1,7 @@
 from loguru import logger
 
 from keyboards.inline.lifestyle_choice_inline import lifestyle_inline_kb
-from keyboards.default.change_profile_inline import change_profile_kb
+from keyboards.default.change_profile_text import change_profile_kb
 from aiogram.types import CallbackQuery, ContentType
 
 from keyboards.inline.main_menu import inline_start
