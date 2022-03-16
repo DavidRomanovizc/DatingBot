@@ -1,4 +1,4 @@
-from aiogram.utils.exceptions import UserDeactivated, MessageToReplyNotFound, InvalidUserId, MessageError
+from aiogram.utils.exceptions import UserDeactivated, InvalidUserId, MessageError
 from keyboards.inline.admin_inline import admin_mode_kb
 from states.ban_user_states import BanUser
 from aiogram.dispatcher import FSMContext
@@ -73,12 +73,6 @@ async def mailing_final(state: FSMContext):
         await sleep(0.3)
 
     await state.reset_state(with_data=True)
-
-
-@dp.callback_query_handler(text='show_active_users')
-async def count_users_db(call: CallbackQuery):
-    count_users = await db.count_users()
-    await call.answer(text=f'В боте зарегистрировано {count_users} участников', show_alert=True)
 
 
 @dp.callback_query_handler(text='delete_db')

@@ -1,17 +1,23 @@
-from keyboards.inline.second_menu import menu_inline_kb, btn_pref
+from handlers.users.back_handler import delete_message
+
 from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup
-from loader import dp, db, bot
-import logging
+
+from keyboards.inline.second_menu import menu_inline_kb
+from loader import dp, db
 
 
 @dp.callback_query_handler(text="second_m")
 async def open_menu(call: CallbackQuery):
-    await call.message.edit_text(f"Меню: ",
+    await call.message.edit_text(f"<b>❤️️ DATE_BOT</b> - платформа для поиска новых знакомств.\n\n"
+                                 f"<b>🤝 Сотрудничество: </b>\n"
+                                 f"Если у вас есть предложение о сотрудничестве, пишите сюда - "
+                                 f"@DRomanovizc\n\n",
                                  reply_markup=menu_inline_kb)
 
 
 @dp.callback_query_handler(text="my_profile")
 async def my_profile_menu(call: CallbackQuery):
+    await delete_message(call.message)
     keyboard = InlineKeyboardMarkup()
     btn1 = InlineKeyboardButton(text="Назад", callback_data="back_with_delete")
     keyboard.add(btn1)
@@ -59,30 +65,3 @@ async def my_profile_menu(call: CallbackQuery):
                                             f'{user_lifestyle}\n\n'
                                             f'Обо мне: {str(user_comm)}',
                                     photo=user_photo, reply_markup=keyboard)
-
-
-@dp.callback_query_handler(text_contains="preferences")
-async def get_preferences(call: CallbackQuery):
-    await call.answer(cache_time=60)
-    callback_data = call.data
-
-    logging.info(f"{callback_data}=")
-    await call.message.edit_text("Кого вы ищете? ", reply_markup=btn_pref)
-
-
-@dp.callback_query_handler(text_contains="male")
-async def get_male(call: CallbackQuery):
-    callback_data = call.data
-
-    logging.info(f"{callback_data}=")
-    await db.update_user_need_partner_sex(need_partner_sex='Мужской', telegram_id=call.from_user.id)
-    await call.message.edit_text("Вы выбрали мужчин", reply_markup=menu_inline_kb)
-
-
-@dp.callback_query_handler(text_contains="g_fe")
-async def get_male(call: CallbackQuery):
-    callback_data = call.data
-
-    logging.info(f"{callback_data}=")
-    await db.update_user_need_partner_sex(need_partner_sex='Женский', telegram_id=call.from_user.id)
-    await call.message.edit_text("Вы выбрали женщин", reply_markup=menu_inline_kb)

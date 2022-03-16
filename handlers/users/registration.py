@@ -4,18 +4,20 @@ from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery, ContentType
 from loguru import logger
 
-from keyboards.inline.lifestyle_choice_inline import lifestyle_inline_kb
-from keyboards.inline.profile_bt import reg_profile
+from keyboards.inline.lifestyle_choice_inline import lifestyle_keyboard
+from keyboards.inline.profile_bt import registration_keyboard
 from keyboards.inline.second_menu import menu_inline_kb
-from keyboards.inline.sex_partner import btn_partner
+from keyboards.inline.sex_partner import sex_partner
+
 from loader import dp, db
 from states.reg_state import RegData
 
 
 @dp.callback_query_handler(text='registration')
 async def registration(call: CallbackQuery):
+    markup = await registration_keyboard()
     text = f"Пройдите опрос, чтобы зарегистрироваться"
-    await call.message.edit_text(text, reply_markup=reg_profile)
+    await call.message.edit_text(text, reply_markup=markup)
 
 
 @dp.callback_query_handler(text_contains="survey")
@@ -48,14 +50,15 @@ async def sex_reg(call: CallbackQuery):
 
 @dp.message_handler(state=RegData.commentary)
 async def commentary_reg(message: types.Message):
+    markup = await sex_partner()
     try:
         await db.update_user_commentary(commentary=message.text, telegram_id=message.from_user.id)
-        await message.reply(f'Комментарий принят! Выберите, кого вы хотите найти: ', reply_markup=btn_partner)
+        await message.reply(f'Комментарий принят! Выберите, кого вы хотите найти: ', reply_markup=markup)
     except Exception as err:
         logger.error(err)
         await message.reply(f'Произошла неизвестная ошибка! Попробуйте изменить комментарий позже в разделе '
                             f'"Меню"\n\n'
-                            f'Выберите, кого вы хотите найти: ', reply_markup=btn_partner)
+                            f'Выберите, кого вы хотите найти: ', reply_markup=markup)
     await RegData.need_partner_sex.set()
 
 
@@ -172,6 +175,7 @@ async def get_car(call: CallbackQuery, state: FSMContext):
 
 @dp.callback_query_handler(state=RegData.own_home)
 async def get_own_home(call: CallbackQuery, state: FSMContext):
+    markup = await lifestyle_keyboard()
     if call.data == 'apart_true':
         try:
             await db.update_user_apartment(telegram_id=call.from_user.id, apartment=True)
@@ -184,7 +188,7 @@ async def get_own_home(call: CallbackQuery, state: FSMContext):
             await state.update_data(own_home='Нет квартиры')
         except asyncpg.exceptions.UniqueViolationError as err:
             print(err)
-    await call.message.edit_text("Чем вы занимаетесь:", reply_markup=lifestyle_inline_kb)
+    await call.message.edit_text("Чем вы занимаетесь:", reply_markup=markup)
     await RegData.hobbies.set()
 
 
@@ -323,6 +327,6 @@ async def get_photo(message: types.Message, state: FSMContext):
                                        f"9. Ваше занятие - {str(user_life_style)}\n"
                                        f"10. Наличие детей - {str(user_kids)}\n"
                                        f"11. Семейное положение - {str(user_marital)}\n\n"
-                                       f"12. О себе - {str(user_comm)}\n\n"
-                                       f"Меню: ",
-                               photo=user.get('photo_id'), reply_markup=menu_inline_kb)
+                                       f"12. О себе - {str(user_comm)}\n\n",
+                               photo=user.get('photo_id'))
+    await message.answer("Меню: ", reply_markup=menu_inline_kb)
