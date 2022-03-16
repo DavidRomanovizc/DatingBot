@@ -1,62 +1,39 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-first_str = InlineKeyboardMarkup(row_width=3,
-                                 inline_keyboard=[
-                                     [
-                                         InlineKeyboardButton(text='➡️ Вперед',
-                                                              callback_data='forward_f')
-                                     ],
 
-                                     [
-                                         InlineKeyboardButton(text='❌ Закрыть',
-                                                              callback_data='back_with_delete')
-                                     ],
-                                 ]
-                                 )
+async def first_str_keyboard():
+    markup = InlineKeyboardMarkup(row_width=3)
+    forward = InlineKeyboardButton(text='➡️ Вперед', callback_data='forward_f')
+    back = InlineKeyboardButton(text='❌ Закрыть', callback_data='back_with_delete')
+    markup.add(forward)
+    markup.add(back)
+    return markup
 
-second_str = InlineKeyboardMarkup(row_width=3,
-                                  inline_keyboard=[
-                                      [
-                                          InlineKeyboardButton(text='⬅️ Назад',
-                                                               callback_data='backward_s'),
-                                          InlineKeyboardButton(text='➡️ Вперед',
-                                                               callback_data='forward_s')
 
-                                      ],
+async def second_str_keyboard():
+    markup = InlineKeyboardMarkup(row_width=3)
+    backward = InlineKeyboardButton(text='⬅️ Назад', callback_data='backward_s')
+    forward = InlineKeyboardButton(text='➡️ Вперед', callback_data='forward_s')
+    back = InlineKeyboardButton(text='❌ Закрыть', callback_data='back_with_delete')
+    markup.add(backward, forward)
+    markup.add(back)
+    return markup
 
-                                      [
-                                          InlineKeyboardButton(text='❌ Закрыть',
-                                                               callback_data='back_with_delete')
-                                      ],
-                                  ]
-                                  )
 
-third_str = InlineKeyboardMarkup(row_width=3,
-                                 inline_keyboard=[
-                                     [
-                                         InlineKeyboardButton(text='⬅️ Назад',
-                                                              callback_data='backward_th'),
-                                         InlineKeyboardButton(text='➡️ Вперед',
-                                                              callback_data='forward_th')
-                                     ],
+async def third_str_keyboard():
+    markup = InlineKeyboardMarkup(row_width=3)
+    backward = InlineKeyboardButton(text='⬅️ Назад', callback_data='backward_th')
+    forward = InlineKeyboardButton(text='➡️ Вперед', callback_data='forward_th')
+    back = InlineKeyboardButton(text='❌ Закрыть', callback_data='back_with_delete')
+    markup.add(backward, forward)
+    markup.add(back)
+    return markup
 
-                                     [
-                                         InlineKeyboardButton(text='❌ Закрыть',
-                                                              callback_data='back_with_delete')
-                                     ],
-                                 ]
-                                 )
 
-fourth_str = InlineKeyboardMarkup(row_width=3,
-                                  inline_keyboard=[
-                                      [
-                                          InlineKeyboardButton(text='⬅️ Назад',
-                                                               callback_data='backward_four'),
-                                      ],
-
-                                      [
-                                          InlineKeyboardButton(text='❌ Закрыть',
-                                                               callback_data='back_with_delete')
-                                      ],
-                                  ]
-                                  )
+async def fourth_str_keyboard():
+    markup = InlineKeyboardMarkup(row_width=3)
+    backward = InlineKeyboardButton(text='⬅️ Назад', callback_data='backward_four')
+    back = InlineKeyboardButton(text='❌ Закрыть', callback_data='back_with_delete')
+    markup.add(backward)
+    markup.add(back)
+    return markup
