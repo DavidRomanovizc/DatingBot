@@ -3,11 +3,12 @@ import random
 
 from aiogram import types
 
-from handlers.users.view import create_questionnaire, select_all_users_list
+from handlers.users.view_ques import create_questionnaire, select_all_users_list
 from keyboards.inline.BN_report import report_keyboard
-from keyboards.inline.second_menu import menu_inline_kb
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery
+
+from keyboards.inline.second_menu import second_menu_keyboard
 from states.reports import Report
 from data.config import ADMINS
 from loader import dp, bot
@@ -67,6 +68,7 @@ async def report_user(call: CallbackQuery, state: FSMContext):
 
 @dp.callback_query_handler(text="cancel_report", state=Report.R1)
 async def cancel_report(call: CallbackQuery, state: FSMContext):
+    markup = await second_menu_keyboard()
     await call.message.delete()
-    await call.message.answer("Вы вернулись в меню", reply_markup=menu_inline_kb)
+    await call.message.answer("Вы вернулись в меню", reply_markup=markup)
     await state.finish()
