@@ -6,7 +6,7 @@ from loguru import logger
 
 from keyboards.inline.lifestyle_choice_inline import lifestyle_keyboard
 from keyboards.inline.profile_bt import registration_keyboard
-from keyboards.inline.second_menu import menu_inline_kb
+from keyboards.inline.second_menu import second_menu_keyboard
 from keyboards.inline.sex_partner import sex_partner
 
 from loader import dp, db
@@ -314,7 +314,7 @@ async def get_photo(message: types.Message, state: FSMContext):
 
     user_marital = user.get('marital')
     user_comm = user.get('commentary')
-
+    markup = await second_menu_keyboard()
     await message.answer_photo(caption=f"Регистрация завершена успешно! \n\n "
                                        f"1. Ваше имя - {str(user_name)}\n"
                                        f"2. Ваш возраст - {str(user_age)}\n"
@@ -329,4 +329,4 @@ async def get_photo(message: types.Message, state: FSMContext):
                                        f"11. Семейное положение - {str(user_marital)}\n\n"
                                        f"12. О себе - {str(user_comm)}\n\n",
                                photo=user.get('photo_id'))
-    await message.answer("Меню: ", reply_markup=menu_inline_kb)
+    await message.answer("Меню: ", reply_markup=markup)

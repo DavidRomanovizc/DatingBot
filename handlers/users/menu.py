@@ -2,17 +2,18 @@ from handlers.users.back_handler import delete_message
 
 from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup
 
-from keyboards.inline.second_menu import menu_inline_kb
+from keyboards.inline.second_menu import second_menu_keyboard
 from loader import dp, db
 
 
 @dp.callback_query_handler(text="second_m")
 async def open_menu(call: CallbackQuery):
+    markup = await second_menu_keyboard()
     await call.message.edit_text(f"<b>❤️️ DATE_BOT</b> - платформа для поиска новых знакомств.\n\n"
                                  f"<b>🤝 Сотрудничество: </b>\n"
                                  f"Если у вас есть предложение о сотрудничестве, пишите сюда - "
                                  f"@DRomanovizc\n\n",
-                                 reply_markup=menu_inline_kb)
+                                 reply_markup=markup)
 
 
 @dp.callback_query_handler(text="my_profile")
