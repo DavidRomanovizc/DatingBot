@@ -4,7 +4,7 @@ import django
 from aiogram import executor
 from django_project.telegrambot.telegrambot import settings
 from loader import dp, db, bot, storage
-import middlewares, filters, handlers
+import handlers
 from utils.notify_admins import on_startup_notify
 from utils.set_bot_commands import set_default_commands
 

@@ -1,12 +1,9 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-btn_partner = InlineKeyboardMarkup(row_width=2,
-                                   inline_keyboard=[
-                                       [
-                                           InlineKeyboardButton(text='Мужчин',
-                                                                callback_data='gen_male'),
-                                           InlineKeyboardButton(text='Женщин',
-                                                                callback_data='g_fe'),
-                                       ]
-                                   ]
-                                   )
+
+async def sex_partner():
+    markup = InlineKeyboardMarkup(row_width=2)
+    male = InlineKeyboardButton(text='Мужчин', callback_data='gen_male')
+    female = InlineKeyboardButton(text='Женщин', callback_data='g_fe')
+    markup.row(male, female)
+    return markup
