@@ -1,5 +1,5 @@
 from aiogram.utils.exceptions import UserDeactivated, InvalidUserId, MessageError
-from keyboards.inline.admin_inline import admin_mode_kb
+from keyboards.inline.admin_button import admin_mode_kb
 from states.ban_user_states import BanUser
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery
