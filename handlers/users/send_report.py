@@ -4,11 +4,11 @@ import random
 from aiogram import types
 
 from handlers.users.view_ques import create_questionnaire, select_all_users_list
-from keyboards.inline.BN_report import report_keyboard
+from keyboards.inline.report_inline import report_keyboard
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery
 
-from keyboards.inline.second_menu import second_menu_keyboard
+from keyboards.inline.second_menu_inline import second_menu_keyboard
 from states.reports import Report
 from data.config import ADMINS
 from loader import dp, bot

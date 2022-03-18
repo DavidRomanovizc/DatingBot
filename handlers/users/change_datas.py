@@ -3,9 +3,9 @@ import asyncio
 from loguru import logger
 
 from handlers.users.back_handler import delete_message
-from keyboards.inline.change_button import gender_keyboard, car_keyboard, kids_keyboard, house_keyboard, \
+from keyboards.inline.change_inline import gender_keyboard, car_keyboard, kids_keyboard, house_keyboard, \
     education_keyboard
-from keyboards.inline.change_data_profile import change_info_keyboard
+from keyboards.inline.change_data_profile_inline import change_info_keyboard
 from keyboards.inline.lifestyle_choice_inline import lifestyle_keyboard
 
 from aiogram.types import CallbackQuery, ContentType, ReplyKeyboardRemove

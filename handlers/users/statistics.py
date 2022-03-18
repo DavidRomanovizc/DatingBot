@@ -1,5 +1,5 @@
 from aiogram.types import CallbackQuery
-from keyboards.inline.main_menu import start_keyboard
+from keyboards.inline.main_menu_inline import start_keyboard
 from loader import dp, db
 
 

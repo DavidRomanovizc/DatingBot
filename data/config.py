@@ -16,3 +16,7 @@ DB_NAME = env.str('DB_NAME')
 I18N_DOMAIN = "testbot"
 BASE_DIR = Path(__file__).parent
 LOCALES_DIR = BASE_DIR / "locales"
+
+support_ids = [
+    5100487520
+]

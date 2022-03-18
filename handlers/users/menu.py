@@ -2,7 +2,7 @@ from handlers.users.back_handler import delete_message
 
 from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup
 
-from keyboards.inline.second_menu import second_menu_keyboard
+from keyboards.inline.second_menu_inline import second_menu_keyboard
 from loader import dp, db
 
 
