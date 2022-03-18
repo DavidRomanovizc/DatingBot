@@ -1,4 +1,4 @@
-from keyboards.inline.guide_btn import first_str_keyboard, second_str_keyboard, third_str_keyboard, fourth_str_keyboard
+from keyboards.inline.guide_inline import first_str_keyboard, second_str_keyboard, third_str_keyboard, fourth_str_keyboard
 from aiogram.types import CallbackQuery, InputMediaPhoto
 from loader import dp, bot
 

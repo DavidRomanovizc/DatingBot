@@ -5,8 +5,8 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Command
 
 from handlers.users.back_handler import delete_message
-from keyboards.inline.main_menu import start_keyboard
-from keyboards.inline.support import support_keyboard, support_callback, check_support_available, get_support_manager, \
+from keyboards.inline.main_menu_inline import start_keyboard
+from keyboards.inline.support_inline import support_keyboard, support_callback, check_support_available, get_support_manager, \
     cancel_support, cancel_support_callback
 from loader import dp, bot
 

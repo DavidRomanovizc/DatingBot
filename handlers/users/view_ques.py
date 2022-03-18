@@ -1,6 +1,6 @@
 from loguru import logger
 
-from keyboards.inline.main_menu import start_keyboard
+from keyboards.inline.main_menu_inline import start_keyboard
 from keyboards.inline.questionnaires_inline import questionnaires_keyboard
 
 from aiogram.dispatcher import FSMContext

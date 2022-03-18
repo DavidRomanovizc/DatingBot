@@ -5,9 +5,9 @@ from aiogram.types import CallbackQuery, ContentType
 from loguru import logger
 
 from keyboards.inline.lifestyle_choice_inline import lifestyle_keyboard
-from keyboards.inline.profile_bt import registration_keyboard
-from keyboards.inline.second_menu import second_menu_keyboard
-from keyboards.inline.gender_button import sex_partner
+from keyboards.inline.profile_inline import registration_keyboard
+from keyboards.inline.second_menu_inline import second_menu_keyboard
+from keyboards.inline.gender_inline import sex_partner
 
 from loader import dp, db
 from states.reg_state import RegData

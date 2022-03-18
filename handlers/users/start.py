@@ -4,7 +4,7 @@ from aiogram.types import CallbackQuery
 from aiogram.dispatcher.filters.builtin import CommandStart
 from asyncpg import UniqueViolationError
 
-from keyboards.inline.main_menu import start_keyboard
+from keyboards.inline.main_menu_inline import start_keyboard
 from loader import dp, db, _
 from aiogram import types
 

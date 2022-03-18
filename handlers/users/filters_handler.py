@@ -1,6 +1,6 @@
 from aiogram.types import CallbackQuery
 
-from keyboards.inline.filters_button import filters_keyboard
+from keyboards.inline.filters_inline import filters_keyboard
 from loader import dp
 
 
