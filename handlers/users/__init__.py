@@ -1,12 +1,13 @@
 from . import start
-from . import report
+from . import send_report
 from . import registration
 from . import admin
 from . import change_datas
 from . import menu
 from . import statistics
 from . import information
-from . import view
+from . import view_ques
+from . import support_handler
+from . import filters_handler
 from . import back_handler
-
 from . import echo

@@ -1,7 +1,8 @@
 from loguru import logger
 
-from keyboards.inline.questionnaires_inline import questionnaires_inline_kb
-from keyboards.inline.main_menu import inline_start
+from keyboards.inline.main_menu_inline import start_keyboard
+from keyboards.inline.questionnaires_inline import questionnaires_keyboard
+
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery
 from loader import dp, db, bot
@@ -19,6 +20,7 @@ async def select_all_users_list():
 
 
 async def create_questionnaire(state, random_user, chat_id, add_text=None):
+    markup = await questionnaires_keyboard()
     user_data = await db.select_user(telegram_id=random_user)
     varname = user_data.get('varname')
     age = user_data.get('age')
@@ -35,9 +37,8 @@ async def create_questionnaire(state, random_user, chat_id, add_text=None):
                               f'<b>Город</b> - {city}\n' \
                               f'<b>Ищу</b> - {need_partner_sex}\n\n' \
                               f'<b>О себе:</b>\n{commentary}\n\n'
-
     await bot.send_photo(chat_id=chat_id, photo=photo_random_user,
-                         caption=description_random_user, reply_markup=questionnaires_inline_kb)
+                         caption=description_random_user, reply_markup=markup)
     await state.update_data(data={'questionnaire_owner': random_user})
 
 
@@ -117,7 +118,8 @@ async def like_questionnaire(message: types.Message, state: FSMContext):
 
 @dp.callback_query_handler(text='stop_finding', state='finding')
 async def stop_finding(call: CallbackQuery, state: FSMContext):
+    markup = await start_keyboard()
     await call.message.delete()
     await call.message.answer(f"Рад был помочь, {call.from_user.full_name}!\n"
-                              f"Надеюсь, ты нашел кого-то благодаря мне", reply_markup=inline_start)
+                              f"Надеюсь, ты нашел кого-то благодаря мне", reply_markup=markup)
     await state.reset_state()

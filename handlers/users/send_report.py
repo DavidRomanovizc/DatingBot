@@ -3,11 +3,12 @@ import random
 
 from aiogram import types
 
-from handlers.users.view import create_questionnaire, select_all_users_list
-from keyboards.inline.BN_report import report_inline_kb
-from keyboards.inline.second_menu import menu_inline_kb
+from handlers.users.view_ques import create_questionnaire, select_all_users_list
+from keyboards.inline.report_inline import report_keyboard
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery
+
+from keyboards.inline.second_menu_inline import second_menu_keyboard
 from states.reports import Report
 from data.config import ADMINS
 from loader import dp, bot
@@ -15,6 +16,7 @@ from loader import dp, bot
 
 @dp.callback_query_handler(text="send_report", state='finding')
 async def report_user(call: CallbackQuery):
+    markup = await report_keyboard()
     await call.answer(cache_time=60)
     await call.message.answer(
         "Укажите причину жалобы\n"
@@ -24,7 +26,7 @@ async def report_user(call: CallbackQuery):
         "3. 💰 Продажа товаров и услуг.\n"
         "4. 🦨 Другое.\n"
         "\n"
-        "5. Вернуться назад.", reply_markup=report_inline_kb)
+        "5. Вернуться назад.", reply_markup=markup)
     await Report.R1.set()
 
 
@@ -47,15 +49,13 @@ async def report_user(call: CallbackQuery, state: FSMContext):
                 f"Кинут репорт на пользователя за публикацию/продажу и т.д наркотиков\n"
             )
         elif call.data == "scam":
-            await bot.send_message(
-                admin_id,
-                f"Кинут репорт на пользователя за мошенничество\n"
-            )
+            await bot.send_message(admin_id, f"Кинут репорт на пользователя за мошенничество\n")
         elif call.data == "another":
             await bot.send_message(
                 admin_id,
                 f"Кинут репорт на пользователя за другое\n"
             )
+
     await call.message.answer(
         f"Репорт на пользователя успешно отправлен.\nАдминистрация предпримет все необходимые меры",
         reply_markup=types.ReplyKeyboardRemove())
@@ -68,6 +68,7 @@ async def report_user(call: CallbackQuery, state: FSMContext):
 
 @dp.callback_query_handler(text="cancel_report", state=Report.R1)
 async def cancel_report(call: CallbackQuery, state: FSMContext):
+    markup = await second_menu_keyboard()
     await call.message.delete()
-    await call.message.answer("Вы вернулись в меню", reply_markup=menu_inline_kb)
+    await call.message.answer("Вы вернулись в меню", reply_markup=markup)
     await state.finish()
