@@ -32,7 +32,8 @@ async def create_questionnaire(state, random_user, chat_id, add_text=None):
     if photo_random_user is None:
         photo_random_user = "https://www.meme-arsenal.com/memes/5eae5104f379baa355e031fa1ded886c.jpg"
 
-    description_random_user = f'<b>Имя</b> - {varname},\n<b>Возраст</b> - {age},\n<b>Пол</b> - {sex}\n' \
+    description_random_user = f'{add_text}\n\n' \
+                              f'<b>Имя</b> - {varname},\n<b>Возраст</b> - {age},\n<b>Пол</b> - {sex}\n' \
                               f'<b>Город</b> - {city}\n' \
                               f'<b>Ищу</b> - {need_partner_sex}\n\n' \
                               f'<b>О себе:</b>\n{commentary}\n\n'
