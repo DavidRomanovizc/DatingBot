@@ -11,6 +11,7 @@ from keyboards.inline.gender_inline import sex_partner
 
 from loader import dp, db
 from states.reg_state import RegData
+from utils.db_api import db_commands
 
 
 @dp.callback_query_handler(text='registration')
@@ -35,12 +36,12 @@ async def survey(call: CallbackQuery):
 async def sex_reg(call: CallbackQuery):
     if call.data == 'male_reg':
         try:
-            await db.update_user_sex(telegram_id=call.from_user.id, sex='Мужской')
+            await db_commands.update_user_data(telegram_id=call.from_user.id, sex="Мужской")
         except asyncpg.exceptions.UniqueViolationError as err:
             print(err)
     elif call.data == 'female_reg':
         try:
-            await db.update_user_sex(telegram_id=call.from_user.id, sex='Женский')
+            await db_commands.update_user_data(telegram_id=call.from_user.id, sex='Женский')
         except asyncpg.exceptions.UniqueViolationError as err:
             print(err)
 
@@ -52,7 +53,7 @@ async def sex_reg(call: CallbackQuery):
 async def commentary_reg(message: types.Message):
     markup = await sex_partner()
     try:
-        await db.update_user_commentary(commentary=message.text, telegram_id=message.from_user.id)
+        await db_commands.update_user_data(commentary=message.text, telegram_id=message.from_user.id)
         await message.reply(f'Комментарий принят! Выберите, кого вы хотите найти: ', reply_markup=markup)
     except Exception as err:
         logger.error(err)
@@ -66,12 +67,12 @@ async def commentary_reg(message: types.Message):
 async def sex_reg(call: CallbackQuery):
     if call.data == 'gen_male':
         try:
-            await db.update_user_need_partner_sex(telegram_id=call.from_user.id, need_partner_sex='Мужской')
+            await db_commands.update_user_data(telegram_id=call.from_user.id, need_partner_sex='Мужской')
         except asyncpg.exceptions.UniqueViolationError as err:
             print(err)
     elif call.data == 'g_fe':
         try:
-            await db.update_user_need_partner_sex(telegram_id=call.from_user.id, need_partner_sex='Женский')
+            await db_commands.update_user_data(telegram_id=call.from_user.id, need_partner_sex='Женский')
         except asyncpg.exceptions.UniqueViolationError as err:
             print(err)
 
@@ -83,7 +84,7 @@ async def sex_reg(call: CallbackQuery):
 async def get_name(message: types.Message, state: FSMContext):
     await state.update_data(name=message.text)
     try:
-        await db.update_user_varname(telegram_id=message.from_user.id, varname=message.text)
+        await db_commands.update_user_data(telegram_id=message.from_user.id, varname=message.text)
     except asyncpg.exceptions.UniqueViolationError as err:
         print(err)
     await message.reply("Введите сколько вам лет:")
@@ -94,7 +95,7 @@ async def get_name(message: types.Message, state: FSMContext):
 async def get_age(message: types.Message, state: FSMContext):
     await state.update_data(age=message.text)
     try:
-        await db.update_user_age(telegram_id=message.from_user.id, age=message.text)
+        await db_commands.update_user_data(telegram_id=message.from_user.id, age=message.text)
     except asyncpg.exceptions.UniqueViolationError as err:
         print(err)
     await message.reply("Введите вашу национальность:")
@@ -110,7 +111,7 @@ async def get_nationality(message: types.Message, state: FSMContext):
     await state.update_data(nationality=message.text)
 
     try:
-        await db.update_user_national(telegram_id=message.from_user.id, national=message.text)
+        await db_commands.update_user_data(telegram_id=message.from_user.id, national=message.text)
         await state.update_data(nationality=message.text)
     except asyncpg.exceptions.UniqueViolationError as err:
         print(err)
@@ -122,13 +123,13 @@ async def get_nationality(message: types.Message, state: FSMContext):
 async def get_education(call: CallbackQuery, state=FSMContext):
     if call.data == 'higher_edu':
         try:
-            await db.update_user_education(telegram_id=call.from_user.id, education='Высшее')
+            await db_commands.update_user_data(telegram_id=call.from_user.id, education='Высшее')
             await state.update_data(education='Высшее')
         except asyncpg.exceptions.UniqueViolationError as err:
             print(err)
     elif call.data == 'secondary_edu':
         try:
-            await db.update_user_education(telegram_id=call.from_user.id, education='Среднее')
+            await db_commands.update_user_data(telegram_id=call.from_user.id, education='Среднее')
             await state.update_data(education="Среднее")
         except asyncpg.exceptions.UniqueViolationError as err:
             print(err)
@@ -143,7 +144,7 @@ async def get_town(message: types.Message, state: FSMContext):
     btn2 = types.InlineKeyboardButton(text='Нет', callback_data='car_false')
     keyboard.add(btn1, btn2)
     try:
-        await db.update_user_city(telegram_id=message.from_user.id, city=message.text)
+        await db_commands.update_user_data(telegram_id=message.from_user.id, city=message.text)
         await state.update_data(town=message.text)
     except asyncpg.exceptions.UniqueViolationError as err:
         print(err)
@@ -159,13 +160,13 @@ async def get_car(call: CallbackQuery, state: FSMContext):
     keyboard.add(btn1, btn2)
     if call.data == 'car_true':
         try:
-            await db.update_user_car(telegram_id=call.from_user.id, car=True)
+            await db_commands.update_user_data(telegram_id=call.from_user.id, car=True)
             await state.update_data(car='Есть машина')
         except asyncpg.exceptions.UniqueViolationError as err:
             print(err)
     elif call.data == 'car_false':
         try:
-            await db.update_user_car(telegram_id=call.from_user.id, car=False)
+            await db_commands.update_user_data(telegram_id=call.from_user.id, car=False)
             await state.update_data(car='Нет машины')
         except asyncpg.exceptions.UniqueViolationError as err:
             print(err)
@@ -178,13 +179,13 @@ async def get_own_home(call: CallbackQuery, state: FSMContext):
     markup = await lifestyle_keyboard()
     if call.data == 'apart_true':
         try:
-            await db.update_user_apartment(telegram_id=call.from_user.id, apartment=True)
+            await db_commands.update_user_data(telegram_id=call.from_user.id, apartment=True)
             await state.update_data(own_home='Есть квартира')
         except asyncpg.exceptions.UniqueViolationError as err:
             print(err)
     elif call.data == 'apart_false':
         try:
-            await db.update_user_apartment(telegram_id=call.from_user.id, apartment=False)
+            await db_commands.update_user_data(telegram_id=call.from_user.id, apartment=False)
             await state.update_data(own_home='Нет квартиры')
         except asyncpg.exceptions.UniqueViolationError as err:
             print(err)
@@ -201,25 +202,25 @@ async def get_hobbies(call: CallbackQuery, state: FSMContext):
 
     if call.data == 'study_lifestyle':
         try:
-            await db.update_user_lifestyle(telegram_id=call.from_user.id, lifestyle='Учусь')
+            await db_commands.update_user_data(telegram_id=call.from_user.id, lifestyle='Учусь')
             await state.update_data(hobbies='Учусь')
         except asyncpg.exceptions.UniqueViolationError as err:
             print(err)
     elif call.data == 'work_lifestyle':
         try:
-            await db.update_user_lifestyle(telegram_id=call.from_user.id, lifestyle='Работаю')
+            await db_commands.update_user_data(telegram_id=call.from_user.id, lifestyle='Работаю')
             await state.update_data(hobbies='Работаю')
         except asyncpg.exceptions.UniqueViolationError as err:
             print(err)
     elif call.data == 'job_find_lifestyle':
         try:
-            await db.update_user_lifestyle(telegram_id=call.from_user.id, lifestyle='Ищу работу')
+            await db_commands.update_user_data(telegram_id=call.from_user.id, lifestyle='Ищу работу')
             await state.update_data(hobbies='Ищу работу')
         except asyncpg.exceptions.UniqueViolationError as err:
             print(err)
     elif call.data == 'householder_lifestyle':
         try:
-            await db.update_user_lifestyle(telegram_id=call.from_user.id, lifestyle='Домохозяйка/Домохозяин')
+            await db_commands.update_user_data(telegram_id=call.from_user.id, lifestyle='Домохозяйка/Домохозяин')
             await state.update_data(hobbies='Домохозяйка/Домохозяин')
         except asyncpg.exceptions.UniqueViolationError as err:
             print(err)
@@ -236,13 +237,13 @@ async def get_marital(call: CallbackQuery, state=FSMContext):
 
     if call.data == 'busy':
         try:
-            await db.update_user_marital(telegram_id=call.from_user.id, marital='Занят/a')
+            await db_commands.update_user_data(telegram_id=call.from_user.id, marital='Занят/a')
             await state.update_data(marital='Занят')
         except asyncpg.exceptions.UniqueViolationError as err:
             print(err)
     elif call.data == 'not_busy':
         try:
-            await db.update_user_marital(telegram_id=call.from_user.id, marital='Не занят/a')
+            await db_commands.update_user_data(telegram_id=call.from_user.id, marital='Не занят/a')
             await state.update_data(marital='Не занят')
         except asyncpg.exceptions.UniqueViolationError as err:
             print(err)
@@ -255,13 +256,13 @@ async def get_marital(call: CallbackQuery, state=FSMContext):
 async def get_children(call: CallbackQuery, state=FSMContext):
     if call.data == 'true':
         try:
-            await db.update_user_kids(telegram_id=call.from_user.id, kids=True)
+            await db_commands.update_user_data(telegram_id=call.from_user.id, kids=True)
             await state.update_data(child='Есть дети')
         except asyncpg.exceptions.UniqueViolationError as err:
             print(err)
     elif call.data == 'false':
         try:
-            await db.update_user_kids(telegram_id=call.from_user.id, kids=False)
+            await db_commands.update_user_data(telegram_id=call.from_user.id, kids=False)
             await state.update_data(child='Нет детей')
         except asyncpg.exceptions.UniqueViolationError as err:
             print(err)
@@ -273,7 +274,7 @@ async def get_children(call: CallbackQuery, state=FSMContext):
 async def get_photo(message: types.Message, state: FSMContext):
     file_id = message.photo[-1].file_id
     try:
-        await db.update_user_photo_id(photo_id=file_id, telegram_id=message.from_user.id)
+        await db_commands.update_user_data(photo_id=file_id, telegram_id=message.from_user.id)
         await message.reply(f'Фото принято!')
     except Exception as err:
         logger.error(err)
@@ -282,7 +283,7 @@ async def get_photo(message: types.Message, state: FSMContext):
 
     await state.finish()
 
-    user = await db.select_user(telegram_id=message.from_user.id)
+    user = await db_commands.select_user(telegram_id=message.from_user.id)
     print(user)
 
     user_name = user.get('varname')

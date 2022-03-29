@@ -4,16 +4,11 @@ import django
 from aiogram import executor
 from django_project.telegrambot.telegrambot import settings
 from loader import dp, db, bot, storage
-import handlers
 from utils.notify_admins import on_startup_notify
 from utils.set_bot_commands import set_default_commands
 
 
 async def on_startup(dp):
-    import filters
-    import middlewares
-    middlewares.setup(dp)
-
     await db.create()
     await db.create_table_users()
     from utils.notify_admins import on_startup_notify
@@ -33,4 +28,8 @@ def setup_django():
 
 if __name__ == '__main__':
     setup_django()
+    import middlewares
+    middlewares.setup(dp)
+    import filters
+    import handlers
     executor.start_polling(dp, on_startup=on_startup, skip_updates=True)

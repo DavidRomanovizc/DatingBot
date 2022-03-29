@@ -15,6 +15,8 @@ from aiogram.dispatcher import FSMContext
 from loader import dp, bot, db
 from aiogram import types
 
+from utils.db_api import db_commands
+
 
 @dp.callback_query_handler(text='change_profile')
 async def start_change_data(call: CallbackQuery):
@@ -32,7 +34,7 @@ async def change_name(call: CallbackQuery):
 async def change_name(message: types.Message, state: FSMContext):
     markup = await change_info_keyboard()
     try:
-        await db.update_user_varname(varname=message.text, telegram_id=message.from_user.id)
+        await db_commands.update_user_data(varname=message.text, telegram_id=message.from_user.id)
         await message.answer(f'Ваше новое имя: <b>{message.text}</b>')
         await message.answer(f'Выберите, что вы хотите изменить: ', reply_markup=markup)
         await state.reset_state()
