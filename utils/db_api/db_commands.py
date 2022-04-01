@@ -20,6 +20,12 @@ def select_all_users():
 
 
 @sync_to_async
+def select_all_users_id(telegram_id: int):
+    users = User.objects.filter(id=telegram_id).all().values()
+    return users
+
+
+@sync_to_async
 def count_users():
     return User.objects.all().count()
 

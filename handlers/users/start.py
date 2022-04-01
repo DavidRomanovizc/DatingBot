@@ -1,11 +1,10 @@
 from aiogram.types import CallbackQuery
 
 from aiogram.dispatcher.filters.builtin import CommandStart
-from asyncpg import UniqueViolationError
-from psycopg2 import IntegrityError
+
 
 from keyboards.inline.main_menu_inline import start_keyboard
-from loader import dp, db, _
+from loader import dp, _
 from aiogram import types
 
 from utils.db_api import db_commands
@@ -45,5 +44,4 @@ async def start_menu(call: CallbackQuery):
 async def change_language(call: CallbackQuery):
     await call.message.edit_reply_markup()
     lang = call.data[-2:]
-
     await call.message.answer(_("Ваш язык был изменен", locale=lang))

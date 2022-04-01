@@ -9,9 +9,11 @@ from loader import dp, db, bot
 from aiogram import types
 import random
 
+from utils.db_api import db_commands
+
 
 async def select_all_users_list():
-    users_records = await db.select_all_users_id()
+    users_records = await db_commands.select_all_users()
     list_id = []
     for i in users_records:
         id_user = i.get('telegram_id')
@@ -21,7 +23,7 @@ async def select_all_users_list():
 
 async def create_questionnaire(state, random_user, chat_id, add_text=None):
     markup = await questionnaires_keyboard()
-    user_data = await db.select_user(telegram_id=random_user)
+    user_data = await db_commands.select_user(telegram_id=random_user)
     varname = user_data.get('varname')
     age = user_data.get('age')
     sex = user_data.get('sex')
