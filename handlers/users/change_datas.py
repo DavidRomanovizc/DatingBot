@@ -57,7 +57,7 @@ async def change_age(call: CallbackQuery):
 async def change_age(message: types.Message, state: FSMContext):
     markup = await change_info_keyboard()
     try:
-        await db.update_user_age(age=message.text, telegram_id=message.from_user.id)
+        await db_commands.update_user_data(age=message.text, telegram_id=message.from_user.id)
         await message.answer(f'Ваш новый возраст: <b>{message.text}</b>')
         await message.answer(f'Выберите, что вы хотите изменить: ', reply_markup=markup)
         await state.reset_state()
@@ -80,7 +80,7 @@ async def change_nationality(call: CallbackQuery):
 async def change_nationality(message: types.Message, state: FSMContext):
     markup = await change_info_keyboard()
     try:
-        await db.update_user_national(national=message.text, telegram_id=message.from_user.id)
+        await db_commands.update_user_data(national=message.text, telegram_id=message.from_user.id)
         await message.answer(f'Ваша новая национальность: <b>{message.text}</b>')
         await message.answer(f'Выберите, что вы хотите изменить: ', reply_markup=markup)
         await state.reset_state()
@@ -102,7 +102,7 @@ async def change_city(call: CallbackQuery):
 async def change_city(message: types.Message, state: FSMContext):
     markup = await change_info_keyboard()
     try:
-        await db.update_user_city(city=message.text, telegram_id=message.from_user.id)
+        await db_commands.update_user_data(city=message.text, telegram_id=message.from_user.id)
         await message.answer(f'Ваш новый город: <b>{message.text}</b>')
         await message.answer(f'Выберите, что вы хотите изменить: ', reply_markup=markup)
         await state.reset_state()
@@ -126,7 +126,7 @@ async def change_sex(call: CallbackQuery, state: FSMContext):
     markup = await change_info_keyboard()
     if call.data == 'male':
         try:
-            await db.update_user_sex(sex='Мужской', telegram_id=call.from_user.id)
+            await db_commands.update_user_data(sex='Мужской', telegram_id=call.from_user.id)
             await call.message.edit_text(f'Ваш новый пол: <b>Мужской</b>')
             await asyncio.sleep(3)
             await call.message.edit_text(f'Выберите, что вы хотите изменить: ', reply_markup=markup)
@@ -137,7 +137,7 @@ async def change_sex(call: CallbackQuery, state: FSMContext):
             await state.reset_state()
     if call.data == 'female':
         try:
-            await db.update_user_sex(sex='Женский', telegram_id=call.from_user.id)
+            await db_commands.update_user_data(sex='Женский', telegram_id=call.from_user.id)
             await call.message.edit_text(f'Ваш новый пол: <b>Женский</b>')
             await asyncio.sleep(3)
             await call.message.edit_text(f'Выберите, что вы хотите изменить: ', reply_markup=markup)
@@ -162,7 +162,7 @@ async def change_car(call: CallbackQuery, state: FSMContext):
     markup = await change_info_keyboard()
     if call.data == 'true':
         try:
-            await db.update_user_car(car=True, telegram_id=call.from_user.id)
+            await db_commands.update_user_data(car=True, telegram_id=call.from_user.id)
             await call.message.edit_text(f'Теперь у вас есть машина')
             await asyncio.sleep(3)
             await call.message.edit_text(f'Выберите, что вы хотите изменить: ', reply_markup=markup)
@@ -173,7 +173,7 @@ async def change_car(call: CallbackQuery, state: FSMContext):
             await state.reset_state()
     if call.data == 'false':
         try:
-            await db.update_user_car(car=False, telegram_id=call.from_user.id)
+            await db_commands.update_user_data(car=False, telegram_id=call.from_user.id)
             await call.message.edit_text(f'Теперь у вас нет машина')
             await asyncio.sleep(3)
             await call.message.edit_text(f'Выберите, что вы хотите изменить: ', reply_markup=markup)
@@ -198,7 +198,7 @@ async def change_children(call: CallbackQuery, state: FSMContext):
     markup = await change_info_keyboard()
     if call.data == 'true':
         try:
-            await db.update_user_kids(kids=True, telegram_id=call.from_user.id)
+            await db_commands.update_user_data(kids=True, telegram_id=call.from_user.id)
             await call.message.edit_text(f'Теперь у вас: <b>есть</b> дети')
             await asyncio.sleep(3)
             await call.message.edit_text(f'Выберите, что вы хотите изменить: ', reply_markup=markup)
@@ -209,7 +209,7 @@ async def change_children(call: CallbackQuery, state: FSMContext):
             await state.reset_state()
     if call.data == 'false':
         try:
-            await db.update_user_kids(kids=False, telegram_id=call.from_user.id)
+            await db_commands.update_user_data(kids=False, telegram_id=call.from_user.id)
             await call.message.edit_text(f'Теперь у вас: <b>нет</b> детей')
             await asyncio.sleep(3)
             await call.message.edit_text(f'Выберите, что вы хотите изменить: ', reply_markup=markup)
@@ -234,7 +234,7 @@ async def change_home(call: CallbackQuery, state: FSMContext):
     markup = await change_info_keyboard()
     if call.data == 'true':
         try:
-            await db.update_user_apartment(apartment=True, telegram_id=call.from_user.id)
+            await db_commands.update_user_data(apartment=True, telegram_id=call.from_user.id)
             await call.message.edit_text(f'Теперь у вас: <b>есть</b> квартира')
             await asyncio.sleep(3)
             await call.message.edit_text(f'Выберите, что вы хотите изменить: ', reply_markup=markup)
@@ -245,7 +245,7 @@ async def change_home(call: CallbackQuery, state: FSMContext):
             await state.reset_state()
     if call.data == 'false':
         try:
-            await db.update_user_apartment(apartment=False, telegram_id=call.from_user.id)
+            await db_commands.update_user_data(apartment=False, telegram_id=call.from_user.id)
             await call.message.edit_text(f'Теперь у вас: <b>нет</b> квартиры')
             await asyncio.sleep(3)
             await call.message.edit_text(f'Выберите, что вы хотите изменить: ', reply_markup=markup)
@@ -270,7 +270,7 @@ async def change_education(call: CallbackQuery, state: FSMContext):
     markup = await change_info_keyboard()
     if call.data == 'higher_edu':
         try:
-            await db.update_user_apartment(apartment=True, telegram_id=call.from_user.id)
+            await db_commands.update_user_data(apartment=True, telegram_id=call.from_user.id)
             await call.message.edit_text(f'Теперь у вас: <b>Высшее</b> образование')
             await asyncio.sleep(3)
             await call.message.edit_text(f'Выберите, что вы хотите изменить: ', reply_markup=markup)
@@ -281,7 +281,7 @@ async def change_education(call: CallbackQuery, state: FSMContext):
             await state.reset_state()
     if call.data == 'secondary_edu':
         try:
-            await db.update_user_apartment(apartment=False, telegram_id=call.from_user.id)
+            await db_commands.update_user_data(apartment=False, telegram_id=call.from_user.id)
             await call.message.edit_text(f'Теперь у вас: <b>Среднее</b> образование')
             await asyncio.sleep(3)
             await call.message.edit_text(f'Выберите, что вы хотите изменить: ', reply_markup=markup)
@@ -306,7 +306,7 @@ async def change_style(call: CallbackQuery, state: FSMContext):
     markup = await change_info_keyboard()
     if call.data == 'study_lifestyle':
         try:
-            await db.update_user_lifestyle(lifestyle='Учусь', telegram_id=call.from_user.id)
+            await db_commands.update_user_data(lifestyle='Учусь', telegram_id=call.from_user.id)
             await call.message.edit_text(f'Теперь вы учитесь!')
             await asyncio.sleep(3)
             await call.message.edit_text(f'Выберите, что вы хотите изменить: ', reply_markup=markup)
@@ -317,7 +317,7 @@ async def change_style(call: CallbackQuery, state: FSMContext):
             await state.reset_state()
     elif call.data == 'work_lifestyle':
         try:
-            await db.update_user_lifestyle(lifestyle='Работаю', telegram_id=call.from_user.id)
+            await db_commands.update_user_data(lifestyle='Работаю', telegram_id=call.from_user.id)
             await call.message.edit_text('Теперь вы работаете!')
             await asyncio.sleep(3)
             await call.message.edit_text(f'Выберите, что вы хотите изменить: ', reply_markup=markup)
@@ -328,7 +328,7 @@ async def change_style(call: CallbackQuery, state: FSMContext):
             await state.reset_state()
     elif call.data == 'job_find_lifestyle':
         try:
-            await db.update_user_lifestyle(lifestyle='Ищу работу', telegram_id=call.from_user.id)
+            await db_commands.update_user_data(lifestyle='Ищу работу', telegram_id=call.from_user.id)
             await call.message.edit_text(f'Теперь вы ищете работу!')
             await asyncio.sleep(3)
             await call.message.edit_text(f'Выберите, что вы хотите изменить: ', reply_markup=markup)
@@ -339,7 +339,7 @@ async def change_style(call: CallbackQuery, state: FSMContext):
             await state.reset_state()
     elif call.data == 'householder_lifestyle':
         try:
-            await db.update_user_lifestyle(lifestyle='Домохозяйка/Домохозяин', telegram_id=call.from_user.id)
+            await db_commands.update_user_data(lifestyle='Домохозяйка/Домохозяин', telegram_id=call.from_user.id)
             await call.message.edit_text(f'Теперь вы домохозяин/домохозяйка!')
             await asyncio.sleep(3)
             await call.message.edit_text(f'Выберите, что вы хотите изменить: ', reply_markup=markup)
@@ -365,7 +365,7 @@ async def update_photo_complete(message: types.Message, state: FSMContext):
     markup = await change_info_keyboard()
     file_id = message.photo[-1].file_id
     try:
-        await db.update_user_photo_id(photo_id=file_id, telegram_id=message.from_user.id)
+        await db_commands.update_user_data(photo_id=file_id, telegram_id=message.from_user.id)
         await message.answer(f'Фото принято!')
         await asyncio.sleep(3)
         await delete_message(message)
@@ -388,7 +388,7 @@ async def new_comment(call: CallbackQuery):
 async def update_comment_complete(message: types.Message, state: FSMContext):
     markup = await change_info_keyboard()
     try:
-        await db.update_user_commentary(commentary=message.text, telegram_id=message.from_user.id)
+        await db_commands.update_user_data(commentary=message.text, telegram_id=message.from_user.id)
         await message.answer(f'Комментарий принят!')
         await asyncio.sleep(3)
         await delete_message(message)

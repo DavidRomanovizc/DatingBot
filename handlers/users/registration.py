@@ -9,7 +9,7 @@ from keyboards.inline.profile_inline import registration_keyboard
 from keyboards.inline.second_menu_inline import second_menu_keyboard
 from keyboards.inline.gender_inline import sex_partner
 
-from loader import dp, db
+from loader import dp
 from states.reg_state import RegData
 from utils.db_api import db_commands
 

@@ -27,3 +27,9 @@ def count_users():
 @sync_to_async
 def update_user_data(telegram_id, **kwargs):
     return User.objects.filter(telegram_id=telegram_id).update(**kwargs)
+
+
+@sync_to_async
+def select_user_username(username: str):
+    user = User.objects.filter(username=username).values().first()
+    return user

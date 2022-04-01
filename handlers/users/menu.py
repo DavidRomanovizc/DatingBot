@@ -2,8 +2,10 @@ from handlers.users.back_handler import delete_message
 
 from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup
 
+from keyboards.inline.registration import registration_keyboard
 from keyboards.inline.second_menu_inline import second_menu_keyboard
-from loader import dp, db
+from loader import dp
+from utils.db_api import db_commands
 
 
 @dp.callback_query_handler(text="second_m")
@@ -22,8 +24,8 @@ async def my_profile_menu(call: CallbackQuery):
     keyboard = InlineKeyboardMarkup()
     btn1 = InlineKeyboardButton(text="Назад", callback_data="back_with_delete")
     keyboard.add(btn1)
-    user = await db.select_user(telegram_id=call.from_user.id)
 
+    user = await db_commands.select_user(telegram_id=call.from_user.id)
     user_name = user.get('varname')
     user_age = user.get('age')
     user_sex = user.get('sex')
