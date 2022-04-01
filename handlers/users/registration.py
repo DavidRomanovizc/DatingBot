@@ -9,7 +9,7 @@ from keyboards.inline.profile_inline import registration_keyboard
 from keyboards.inline.second_menu_inline import second_menu_keyboard
 from keyboards.inline.gender_inline import sex_partner
 
-from loader import dp, db
+from loader import dp
 from states.reg_state import RegData
 from utils.db_api import db_commands
 
@@ -54,12 +54,12 @@ async def commentary_reg(message: types.Message):
     markup = await sex_partner()
     try:
         await db_commands.update_user_data(commentary=message.text, telegram_id=message.from_user.id)
-        await message.reply(f'Комментарий принят! Выберите, кого вы хотите найти: ', reply_markup=markup)
+        await message.answer(f'Комментарий принят! Выберите, кого вы хотите найти: ', reply_markup=markup)
     except Exception as err:
         logger.error(err)
-        await message.reply(f'Произошла неизвестная ошибка! Попробуйте изменить комментарий позже в разделе '
-                            f'"Меню"\n\n'
-                            f'Выберите, кого вы хотите найти: ', reply_markup=markup)
+        await message.answer(f'Произошла неизвестная ошибка! Попробуйте изменить комментарий позже в разделе '
+                             f'"Меню"\n\n'
+                             f'Выберите, кого вы хотите найти: ', reply_markup=markup)
     await RegData.need_partner_sex.set()
 
 
@@ -87,7 +87,7 @@ async def get_name(message: types.Message, state: FSMContext):
         await db_commands.update_user_data(telegram_id=message.from_user.id, varname=message.text)
     except asyncpg.exceptions.UniqueViolationError as err:
         print(err)
-    await message.reply("Введите сколько вам лет:")
+    await message.answer("Введите сколько вам лет:")
     await RegData.age.set()
 
 
@@ -98,7 +98,7 @@ async def get_age(message: types.Message, state: FSMContext):
         await db_commands.update_user_data(telegram_id=message.from_user.id, age=message.text)
     except asyncpg.exceptions.UniqueViolationError as err:
         print(err)
-    await message.reply("Введите вашу национальность:")
+    await message.answer("Введите вашу национальность:")
     await RegData.nationality.set()
 
 
@@ -115,7 +115,7 @@ async def get_nationality(message: types.Message, state: FSMContext):
         await state.update_data(nationality=message.text)
     except asyncpg.exceptions.UniqueViolationError as err:
         print(err)
-    await message.reply("Введите ваше образование:", reply_markup=keyboard)
+    await message.answer("Введите ваше образование:", reply_markup=keyboard)
     await RegData.education.set()
 
 
@@ -148,7 +148,7 @@ async def get_town(message: types.Message, state: FSMContext):
         await state.update_data(town=message.text)
     except asyncpg.exceptions.UniqueViolationError as err:
         print(err)
-    await message.reply("Имеете ли вы машину:", reply_markup=keyboard)
+    await message.answer("Имеете ли вы машину:", reply_markup=keyboard)
     await RegData.car.set()
 
 
@@ -278,13 +278,12 @@ async def get_photo(message: types.Message, state: FSMContext):
         await message.reply(f'Фото принято!')
     except Exception as err:
         logger.error(err)
-        await message.reply(f'Произошла ошибка! Попробуйте еще раз либо отправьте другую фотографию. \n'
-                            f'Если ошибка осталась, напишите системному администратору.')
+        await message.answer(f'Произошла ошибка! Попробуйте еще раз либо отправьте другую фотографию. \n'
+                             f'Если ошибка осталась, напишите системному администратору.')
 
     await state.finish()
 
     user = await db_commands.select_user(telegram_id=message.from_user.id)
-    print(user)
 
     user_name = user.get('varname')
     user_age = user.get('age')
