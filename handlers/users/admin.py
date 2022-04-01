@@ -1,211 +1,152 @@
-from aiogram.utils.exceptions import UserDeactivated, InvalidUserId, MessageError
-from keyboards.inline.admin_inline import admin_mode_kb
-from states.ban_user_states import BanUser
+from aiogram.utils.exceptions import UserDeactivated, MessageToReplyNotFound, InvalidUserId, MessageError
+
 from aiogram.dispatcher import FSMContext
+
 from aiogram.types import CallbackQuery
-from states.find_user import FindUser
-from states.mailing import Mailing
-from loader import dp, db, bot
+
+from filters import IsPrivate
+from keyboards.inline.admin_inline import admin_mode_keyboard, approval_keyboard, find_user
+from keyboards.inline.main_menu_inline import start_keyboard
+from utils.db_api import db_commands
 from data.config import ADMINS
+from loader import dp, bot
+from loguru import logger
 from asyncio import sleep
 from aiogram import types
-import asyncpg
 
 
-@dp.message_handler(chat_id=ADMINS, text='/admin')
+@dp.message_handler(IsPrivate(), chat_id=ADMINS, text="/admin")
 async def open_admin_mode(message: types.Message):
-    await message.answer(f'Приветствую, мой повелитель! Вот мои функции: ', reply_markup=admin_mode_kb)
+    markup = await admin_mode_keyboard()
+    await message.answer(f"Приветствую, мой повелитель! Вот мои функции: ", reply_markup=markup)
 
 
-@dp.callback_query_handler(text='create_base_users')
-async def create_base_users(call: CallbackQuery):
-    try:
-        await db.create_table_users()
-    except MessageError:
-        await call.answer(f'Ошибка! Вполне возможно, база уже есть', show_alert=True)
-
-    await call.answer(text=f'Таблица пользователей создана со следующими параметрами: \n\n'
-                           f'id, fullname, photo, username, email, sex, is_premium, age, '
-                           f'national, education, city, car, apartment, marital', show_alert=True)
+@dp.callback_query_handler(text="mailing_start")
+async def mailing_start(call: CallbackQuery, state: FSMContext):
+    await bot.answer_callback_query(call.id)
+    await bot.send_message(call.from_user.id, "Отправьте сообщение для рассылки")
+    await state.set_state("mailing")
 
 
-@dp.callback_query_handler(text='create_base_Payments')
-async def create_base_users(call: CallbackQuery):
-    try:
-        await db.create_table_payments()
-    except MessageError:
-        await call.answer(f'Ошибка! Вполне возможно, база уже есть', show_alert=True)
-
-    await call.answer(text=f'Таблица оплаты создана со следующими параметрами: \n\n'
-                           f'id, fullname, is_premium, telegram_id', show_alert=True)
-
-
-@dp.callback_query_handler(text='mailing_start', state=None)
-async def mailing_start(callback_query: CallbackQuery):
-    await bot.answer_callback_query(callback_query.id)
-    await bot.send_message(callback_query.from_user.id, 'Отправьте сообщение для рассылки. Это сообщение получат те,'
-                                                        ' кто не купил премиум!')
-    await Mailing.stage1.set()
-
-
-@dp.message_handler(state=Mailing.stage1)
+@dp.message_handler(state="mailing")
 async def send_mailing(message: types.Message, state: FSMContext):
     answer = message.text
-    count_users = await db.count_users()
+    count_users = await db_commands.count_users()
+    markup = await approval_keyboard()
     async with state.proxy() as data:
         data['mailing'] = answer
     await message.answer(f'Отправьте любое сообщение для подтверждения отправки следующего сообщения: \n\n'
                          f'<b>{answer}</b>\n\n'
-                         f'Сообщение получат: <b>{count_users}</b> человек', parse_mode='HTML')
-    await Mailing.stage2.set()
+                         f'Сообщение получат: <b>{count_users}</b> человек', parse_mode='HTML', reply_markup=markup)
+    await state.set_state("mailing_2")
 
 
-@dp.message_handler(state=Mailing.stage2)
-async def mailing_final(state: FSMContext):
+@dp.callback_query_handler(text="approved_btn", state="mailing_2")
+async def mailing_final(call: CallbackQuery, state: FSMContext):
     data1 = await state.get_data()
     answer1 = str(data1.get('mailing'))
-    users = await db.select_all_users()
+    users = await db_commands.select_all_users()
     for i in users:
         id_chat = i.get('telegram_id')
         await bot.send_message(chat_id=id_chat, text=f'Вы получили следующую рассылку: \n\n'
-                                                     f'{answer1}\n\n'
-                                                     f'Чтобы отказаться от рассылки, купите премиум :)')
-        await sleep(0.3)
+                                                     f'{answer1}\n\n')
+        await sleep(0.5)
 
     await state.reset_state(with_data=True)
 
 
-@dp.callback_query_handler(text='delete_db')
-async def delete_users_db(call: CallbackQuery):
-    await db.drop_users()
-    await db.drop_payments()
-    await bot.send_message(call.from_user.id, f'База данных успешно удалена!')
+@dp.callback_query_handler(text='show_active_users')
+async def count_users_db(call: CallbackQuery):
+    count_users = await db_commands.count_users()
+    await call.answer(text=f'В боте зарегистрировано {count_users} участников', show_alert=True)
 
 
-@dp.callback_query_handler(text='initialization_user')
-async def initialize_me(call: CallbackQuery):
-    try:
-        user = await db.add_user_Users(full_name=call.from_user.full_name,
-                                       telegram_id=call.from_user.id,
-                                       username=call.from_user.username,
-                                       email=None,
-                                       sex=None,
-                                       national=None,
-                                       education=None,
-                                       city=None,
-                                       age=None,
-                                       kids=None,
-                                       language=None,
-                                       marital=None,
-                                       car=None,
-                                       varname=None,
-                                       lifestyle=None,
-                                       is_banned=False,
-                                       apartment=None)
-    except asyncpg.exceptions.UniqueViolationError:
-        user = await db.select_user(telegram_id=call.from_user.id)
-        await bot.send_message(chat_id=user.get('telegram_id'), text=f'С возвращением, {call.from_user.full_name}!')
-    await bot.answer_callback_query(call.id)
-
-    user_data = list(user)
-    user_data_dict = dict(user)
-    username = user.get('username')
-    full_name = user[2]
-    count_users = await db.count_users()
-    await bot.send_message(call.from_user.id, f'Отправляю данные о Вас...')
-    await bot.send_message(call.from_user.id, f'Данные следующие: \n\n'
-                                              f'Количество юзеров - <b>{count_users}</b>\n\n'
-                                              f'Данные о Вас: \n'
-                                              f'<code>User - {username}, {full_name}\n'
-                                              f'{user_data=}\n'
-                                              f'{user_data_dict=}</code>', parse_mode='HTML')
-
-
-@dp.callback_query_handler(text='find_user')
+@dp.callback_query_handler(text="find_users")
 async def start_find(call: CallbackQuery):
-    await bot.send_message(call.from_user.id, f'Введите ID пользователя, которого хотите найти')
-    await FindUser.process_find1.set()
+    markup = await find_user()
+    await call.message.edit_text("Выберите способ поиска пользователя", reply_markup=markup)
 
 
-@dp.message_handler(state=FindUser.process_find1)
-async def delete_users_db(message: types.Message, state: FSMContext):
+@dp.callback_query_handler(text="find_id")
+async def send_find(call: CallbackQuery, state: FSMContext):
+    await call.message.edit_text("Напишите ID пользователя")
+    await state.set_state("ID")
+
+
+@dp.message_handler(state="ID")
+async def send_find(message: types.Message, state: FSMContext):
     answer = message.text
     async with state.proxy() as data:
         data['id'] = answer
-    await bot.send_message(message.from_user.id, f'Отправьте любое сообщение, чтобы продолжать')
-
-    await FindUser.finish_find.set()
-
-
-@dp.message_handler(state=FindUser.finish_find)
-async def delete_users_db(message: types.Message, state: FSMContext):
     data = await state.get_data()
     telegram_id = data.get('id')
     try:
-        user = await db.select_user(telegram_id=telegram_id)
-        await bot.send_message(message.from_user.id, f'Пользователь найден, вот данные о нем:\n\n'
-                                                     f'{list(user)}')
-    except UserDeactivated:
-        await bot.send_message(message.from_user.id, f'Пользователь не найден, попробуйте изменить ID')
+        user = await db_commands.select_user(telegram_id=telegram_id)
+        full_name = user.get("full_name")
+        username = user.get("username")
+        user_balance = user.get("balance")
+        user_created = user.get("created_at")
+        user_created = user_created.strftime("%b %d %Y %H:%M:%S")
+        markup = await start_keyboard()
+        await message.answer(f'<b>Пользователь найден, вот данные о нем:</b>\n\n'
+                             f'<b>Имя:</b> {full_name}\n\n'
+                             f'<b>Ссылка:</b> https://t.me/{username}\n'
+                             f'<b>Баланс:</b> {user_balance}$\n\n'
+                             f'<b>Дата регистрации:</b> <code>{user_created}</code>\n\n')
+        await message.answer("Главное меню", reply_markup=markup)
+    except Exception as err:
+        logger.error(err)
+        await message.answer(f'Пользователь не найден, попробуйте изменить ID')
 
-    await state.reset_state()
+    await state.reset_state(with_data=True)
+
+
+@dp.callback_query_handler(text="find_user")
+async def send_find(call: CallbackQuery, state: FSMContext):
+    await call.message.edit_text("Напишите username пользователя")
+    await state.set_state("username_get")
+
+
+@dp.message_handler(state="username_get")
+async def send_find(message: types.Message, state: FSMContext):
+    answer = message.text
+    async with state.proxy() as data:
+        data['name'] = answer
+    data = await state.get_data()
+    username = data.get('name')
+    try:
+        user = await db_commands.select_user_username(username=username)
+        full_name = user.get("full_name")
+        telegram_id = user.get("telegram_id")
+        user_balance = user.get("balance")
+        user_created = user.get("created_at")
+        user_created = user_created.strftime("%b %d %Y %H:%M:%S")
+        await message.answer(f'<b>Пользователь найден, вот данные о нем:</b>\n\n'
+                             f'Имя: {full_name}\n\n'
+                             f'<b>Телеграм ID:</b> {telegram_id}\n\n'
+                             f'<b>Ссылка:</b> https://t.me/{username}\n'
+                             f'<b>Баланс:</b> {user_balance}$\n\n'
+                             f'<b>Дата регистрации:</b> <code>{user_created}</code>\n\n')
+    except UserDeactivated:
+        await message.answer(f'Пользователь не найден, попробуйте изменить ID')
+
+    await state.reset_state(with_data=True)
 
 
 @dp.callback_query_handler(text='ban_user_id')
-async def ban_user(call: CallbackQuery):
-    keyboard = types.InlineKeyboardMarkup()
-    btn1 = types.InlineKeyboardButton(text='Бан', callback_data='ban')
-    keyboard.add(btn1)
-    btn1 = types.InlineKeyboardButton(text='Разбан', callback_data='unban')
-    keyboard.add(btn1)
-    btn1 = types.InlineKeyboardButton(text='Отмена', callback_data='cancel_ban')
-    keyboard.add(btn1)
-    await bot.send_message(call.from_user.id, f'Выберите функцию: ', reply_markup=keyboard)
+async def get_ban_id(call: CallbackQuery, state: FSMContext):
+    await call.message.answer(text="Отправьте ID пользователя, которого нужно забанить")
+    await state.set_state("get_ban_id")
 
 
-@dp.callback_query_handler(text='ban')
-async def ban_user(call: CallbackQuery):
-    await bot.send_message(call.from_user.id, f'Введите id пользователя, которого нужно <b>ЗАБАНИТЬ</b>')
-    await BanUser.ban_complete.set()
-
-
-@dp.message_handler(state=BanUser.ban_complete)
+@dp.message_handler(state="get_ban_id")
 async def complete_ban(message: types.Message, state: FSMContext):
-    need_ban_id = message.text
     try:
-        full_name_banned_user = await db.select_user(telegram_id=int(need_ban_id))
-    except InvalidUserId:
-        full_name_banned_user = 0
+        user_id = message.text
+        await db_commands.update_user_data(telegram_id=user_id, is_banned=True)
+        await message.answer(text="Пользователь успешно забанен!")
+    except Exception as err:
+        logger.critical(err)
+        await message.answer(text="Не удалось забанить юзера - проверьте введенные данные")
 
-    fullname = full_name_banned_user.get('full_name')
-    try:
-        await db.update_user_ban_status(is_banned=True, telegram_id=int(need_ban_id))
-        await bot.send_message(message.from_user.id, f'Пользователь {fullname} был успешно забанен!')
-        await state.reset_state()
-    except InvalidUserId:
-        await bot.send_message(f'Произошла неизвестная ошибка! Попробуйте изменить id в формате целочисленного числа')
-        await state.reset_state()
-
-
-@dp.callback_query_handler(text='unban')
-async def ban_user(call: CallbackQuery):
-    await bot.send_message(call.from_user.id, f'Введите id пользователя, которого нужно <b>РАЗБАНИТЬ</b>')
-    await BanUser.unban_complete.set()
-
-
-@dp.message_handler(state=BanUser.unban_complete)
-async def complete_unban(message: types.Message, state: FSMContext):
-    need_unban_id = message.text
-    try:
-        full_name_unbanned_user = await db.select_user(telegram_id=int(need_unban_id))
-    except InvalidUserId:
-        full_name_unbanned_user = 0
-
-    fullname = full_name_unbanned_user.get('full_name')
-    try:
-        await db.update_user_ban_status(is_banned=False, telegram_id=int(need_unban_id))
-        await bot.send_message(message.from_user.id, f'Пользователь {fullname} был успешно разбанен!')
-        await state.reset_state()
-    except InvalidUserId:
-        await bot.send_message(f'Произошла неизвестная ошибка! Попробуйте изменить id в формате целочисленного числа')
-        await state.reset_state()
+    await state.reset_state(with_data=True)
