@@ -53,7 +53,6 @@ async def start_finding(call: CallbackQuery, state: FSMContext):
     await state.set_state('finding')
 
 
-
 @dp.callback_query_handler(text='like_questionnaire', state='finding')
 async def like_questionnaire(call: CallbackQuery, state: FSMContext):
     user_list = await select_all_users_list()
