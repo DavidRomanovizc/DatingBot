@@ -1,5 +1,6 @@
 from loguru import logger
 
+from handlers.users.back_handler import delete_message
 from keyboards.inline.main_menu_inline import start_keyboard
 from keyboards.inline.questionnaires_inline import questionnaires_keyboard
 
@@ -33,12 +34,11 @@ async def create_questionnaire(state, random_user, chat_id, add_text=None):
     photo_random_user = user_data.get('photo_id')
     if photo_random_user is None:
         photo_random_user = "https://www.meme-arsenal.com/memes/5eae5104f379baa355e031fa1ded886c.jpg"
-
-    description_random_user = f'{add_text}\n\n' \
-                              f'<b>Имя</b> - {varname},\n<b>Возраст</b> - {age},\n<b>Пол</b> - {sex}\n' \
-                              f'<b>Город</b> - {city}\n' \
-                              f'<b>Ищу</b> - {need_partner_sex}\n\n' \
-                              f'<b>О себе:</b>\n{commentary}\n\n'
+    # TODO: изменить оформление анкеты
+    description_random_user = (f'<b>Имя</b> - {varname},\n<b>Возраст</b> - {age},\n<b>Пол</b> - {sex}\n'
+                               f'<b>Город</b> - {city}\n'
+                               f'<b>Ищу</b> - {need_partner_sex}\n\n'
+                               f'<b>О себе:</b>\n{commentary}\n\n')
     await bot.send_photo(chat_id=chat_id, photo=photo_random_user,
                          caption=description_random_user, reply_markup=markup)
     await state.update_data(data={'questionnaire_owner': random_user})
@@ -46,6 +46,7 @@ async def create_questionnaire(state, random_user, chat_id, add_text=None):
 
 @dp.callback_query_handler(text='find_ancets')
 async def start_finding(call: CallbackQuery, state: FSMContext):
+    await delete_message(call.message)
     user_list = await select_all_users_list()
     user_list.remove(call.from_user.id)
     random_user = random.choice(user_list)
@@ -97,6 +98,7 @@ async def like_questionnaire(call: CallbackQuery, state: FSMContext):
     await state.reset_data()
 
 
+# TODO: Отправка сообщений работает через раз
 @dp.message_handler(state='finding')
 async def like_questionnaire(message: types.Message, state: FSMContext):
     answer_from_user = message.from_user.id
@@ -110,7 +112,7 @@ async def like_questionnaire(message: types.Message, state: FSMContext):
         data["message"] = answer
         try:
             await create_questionnaire(random_user=answer_from_user, chat_id=answered_user,
-                                       add_text=f"{answer}", state=state)
+                                       add_text=f"У вас новое сообщение: {answer}", state=state)
             await create_questionnaire(random_user=random_user, chat_id=message.from_user.id, state=state)
             await state.reset_data()
         except Exception as err:
