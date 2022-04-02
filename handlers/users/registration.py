@@ -1,17 +1,20 @@
-import asyncpg
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery, ContentType
-from loguru import logger
 
+from handlers.users.back_handler import delete_message
 from keyboards.inline.lifestyle_choice_inline import lifestyle_keyboard
-from keyboards.inline.profile_inline import registration_keyboard
+from keyboards.inline.registration_inline import gender_keyboard, education_keyboard, town_keyboard, car_keyboard, \
+    hobbies_keyboard, family_keyboard
 from keyboards.inline.second_menu_inline import second_menu_keyboard
+from keyboards.inline.profile_inline import registration_keyboard
 from keyboards.inline.gender_inline import sex_partner
 
-from loader import dp
 from states.reg_state import RegData
 from utils.db_api import db_commands
+from loguru import logger
+from loader import dp
+import asyncpg
 
 
 @dp.callback_query_handler(text='registration')
@@ -23,12 +26,9 @@ async def registration(call: CallbackQuery):
 
 @dp.callback_query_handler(text_contains="survey")
 async def survey(call: CallbackQuery):
-    keyboard = types.InlineKeyboardMarkup(row_with=1)
-    btn1 = types.InlineKeyboardButton(text='Мужской', callback_data='male_reg')
-    btn2 = types.InlineKeyboardButton(text='Женский', callback_data='female_reg')
-    keyboard.add(btn1, btn2)
+    markup = await gender_keyboard()
 
-    await call.message.edit_text("Выберите пол", reply_markup=keyboard)
+    await call.message.edit_text("Выберите пол", reply_markup=markup)
     await RegData.sex.set()
 
 
@@ -104,18 +104,14 @@ async def get_age(message: types.Message, state: FSMContext):
 
 @dp.message_handler(state=RegData.nationality)
 async def get_nationality(message: types.Message, state: FSMContext):
-    keyboard = types.InlineKeyboardMarkup(row_width=1)
-    btn1 = types.InlineKeyboardButton(text='Высшее', callback_data='higher_edu')
-    btn2 = types.InlineKeyboardButton(text='Среднее', callback_data='secondary_edu')
-    keyboard.add(btn1, btn2)
+    markup = await education_keyboard()
     await state.update_data(nationality=message.text)
-
     try:
         await db_commands.update_user_data(telegram_id=message.from_user.id, national=message.text)
         await state.update_data(nationality=message.text)
     except asyncpg.exceptions.UniqueViolationError as err:
         print(err)
-    await message.answer("Введите ваше образование:", reply_markup=keyboard)
+    await message.answer("Введите ваше образование:", reply_markup=markup)
     await RegData.education.set()
 
 
@@ -139,25 +135,19 @@ async def get_education(call: CallbackQuery, state=FSMContext):
 
 @dp.message_handler(state=RegData.town)
 async def get_town(message: types.Message, state: FSMContext):
-    keyboard = types.InlineKeyboardMarkup(row_width=1)
-    btn1 = types.InlineKeyboardButton(text='Да', callback_data='car_true')
-    btn2 = types.InlineKeyboardButton(text='Нет', callback_data='car_false')
-    keyboard.add(btn1, btn2)
+    markup = await town_keyboard()
     try:
         await db_commands.update_user_data(telegram_id=message.from_user.id, city=message.text)
         await state.update_data(town=message.text)
     except asyncpg.exceptions.UniqueViolationError as err:
         print(err)
-    await message.answer("Имеете ли вы машину:", reply_markup=keyboard)
+    await message.answer("Имеете ли вы машину:", reply_markup=markup)
     await RegData.car.set()
 
 
 @dp.callback_query_handler(state=RegData.car)
 async def get_car(call: CallbackQuery, state: FSMContext):
-    keyboard = types.InlineKeyboardMarkup(row_width=1)
-    btn1 = types.InlineKeyboardButton(text='Да', callback_data='apart_true')
-    btn2 = types.InlineKeyboardButton(text='Нет', callback_data='apart_false')
-    keyboard.add(btn1, btn2)
+    markup = await car_keyboard()
     if call.data == 'car_true':
         try:
             await db_commands.update_user_data(telegram_id=call.from_user.id, car=True)
@@ -170,7 +160,7 @@ async def get_car(call: CallbackQuery, state: FSMContext):
             await state.update_data(car='Нет машины')
         except asyncpg.exceptions.UniqueViolationError as err:
             print(err)
-    await call.message.edit_text("Имеете ли вы свое жилье:", reply_markup=keyboard)
+    await call.message.edit_text("Имеете ли вы свое жилье:", reply_markup=markup)
     await RegData.own_home.set()
 
 
@@ -195,11 +185,7 @@ async def get_own_home(call: CallbackQuery, state: FSMContext):
 
 @dp.callback_query_handler(state=RegData.hobbies)
 async def get_hobbies(call: CallbackQuery, state: FSMContext):
-    keyboard = types.InlineKeyboardMarkup(row_width=1)
-    btn1 = types.InlineKeyboardButton(text='Занят', callback_data='busy')
-    btn2 = types.InlineKeyboardButton(text='Не занят', callback_data='not_busy')
-    keyboard.add(btn1, btn2)
-
+    markup = await hobbies_keyboard()
     if call.data == 'study_lifestyle':
         try:
             await db_commands.update_user_data(telegram_id=call.from_user.id, lifestyle='Учусь')
@@ -224,16 +210,13 @@ async def get_hobbies(call: CallbackQuery, state: FSMContext):
             await state.update_data(hobbies='Домохозяйка/Домохозяин')
         except asyncpg.exceptions.UniqueViolationError as err:
             print(err)
-    await call.message.edit_text("Выберите ваше семейное положение", reply_markup=keyboard)
+    await call.message.edit_text("Выберите ваше семейное положение", reply_markup=markup)
     await RegData.marital.set()
 
 
 @dp.callback_query_handler(state=RegData.marital)
 async def get_marital(call: CallbackQuery, state=FSMContext):
-    keyboard = types.InlineKeyboardMarkup(row_width=1)
-    btn1 = types.InlineKeyboardButton(text='Да', callback_data='true')
-    btn2 = types.InlineKeyboardButton(text='Нет', callback_data='false')
-    keyboard.add(btn1, btn2)
+    markup = await family_keyboard()
 
     if call.data == 'busy':
         try:
@@ -248,7 +231,7 @@ async def get_marital(call: CallbackQuery, state=FSMContext):
         except asyncpg.exceptions.UniqueViolationError as err:
             print(err)
 
-    await call.message.edit_text("Есть ли у вас дети?", reply_markup=keyboard)
+    await call.message.edit_text("Есть ли у вас дети?", reply_markup=markup)
     await RegData.child.set()
 
 
@@ -329,4 +312,5 @@ async def get_photo(message: types.Message, state: FSMContext):
                                        f"11. Семейное положение - {str(user_marital)}\n\n"
                                        f"12. О себе - {str(user_comm)}\n\n",
                                photo=user.get('photo_id'))
+
     await message.answer("Меню: ", reply_markup=markup)
