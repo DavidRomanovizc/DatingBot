@@ -13,6 +13,7 @@ import asyncio
 import random
 
 
+# TODO: доделать систему отправки репортов
 @dp.callback_query_handler(text="send_report", state='finding')
 async def report_user(call: CallbackQuery):
     markup = await report_keyboard()
