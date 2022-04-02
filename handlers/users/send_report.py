@@ -1,17 +1,16 @@
-import asyncio
-import random
-
-from aiogram import types
-
 from handlers.users.view_ques import create_questionnaire, select_all_users_list
+from keyboards.inline.second_menu_inline import second_menu_keyboard
 from keyboards.inline.report_inline import report_keyboard
+
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery
+from aiogram import types
 
-from keyboards.inline.second_menu_inline import second_menu_keyboard
 from states.reports import Report
 from data.config import ADMINS
 from loader import dp, bot
+import asyncio
+import random
 
 
 @dp.callback_query_handler(text="send_report", state='finding')

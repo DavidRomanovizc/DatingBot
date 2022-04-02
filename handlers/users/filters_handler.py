@@ -12,4 +12,4 @@ async def get_filters(call: CallbackQuery):
 
 @dp.callback_query_handler(filters_data_kb.filter())
 async def filters_change(call: CallbackQuery):
-    print(f"ХАХАХА ПРИКОЛ {call.data}")
+    print(f"{call.data}")

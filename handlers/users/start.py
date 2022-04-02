@@ -1,13 +1,10 @@
-from aiogram.types import CallbackQuery
-
 from aiogram.dispatcher.filters.builtin import CommandStart
-
+from aiogram.types import CallbackQuery
+from utils.db_api import db_commands
 
 from keyboards.inline.main_menu_inline import start_keyboard
-from loader import dp, _
 from aiogram import types
-
-from utils.db_api import db_commands
+from loader import dp, _
 
 
 @dp.message_handler(CommandStart())

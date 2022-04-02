@@ -8,11 +8,11 @@ from keyboards.inline.change_inline import gender_keyboard, car_keyboard, kids_k
 from keyboards.inline.change_data_profile_inline import change_info_keyboard
 from keyboards.inline.lifestyle_choice_inline import lifestyle_keyboard
 
-from aiogram.types import CallbackQuery, ContentType, ReplyKeyboardRemove
+from aiogram.types import CallbackQuery, ContentType
 
 from states.new_data_state import NewData
 from aiogram.dispatcher import FSMContext
-from loader import dp, bot, db
+from loader import dp
 from aiogram import types
 
 from utils.db_api import db_commands

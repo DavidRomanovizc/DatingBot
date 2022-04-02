@@ -1,9 +1,8 @@
-from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
-from aiogram.types import CallbackQuery
 from aiogram.utils.markdown import hcode
+from aiogram.types import CallbackQuery
+from aiogram import types
 from loguru import logger
-
 from loader import dp
 
 

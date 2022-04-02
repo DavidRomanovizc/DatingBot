@@ -5,7 +5,7 @@ from keyboards.inline.questionnaires_inline import questionnaires_keyboard
 
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery
-from loader import dp, db, bot
+from loader import dp, bot
 from aiogram import types
 import random
 
