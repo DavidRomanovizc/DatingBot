@@ -2,6 +2,7 @@ from aiogram.types import CallbackQuery
 
 from keyboards.inline.filters_inline import filters_keyboard, filters_data_kb
 from loader import dp
+from loguru import logger
 
 
 @dp.callback_query_handler(text="filters")
@@ -12,4 +13,4 @@ async def get_filters(call: CallbackQuery):
 
 @dp.callback_query_handler(filters_data_kb.filter())
 async def filters_change(call: CallbackQuery):
-    print(f"{call.data}")
+    logger.info(f"{call.data}")
