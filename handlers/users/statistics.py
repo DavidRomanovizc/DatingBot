@@ -1,7 +1,7 @@
-from aiogram.types import CallbackQuery
 from keyboards.inline.main_menu_inline import start_keyboard
-from loader import dp, db
+from aiogram.types import CallbackQuery
 from utils.db_api import db_commands
+from loader import dp
 
 
 @dp.callback_query_handler(text="statistics")

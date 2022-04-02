@@ -1,11 +1,10 @@
-from handlers.users.back_handler import delete_message
-
 from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup
 
-from keyboards.inline.registration import registration_keyboard
 from keyboards.inline.second_menu_inline import second_menu_keyboard
-from loader import dp
+from handlers.users.back_handler import delete_message
+
 from utils.db_api import db_commands
+from loader import dp
 
 
 @dp.callback_query_handler(text="second_m")
@@ -22,7 +21,7 @@ async def open_menu(call: CallbackQuery):
 async def my_profile_menu(call: CallbackQuery):
     await delete_message(call.message)
     keyboard = InlineKeyboardMarkup()
-    btn1 = InlineKeyboardButton(text="Назад", callback_data="back_with_delete")
+    btn1 = InlineKeyboardButton(text="Назад", callback_data="back_to_sec_menu")
     keyboard.add(btn1)
 
     user = await db_commands.select_user(telegram_id=call.from_user.id)
@@ -33,11 +32,11 @@ async def my_profile_menu(call: CallbackQuery):
     user_education = user.get('education')
     user_city = user.get('city')
 
-    usercar = user.get('car')
-    if usercar:
-        usercar = 'Есть машина'
+    user_car = user.get('car')
+    if user_car:
+        user_car = 'Есть машина'
     else:
-        usercar = 'Нет машины'
+        user_car = 'Нет машины'
 
     user_apart = user.get('apartment')
     if user_apart:
@@ -62,9 +61,10 @@ async def my_profile_menu(call: CallbackQuery):
     await call.message.answer_photo(caption=f'{str(user_name)}, {str(user_age)}\n\n'
                                             f'{user_sex}, {str(user_city)}, {str(user_national)}\n\n'
                                             f'{user_education}\n'
-                                            f'{usercar}\n'
+                                            f'{user_car}\n'
                                             f'{user_apart}\n'
                                             f'{user_kids}\n\n'
                                             f'{user_lifestyle}\n\n'
                                             f'Обо мне: {str(user_comm)}',
                                     photo=user_photo, reply_markup=keyboard)
+

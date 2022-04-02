@@ -1,9 +1,11 @@
-from aiogram import types
 from aiogram.dispatcher import FSMContext
+from aiogram import types
 
 from keyboards.inline.main_menu_inline import start_keyboard
-from keyboards.inline.support_inline import support_keyboard, support_callback, check_support_available, get_support_manager, \
+from keyboards.inline.support_inline import support_keyboard, support_callback, check_support_available, \
+    get_support_manager, \
     cancel_support, cancel_support_callback
+
 from loader import dp, bot
 
 
@@ -93,7 +95,6 @@ async def exit_support(call: types.CallbackQuery, state: FSMContext, callback_da
         if int(second_id) == call.from_user.id:
             await second_state.reset_state()
             await bot.send_message(user_id, "Пользователь завершил сеанс техподдержки")
-
 
     await call.message.edit_text("Вы завершили сеанс и были возвращены в главное меню", reply_markup=markup)
     await state.reset_state()

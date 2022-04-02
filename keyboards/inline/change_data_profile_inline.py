@@ -15,7 +15,7 @@ async def change_info_keyboard():
     kids = InlineKeyboardButton(text="Дети", callback_data="kids")
     photo = InlineKeyboardButton(text="Фото", callback_data="photo")
     about_me = InlineKeyboardButton(text="О себе", callback_data="about_me")
-    back_to_menu = InlineKeyboardButton(text="⏪️ Вернуться в меню", callback_data="start_menu")
+    back_to_menu = InlineKeyboardButton(text="⏪️ Вернуться в меню", callback_data="second_m")
     markup.row(name, gender, age)
     markup.add(nationality)
     markup.row(city, housing, car)

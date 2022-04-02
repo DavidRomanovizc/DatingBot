@@ -1,5 +1,6 @@
 from . import start
 from . import send_report
+from . import verification_handler
 from . import registration
 from . import admin
 from . import change_datas
