@@ -11,6 +11,7 @@ from aiogram import types
 import random
 
 from utils.db_api import db_commands
+from utils.misc.create_questionnaire import get_data
 
 
 async def select_all_users_list():
@@ -24,23 +25,21 @@ async def select_all_users_list():
 
 async def create_questionnaire(state, random_user, chat_id, add_text=None):
     markup = await questionnaires_keyboard()
-    user_data = await db_commands.select_user(telegram_id=random_user)
-    varname = user_data.get('varname')
-    age = user_data.get('age')
-    sex = user_data.get('sex')
-    city = user_data.get('city')
-    need_partner_sex = user_data.get('need_partner_sex')
-    commentary = user_data.get('commentary')
-    photo_random_user = user_data.get('photo_id')
-    if photo_random_user is None:
-        photo_random_user = "https://www.meme-arsenal.com/memes/5eae5104f379baa355e031fa1ded886c.jpg"
-    # TODO: изменить оформление анкеты
-    description_random_user = (f'<b>Имя</b> - {varname},\n<b>Возраст</b> - {age},\n<b>Пол</b> - {sex}\n'
-                               f'<b>Город</b> - {city}\n'
-                               f'<b>Ищу</b> - {need_partner_sex}\n\n'
-                               f'<b>О себе:</b>\n{commentary}\n\n')
-    await bot.send_photo(chat_id=chat_id, photo=photo_random_user,
-                         caption=description_random_user, reply_markup=markup)
+    user_data = await get_data(random_user)
+    await bot.send_photo(chat_id=chat_id, caption=f"<b>Статус анкеты</b> - \n{str(user_data[12])}\n\n"
+                                                  f"<b>Имя</b> - {str(user_data[0])}\n"
+                                                  f"<b>Возраст</b> - {str(user_data[1])}\n"
+                                                  f"<b>Пол</b> - {str(user_data[2])}\n"
+                                                  f"<b>Национальность</b> - {str(user_data[3])}\n"
+                                                  f"<b>Образование</b> - {str(user_data[4])}\n"
+                                                  f"<b>Город</b> - {str(user_data[5])}\n"
+                                                  f"<b>Наличие машины</b> - {str(user_data[6])}\n"
+                                                  f"<b>Наличие жилья</b> - {str(user_data[7])}\n"
+                                                  f"<b>Ваше занятие</b> - {str(user_data[8])}\n"
+                                                  f"<b>Наличие детей</b> - {str(user_data[9])}\n"
+                                                  f"<b>Семейное положение</b> - {str(user_data[10])}\n\n"
+                                                  f"<b>О себе</b> - {str(user_data[11])}\n\n",
+                         photo=user_data[13], reply_markup=markup)
     await state.update_data(data={'questionnaire_owner': random_user})
 
 

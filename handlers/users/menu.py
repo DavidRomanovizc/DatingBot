@@ -1,5 +1,6 @@
 from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup
 
+from keyboards.inline.menu_profile_inline import get_profile
 from keyboards.inline.second_menu_inline import second_menu_keyboard
 from handlers.users.back_handler import delete_message
 
@@ -21,12 +22,9 @@ async def open_menu(call: CallbackQuery):
 @dp.callback_query_handler(text="my_profile")
 async def my_profile_menu(call: CallbackQuery):
     await delete_message(call.message)
-    keyboard = InlineKeyboardMarkup()
-    btn1 = InlineKeyboardButton(text="Назад", callback_data="back_to_sec_menu")
-    keyboard.add(btn1)
+    markup = await get_profile()
     telegram_id = call.from_user.id
     user_data = await get_data(telegram_id)
-    print(user_data)
     user = await db_commands.select_user(telegram_id=telegram_id)
     await call.message.answer_photo(caption=f"Ваша анкета:\n\n "
                                             f"Статус анкеты - {str(user_data[12])}\n\n"
@@ -42,4 +40,10 @@ async def my_profile_menu(call: CallbackQuery):
                                             f"10. Наличие детей - {str(user_data[9])}\n"
                                             f"11. Семейное положение - {str(user_data[10])}\n\n"
                                             f"12. О себе - {str(user_data[11])}\n\n",
-                                    photo=user.get('photo_id'), reply_markup=keyboard)
+                                    photo=user.get('photo_id'), reply_markup=markup)
+
+
+# TODO: Написать отключение анкеты. Для начала нужно написать методы в бд
+@dp.callback_query_handler(text="disable")
+async def disable_profile(call: CallbackQuery):
+    await call.answer("Coming soon...")
