@@ -277,7 +277,7 @@ async def change_education(call: CallbackQuery, state: FSMContext):
             await state.reset_state()
         except Exception as err:
             logger.error(err)
-            await call.message.edit_text(call.from_user.id, f'Произошла неизвестная ошибка', reply_markup=markup)
+            await call.message.edit_text(f'Произошла неизвестная ошибка', reply_markup=markup)
             await state.reset_state()
     if call.data == 'secondary_edu':
         try:

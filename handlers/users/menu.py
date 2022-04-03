@@ -1,10 +1,12 @@
 from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup
 
+from keyboards.inline.menu_profile_inline import get_profile
 from keyboards.inline.second_menu_inline import second_menu_keyboard
 from handlers.users.back_handler import delete_message
 
 from utils.db_api import db_commands
 from loader import dp
+from utils.misc.create_questionnaire import get_data
 
 
 @dp.callback_query_handler(text="second_m")
@@ -20,51 +22,28 @@ async def open_menu(call: CallbackQuery):
 @dp.callback_query_handler(text="my_profile")
 async def my_profile_menu(call: CallbackQuery):
     await delete_message(call.message)
-    keyboard = InlineKeyboardMarkup()
-    btn1 = InlineKeyboardButton(text="Назад", callback_data="back_to_sec_menu")
-    keyboard.add(btn1)
+    markup = await get_profile()
+    telegram_id = call.from_user.id
+    user_data = await get_data(telegram_id)
+    user = await db_commands.select_user(telegram_id=telegram_id)
+    await call.message.answer_photo(caption=f"Ваша анкета:\n\n "
+                                            f"Статус анкеты - {str(user_data[12])}\n\n"
+                                            f"1. Ваше имя - {str(user_data[0])}\n"
+                                            f"2. Ваш возраст - {str(user_data[1])}\n"
+                                            f"3. Ваш пол - {str(user_data[2])}\n"
+                                            f"4. Ваша национальность - {str(user_data[3])}\n"
+                                            f"5. Ваше образование - {str(user_data[4])}\n"
+                                            f"6. Ваш город - {str(user_data[5])}\n"
+                                            f"7. Наличие машины - {str(user_data[6])}\n"
+                                            f"8. Наличие жилья - {str(user_data[7])}\n"
+                                            f"9. Ваше занятие - {str(user_data[8])}\n"
+                                            f"10. Наличие детей - {str(user_data[9])}\n"
+                                            f"11. Семейное положение - {str(user_data[10])}\n\n"
+                                            f"12. О себе - {str(user_data[11])}\n\n",
+                                    photo=user.get('photo_id'), reply_markup=markup)
 
-    user = await db_commands.select_user(telegram_id=call.from_user.id)
-    user_name = user.get('varname')
-    user_age = user.get('age')
-    user_sex = user.get('sex')
-    user_national = user.get('national')
-    user_education = user.get('education')
-    user_city = user.get('city')
 
-    user_car = user.get('car')
-    if user_car:
-        user_car = 'Есть машина'
-    else:
-        user_car = 'Нет машины'
-
-    user_apart = user.get('apartment')
-    if user_apart:
-        user_apart = 'Есть квартира'
-    else:
-        user_apart = 'Нет квартиры'
-
-    user_lifestyle = user.get('lifestyle')
-
-    user_kids = user.get('kids')
-    if user_kids:
-        user_kids = 'Есть дети'
-    else:
-        user_kids = 'Нет детей'
-    user_comm = user.get('commentary')
-    user_photo = user.get('photo_id')
-    if user_photo:
-        user_photo = user.get('photo_id')
-    elif user_photo is None:
-        user_photo = 'https://www.pngfind.com/pngs/m/110-1102775_download-empty-profile-hd-png-download.png'
-
-    await call.message.answer_photo(caption=f'{str(user_name)}, {str(user_age)}\n\n'
-                                            f'{user_sex}, {str(user_city)}, {str(user_national)}\n\n'
-                                            f'{user_education}\n'
-                                            f'{user_car}\n'
-                                            f'{user_apart}\n'
-                                            f'{user_kids}\n\n'
-                                            f'{user_lifestyle}\n\n'
-                                            f'Обо мне: {str(user_comm)}',
-                                    photo=user_photo, reply_markup=keyboard)
-
+# TODO: Написать отключение анкеты. Для начала нужно написать методы в бд
+@dp.callback_query_handler(text="disable")
+async def disable_profile(call: CallbackQuery):
+    await call.answer("Coming soon...")

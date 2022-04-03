@@ -4,6 +4,7 @@ from typing import Tuple, Any, Optional
 from aiogram import types
 
 
+# Unused
 class ACLMiddleware(I18nMiddleware):
     async def get_user_locale(self, action: str, args: Tuple[Any]) -> Optional[str]:
         user = types.User.get_current()

@@ -26,6 +26,7 @@ class User(TimeBasedModel):
     education = models.CharField(max_length=40, verbose_name="Образование искателя", null=True)
     city = models.CharField(max_length=40, verbose_name="Город искателя", null=True)
     kids = models.BooleanField(verbose_name="Наличие детей", default=False)
+    verification = models.BooleanField(verbose_name="Верификация", default=False)
     car = models.BooleanField(verbose_name="Наличие машины", default=False)
     apartment = models.BooleanField(verbose_name="Наличие жилья", default=False)
     marital = models.CharField(max_length=100, verbose_name="Семейное положение", null=True)
