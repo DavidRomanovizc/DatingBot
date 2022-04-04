@@ -47,5 +47,3 @@ python djangp_app.py runserver
 ## Pull requests - a guide to action 💡
 
 If you suddenly write a pull request to any segment of the bot, please leave comments on the key points of your code.
-
-In the near future, the bot will be translated into English, and comments will be left everywhere for mutual understanding of the code. ^_^
