@@ -7,7 +7,7 @@ from keyboards.inline.registration_inline import gender_keyboard, education_keyb
     hobbies_keyboard, family_keyboard
 from keyboards.inline.second_menu_inline import second_menu_keyboard
 from keyboards.inline.profile_inline import registration_keyboard
-from keyboards.inline.gender_inline import sex_partner
+from keyboards.inline.gender_inline import gender_partner_keyboard
 
 from utils.misc.create_questionnaire import get_data
 from utils.db_api import db_commands
@@ -53,7 +53,7 @@ async def sex_reg(call: CallbackQuery):
 
 @dp.message_handler(state=RegData.commentary)
 async def commentary_reg(message: types.Message):
-    markup = await sex_partner()
+    markup = await gender_partner_keyboard()
     try:
         await db_commands.update_user_data(commentary=message.text, telegram_id=message.from_user.id)
         await message.answer(f'Комментарий принят! Выберите, кого вы хотите найти: ', reply_markup=markup)
@@ -261,7 +261,7 @@ async def get_photo(message: types.Message, state: FSMContext):
     markup = await second_menu_keyboard()
     try:
         await db_commands.update_user_data(photo_id=file_id, telegram_id=message.from_user.id)
-        await message.reply(f'Фото принято!')
+        await message.answer(f'Фото принято!')
     except Exception as err:
         logger.error(err)
         await message.answer(f'Произошла ошибка! Попробуйте еще раз либо отправьте другую фотографию. \n'
