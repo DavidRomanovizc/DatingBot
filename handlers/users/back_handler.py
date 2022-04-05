@@ -20,7 +20,7 @@ async def open_menu(call: CallbackQuery):
     await call.message.answer(f"<b>❤️️ DATE_BOT</b> - платформа для поиска новых знакомств.\n\n"
                               f"<b>🤝 Сотрудничество: </b>\n"
                               f"Если у вас есть предложение о сотрудничестве, пишите сюда - "
-                              f"@DRomanovizc\n\n",
+                              f"@borisLobkov\n\n",
                               reply_markup=markup)
 
 
@@ -31,5 +31,5 @@ async def open_second_menu(call: CallbackQuery):
     await call.message.answer(f"<b>❤️️ DATE_BOT</b> - платформа для поиска новых знакомств.\n\n"
                               f"<b>🤝 Сотрудничество: </b>\n"
                               f"Если у вас есть предложение о сотрудничестве, пишите сюда - "
-                              f"@DRomanovizc\n\n",
+                              f"@borisLobkov\n\n",
                               reply_markup=markup)

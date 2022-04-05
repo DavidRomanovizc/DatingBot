@@ -39,6 +39,7 @@ class User(TimeBasedModel):
     need_partner_sex = models.CharField(max_length=50, verbose_name="Пол цели", null=True)
     likes = models.BigIntegerField(verbose_name="Количество лайков у пользователя", default=0)
     dislikes = models.BigIntegerField(verbose_name="Количество дизлайков у пользователя", default=0)
+    phone_number = models.BigIntegerField(verbose_name="Номер телефона", null=True)
 
     def __str__(self):
         return f"№{self.id} ({self.telegram_id}) - {self.name}"

@@ -15,7 +15,7 @@ async def open_menu(call: CallbackQuery):
     await call.message.edit_text(f"<b>❤️️ DATE_BOT</b> - платформа для поиска новых знакомств.\n\n"
                                  f"<b>🤝 Сотрудничество: </b>\n"
                                  f"Если у вас есть предложение о сотрудничестве, пишите сюда - "
-                                 f"@DRomanovizc\n\n",
+                                 f"@borisLobkov\n\n",
                                  reply_markup=markup)
 
 
@@ -25,7 +25,7 @@ async def my_profile_menu(call: CallbackQuery):
     markup = await get_profile()
     telegram_id = call.from_user.id
     user_data = await get_data(telegram_id)
-    user = await db_commands.select_user(telegram_id=telegram_id)
+
     await call.message.answer_photo(caption=f"Ваша анкета:\n\n "
                                             f"Статус анкеты - {str(user_data[12])}\n\n"
                                             f"1. Ваше имя - {str(user_data[0])}\n"
@@ -40,7 +40,7 @@ async def my_profile_menu(call: CallbackQuery):
                                             f"10. Наличие детей - {str(user_data[9])}\n"
                                             f"11. Семейное положение - {str(user_data[10])}\n\n"
                                             f"12. О себе - {str(user_data[11])}\n\n",
-                                    photo=user.get('photo_id'), reply_markup=markup)
+                                    photo=user_data[13], reply_markup=markup)
 
 
 # TODO: Написать отключение анкеты. Для начала нужно написать методы в бд
