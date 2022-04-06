@@ -41,7 +41,7 @@ Coming soon...
 python django_app.py makemigrations
 python django_app.py migrate
 python django_app.py createsuperuser
-python djangp_app.py runserver
+python django_app.py runserver
 ```
 
 ## Pull requests - a guide to action 💡
