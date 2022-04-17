@@ -27,20 +27,14 @@ async def my_profile_menu(call: CallbackQuery):
     user_data = await get_data(telegram_id)
 
     await call.message.answer_photo(caption=f"Ваша анкета:\n\n "
-                                            f"Статус анкеты - {str(user_data[12])}\n\n"
-                                            f"1. Ваше имя - {str(user_data[0])}\n"
-                                            f"2. Ваш возраст - {str(user_data[1])}\n"
-                                            f"3. Ваш пол - {str(user_data[2])}\n"
-                                            f"4. Ваша национальность - {str(user_data[3])}\n"
-                                            f"5. Ваше образование - {str(user_data[4])}\n"
-                                            f"6. Ваш город - {str(user_data[5])}\n"
-                                            f"7. Наличие машины - {str(user_data[6])}\n"
-                                            f"8. Наличие жилья - {str(user_data[7])}\n"
-                                            f"9. Ваше занятие - {str(user_data[8])}\n"
-                                            f"10. Наличие детей - {str(user_data[9])}\n"
-                                            f"11. Семейное положение - {str(user_data[10])}\n\n"
-                                            f"12. О себе - {str(user_data[11])}\n\n",
-                                    photo=user_data[13], reply_markup=markup)
+                                            f"<b>Статус анкеты</b> - \n{str(user_data[6])}\n\n"
+                                            f"<b>Имя</b> - {str(user_data[0])}\n"
+                                            f"<b>Возраст</b> - {str(user_data[1])}\n"
+                                            f"<b>Пол</b> - {str(user_data[2])}\n"
+                                            f"<b>Город</b> - {str(user_data[3])}\n"
+                                            f"<b>Ваше занятие</b> - {str(user_data[4])}\n\n"
+                                            f"<b>О себе</b> - {str(user_data[5])}\n",
+                                    photo=user_data[7], reply_markup=markup)
 
 
 # TODO: Написать отключение анкеты. Для начала нужно написать методы в бд

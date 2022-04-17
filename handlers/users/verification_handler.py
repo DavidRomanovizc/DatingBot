@@ -33,6 +33,7 @@ async def get_contact(message: types.Message):
     if contact:
         await db_commands.update_user_data(verification=True, telegram_id=telegram_id)
         await db_commands.update_user_data(phone_number=contact.phone_number, telegram_id=telegram_id)
+        await asyncio.sleep(2)
         await message.answer(f"Спасибо, {contact.full_name}.\n"
                              f"Ваш номер {contact.phone_number} был получен.\nСтатус вашей: {user_verification}",
                              reply_markup=ReplyKeyboardRemove())

@@ -1,4 +1,7 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.utils.callback_data import CallbackData
+
+banned_user = CallbackData("questionnaire", "action")
 
 
 async def admin_mode_keyboard():
@@ -11,6 +14,14 @@ async def admin_mode_keyboard():
     site_admin_button = InlineKeyboardButton('Сайт-админка🛑', callback_data='admin_site_url')
     markup.add(give_admin_button, count_user_button, ban_user_button, find_user_button, mailing_button,
                site_admin_button)
+    return markup
+
+
+async def banned_user_keyboard():
+    markup = InlineKeyboardMarkup(row_width=2)
+    ban_user_button = InlineKeyboardButton('Забанить', callback_data=banned_user.new(action='ban_user'))
+    not_bun_button = InlineKeyboardButton('Не банить', callback_data=banned_user.new(action='not_ban_user'))
+    markup.add(ban_user_button, not_bun_button)
     return markup
 
 

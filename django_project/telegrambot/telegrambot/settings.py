@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django_project.telegrambot.usersmanage',
     'django.contrib.admin',
     'django.contrib.auth',

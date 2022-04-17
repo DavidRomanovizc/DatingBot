@@ -17,10 +17,10 @@ async def register_user(message: types.Message):
     except:
         pass
     await message.answer(text=_(f"Приветствую вас, {message.from_user.full_name}!!\n\n"
-                                f"<b>❤️️ DATE_BOT</b> - платформа для поиска новых знакомств.\n\n"
+                                f"<b>❤ DATE_BOT</b> - платформа для поиска новых знакомств.\n\n"
                                 f"<b>🤝 Сотрудничество: </b>\n"
                                 f"Если у вас есть предложение о сотрудничестве, пишите сюда - "
-                                f"@borisLobkov\n\n"
+                                f"@Support\n\n"
                                 ),
                          reply_markup=markup)
 
@@ -29,10 +29,10 @@ async def register_user(message: types.Message):
 async def start_menu(call: CallbackQuery):
     markup = await start_keyboard()
     await call.message.edit_text(text=_(f"Приветствую вас, {call.from_user.full_name}!!\n\n"
-                                        f"<b>❤️️ DATE_BOT</b> - платформа для поиска новых знакомств.\n\n"
+                                        f"<b>❤ DATE_BOT</b> - платформа для поиска новых знакомств.\n\n"
                                         f"<b>🤝 Сотрудничество: </b>\n"
                                         f"Если у вас есть предложение о сотрудничестве, пишите сюда - "
-                                        f"@borisLobkov\n\n"
+                                        f"@Support\n\n"
                                         ),
                                  reply_markup=markup)
 
