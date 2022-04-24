@@ -1,22 +1,30 @@
-from aiogram.dispatcher import FSMContext
 from aiogram import types
+from aiogram.dispatcher import FSMContext
 
 from keyboards.inline.main_menu_inline import start_keyboard
+from keyboards.inline.registration_inline import registration_keyboard
 from keyboards.inline.support_inline import support_keyboard, support_callback, check_support_available, \
     get_support_manager, \
     cancel_support, cancel_support_callback
-
 from loader import dp, bot
+from utils.misc.create_questionnaire import get_data
 
 
 @dp.callback_query_handler(text="support")
 async def ask_support_call(call: types.CallbackQuery):
-    text = "Хотите связаться с техподдержкой? Нажмите на кнопку ниже!"
-    keyboard = await support_keyboard(messages="many")
-    if not keyboard:
-        await call.message.edit_text("К сожалению, сейчас нет свободных операторов. Попробуйте позже.")
-        return
-    await call.message.edit_text(text, reply_markup=keyboard)
+    telegram_id = call.from_user.id
+    user_data = await get_data(telegram_id)
+    user_status = user_data[9]
+    if user_status:
+        text = "Хотите связаться с тех поддержкой? Нажмите на кнопку ниже!"
+        keyboard = await support_keyboard(messages="many")
+        if not keyboard:
+            await call.message.edit_text("К сожалению, сейчас нет свободных операторов. Попробуйте позже.")
+            return
+        await call.message.edit_text(text, reply_markup=keyboard)
+    else:
+        await call.message.edit_text("Вам необходимо зарегистрироваться, нажмите на кнопку ниже",
+                                     reply_markup=await registration_keyboard())
 
 
 @dp.callback_query_handler(support_callback.filter(messages="many", as_user="yes"))

@@ -16,5 +16,3 @@ class RegData(StatesGroup):
     child = State()
     marital = State()
     photo = State()
-
-

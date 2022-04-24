@@ -95,7 +95,8 @@ class Database:
         sql = '''INSERT INTO users (full_name, username, telegram_id, email, national, education, sex, city, age,
                        kids, car, apartment, marital, language, varname, lifestyle, is_banned, photo_id, commentary, 
                        need_partner_sex, likes, dislikes) 
-                       VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22) returning *'''
+                       VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20,
+                        $21, $22) returning *'''
         return await self.execute(sql, full_name, username, telegram_id, email, national, education, sex, city, age,
                                   kids, car, apartment, marital, language, varname, lifestyle, is_banned, photo_id,
                                   commentary, need_partner_sex, likes, dislikes,
@@ -217,5 +218,3 @@ class Database:
 
     async def drop_payments(self):
         await self.execute("DROP TABLE Payments", execute=True)
-
-

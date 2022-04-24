@@ -9,4 +9,3 @@ class BanUser(StatesGroup):
 
     ban_complete = State()
     unban_complete = State()
-
