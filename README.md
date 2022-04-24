@@ -1,50 +1,71 @@
 # DatingBot
 
-
 ## Used technology 📝
- [![Python](https://img.shields.io/badge/Python-3.8%2B-blueviolet?style=flat-square)](https://www.python.org/downloads/)
- [![Django](https://img.shields.io/badge/Django-3.1.13-ff69b49cf?style=flat-square)](https://pypi.org/project/aiogram/)
- [![Aiogram](https://img.shields.io/badge/aiogram-2.14-9cf?style=flat-square)](https://pypi.org/project/aiogram/)
- [![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-1.4.21-pink?style=flat-square)](https://pypi.org/project/aiogram/)
- [![loguru](https://img.shields.io/badge/loguru-0.5-red?style=flat-square)](https://pypi.org/project/aiogram/)
- [![asyncpg](https://img.shields.io/badge/asyncpg-0.24-green?style=flat-square)](https://pypi.org/project/aiogram/)
- [![Qiwipy](https://img.shields.io/badge/Qiwipy-2.1.6-important?style=flat-square)](https://pypi.org/project/aiogram/)
 
+[![Python](https://img.shields.io/badge/Python-3.8%2B-blueviolet?style=flat-square)](https://www.python.org/downloads/)
+[![Django](https://img.shields.io/badge/Django-3.1.13-ff69b49cf?style=flat-square)](https://pypi.org/project/aiogram/)
+[![Aiogram](https://img.shields.io/badge/aiogram-2.14-9cf?style=flat-square)](https://pypi.org/project/aiogram/)
+[![loguru](https://img.shields.io/badge/loguru-0.5-red?style=flat-square)](https://pypi.org/project/aiogram/)
+[![asyncpg](https://img.shields.io/badge/asyncpg-0.24-green?style=flat-square)](https://pypi.org/project/aiogram/)
 
 ## Bot functionality 🔍️
-```/start``` - welcome message with main menu
 
-There are 5 buttons in the main menu\
-```Registration```, ```Second menu```, ```Sponsor project```, ```Information```, ```Instruction```
-
-In the second menu you can also see five buttons\
-```My profile```, ```Change profile```, ```Preferences```, ```View other profiles```, ```Stop bot```
-
-
-The main functionality you can find in second menu on button ```View other profile```\
-There will be: a photo of the questionnaire, like, dislike, send a message to the user via the bot, complain and leave the viewing of questionnaires, if you stop viewing questionnaires, then you move to the main menu
-
+<br>
+Coming soon...
+<br>
+<br>
 
 ## Preparing for launch 🚀
-1. Clone this repository via `git clone https://github.com/DavidRomanovizc/DatingBot.git`
 
-2. Setting up a virtual environment\
-   `python -m venv venv`
-   
-3. Activate the virtual environment and set the requirements\
-   `pip install -r requirements.txt`
-   
-4. Rename example environment file `.env.dist` to active environment file`.env` and replace the token with your own
+### Environment
 
-5. Run bot \
-   `python app.py`
-   
-## Pull requests - a guide to action 💡
+| Variable     | Type        | Importance   |
+|--------------|-------------|--------------|
+| BOT_TOKEN    | str         | True         |
+| ADMINS       | list        | True         |
+| IP           | str         | True         |
+| DB_USER      | str         | True         |
+| DB_PASS      | str         | True         |
+| DB_HOST      | str         | True         |
+| DB_NAME      | str         | True         |
 
-If you suddenly write a pull request to any segment of the bot, please leave comments on the key points of your code.
+`BOT_TOKEN` - Bot token\
+`ADMINS` - list of admins id\
+`IP` - ip for other services
 
-In the near future, the bot will be translated into English, and comments will be left everywhere for mutual understanding of the code. ^_^
+`DB_USER` - username of the database owner\
+`DB_PASS` - password from the database\
+`DB_HOST` - IP address of the database\
+`DB_NAME` - database name
 
-## Django 🟢
+### Django 🟢
 
-```Soon...```
+```shell
+python django_app.py makemigrations
+python django_app.py migrate
+python django_app.py createsuperuser
+python django_app.py runserver
+```
+
+## Contributing guidelines to action 💡
+
+<hr>
+
+### Code Style Guide
+
+We try to stick to [PEP 8](https://peps.python.org/pep-0008/#:~:text=Use%20the%20function%20naming%20rules,invoke%20Python's%20name%20mangling%20rules)
+
+### Handlers
+1. There must be no buttons in handlers (only in extreme cases, but it is better to put it in a separate file)
+2. If we make a handler for buttons, then we use the "text='action'" in the decorator parameters
+3. If we are fetching data or updating data, then the function call should be like this: `await db_commands.func(...)`
+
+
+### Keyboards
+1. If you use the "default button", you need to put them in the "keyboard/default" directories.
+2. If you are creating a new file, then you should add the prefix "_default" to the filename 
+3. If you use the "inline button", you need to put them in the "keyboard/inline" directories.
+4. If you are creating a new file, then you should add the prefix "_inline" to the filename 
+5. If you are creating a new keyboard, then you should add the prefix "_keyboard" in the name function
+
+
