@@ -10,7 +10,6 @@
 
 - [Installation](#package-installation)
 - [Usage](#rocket-usage)
-- [Django](#green_book-django)
 - [Contributing](#memo-contributing)
 - [License](#scroll-license)
 
@@ -63,16 +62,9 @@ After that, you need to fill it with data.
 `DB_HOST` - IP address of the database\
 `DB_NAME` - database name
 
-#### :green_book: Django
+#### 🟢 Django
 
-#### Install Jazzmin
-```sh
-pip install -U django-jazzmin
-```
-Add jazzmin to your `INSTALLED_APPS` before django.contrib.admin
-
-
-```sh
+```shell
 python django_app.py makemigrations
 python django_app.py migrate
 python django_app.py createsuperuser
