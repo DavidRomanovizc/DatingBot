@@ -16,3 +16,11 @@ async def change_info_keyboard():
     markup.row(employment, photo, about_me)
     markup.add(back_to_menu)
     return markup
+
+
+async def gender_keyboard():
+    markup = InlineKeyboardMarkup(row_width=1)
+    male = InlineKeyboardButton(text='Парень', callback_data='male')
+    female = InlineKeyboardButton(text='Девушка', callback_data='female')
+    markup.row(male, female)
+    return markup
