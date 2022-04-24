@@ -67,5 +67,3 @@ We try to stick to [PEP 8](https://peps.python.org/pep-0008/#:~:text=Use%20the%2
 3. If you use the "inline button", you need to put them in the "keyboard/inline" directories.
 4. If you are creating a new file, then you should add the prefix "_inline" to the filename 
 5. If you are creating a new keyboard, then you should add the prefix "_keyboard" in the name function
-
-
