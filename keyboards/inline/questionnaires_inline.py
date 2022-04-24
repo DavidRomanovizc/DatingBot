@@ -13,3 +13,17 @@ async def questionnaires_keyboard():
     markup.row(like, dislike)
     markup.add(go_back)
     return markup
+
+
+action_reciprocity_keyboard = CallbackData("questionnaire", "action")
+
+
+async def reciprocity_keyboard():
+    markup = InlineKeyboardMarkup(row_width=2)
+    like = InlineKeyboardButton(text='👍', callback_data=action_reciprocity_keyboard.new(action="like_reciprocity"))
+    dislike = InlineKeyboardButton(text='👎',
+                                   callback_data=action_reciprocity_keyboard.new(action="dislike_reciprocity"))
+    markup.row(like, dislike)
+
+    return markup
+

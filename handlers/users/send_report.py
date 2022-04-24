@@ -1,17 +1,15 @@
-from handlers.users.view_ques import create_questionnaire, select_all_users_list
-from keyboards.inline.admin_inline import banned_user_keyboard
-from keyboards.inline.second_menu_inline import second_menu_keyboard
-
-from aiogram.dispatcher import FSMContext
-from aiogram.types import CallbackQuery
-from aiogram import types
-
-from states.reports import Report
-from data.config import ADMINS, support_ids
-from loader import dp, bot
 import asyncio
 import random
 
+from aiogram import types
+from aiogram.dispatcher import FSMContext
+from aiogram.types import CallbackQuery
+
+from data.config import support_ids
+from handlers.users.view_ques_handler import create_questionnaire, select_all_users_list
+from keyboards.inline.admin_inline import banned_user_keyboard
+from loader import dp, bot
+from states.reports import Report
 from utils.misc.create_questionnaire import get_data
 
 
