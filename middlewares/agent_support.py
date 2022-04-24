@@ -5,7 +5,6 @@ from aiogram.dispatcher.handler import CancelHandler
 from aiogram.dispatcher.middlewares import BaseMiddleware
 
 
-
 class SupportMiddleware(BaseMiddleware):
 
     @staticmethod
@@ -15,7 +14,6 @@ class SupportMiddleware(BaseMiddleware):
 
         state_str = str(await state.get_state())
         if state_str == "in_support":
-
             data = await state.get_data()
             second_id = data.get("second_id")
             await message.copy_to(second_id)

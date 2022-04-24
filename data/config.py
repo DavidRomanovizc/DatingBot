@@ -1,9 +1,11 @@
 from pathlib import Path
+
 from environs import Env
 
 env = Env()
 env.read_env()
 
+support_ids = env.list("SUPPORTS")
 BOT_TOKEN = env.str("BOT_TOKEN")
 ADMINS = env.list("ADMINS")
 IP = env.str("ip")
@@ -17,6 +19,4 @@ I18N_DOMAIN = "testbot"
 BASE_DIR = Path(__file__).parent
 LOCALES_DIR = BASE_DIR / "locales"
 
-support_ids = [
-    5100487520
-]
+Yandex_API_KEY = env.str('API_KEY')

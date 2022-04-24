@@ -1,15 +1,17 @@
-from keyboards.inline.admin_inline import admin_mode_keyboard, approval_keyboard, find_user
-from keyboards.inline.main_menu_inline import start_keyboard
-from aiogram.utils.exceptions import UserDeactivated
+from asyncio import sleep
+
+from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery
-from utils.db_api import db_commands
+from aiogram.utils.exceptions import UserDeactivated
+from loguru import logger
+
 from data.config import ADMINS
 from filters import IsPrivate
+from keyboards.inline.admin_inline import admin_mode_keyboard, approval_keyboard, find_user
+from keyboards.inline.main_menu_inline import start_keyboard
 from loader import dp, bot
-from loguru import logger
-from asyncio import sleep
-from aiogram import types
+from utils.db_api import db_commands
 
 
 @dp.message_handler(IsPrivate(), chat_id=ADMINS, text="/admin")
@@ -49,7 +51,7 @@ async def mailing_final(call: CallbackQuery, state: FSMContext):
                                                      f'{answer1}\n\n')
         await sleep(0.5)
 
-    await state.reset_state(with_data=True)
+    await state.reset_state()
 
 
 @dp.callback_query_handler(text='show_active_users')
@@ -95,7 +97,7 @@ async def send_find(message: types.Message, state: FSMContext):
         logger.error(err)
         await message.answer(f'Пользователь не найден, попробуйте изменить ID')
 
-    await state.reset_state(with_data=True)
+    await state.reset_state()
 
 
 @dp.callback_query_handler(text="find_user")
@@ -127,7 +129,7 @@ async def send_find(message: types.Message, state: FSMContext):
     except UserDeactivated:
         await message.answer(f'Пользователь не найден, попробуйте изменить ID')
 
-    await state.reset_state(with_data=True)
+    await state.reset_state()
 
 
 @dp.callback_query_handler(text='ban_user_id')
@@ -146,4 +148,4 @@ async def complete_ban(message: types.Message, state: FSMContext):
         logger.critical(err)
         await message.answer(text="Не удалось забанить юзера - проверьте введенные данные")
 
-    await state.reset_state(with_data=True)
+    await state.reset_state()

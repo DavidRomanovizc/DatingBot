@@ -3,6 +3,7 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
 from data import config
 from middlewares.language_middleware import setup_middleware
+from utils.YandexMap.work_with_location import Client
 
 from utils.db_api.postgres import Database
 
@@ -14,3 +15,4 @@ db = Database()
 i18n = setup_middleware(dp)
 # Creating an alias for the gettext method
 _ = i18n.gettext
+client = Client(api_key=config.Yandex_API_KEY)

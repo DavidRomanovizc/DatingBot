@@ -1,11 +1,16 @@
-from aiogram.utils.exceptions import MessageCantBeDeleted, MessageToDeleteNotFound
-from keyboards.inline.main_menu_inline import start_keyboard
-from aiogram.types import CallbackQuery
+import random
 from contextlib import suppress
-from aiogram import types
 
+from aiogram import types
+from aiogram.types import CallbackQuery
+from aiogram.utils.exceptions import MessageCantBeDeleted, MessageToDeleteNotFound
+
+from keyboards.inline.main_menu_inline import start_keyboard
 from keyboards.inline.second_menu_inline import second_menu_keyboard
 from loader import dp
+
+hearts = ['💙', '💚', '💛', '🧡', '💜', '🖤', '❤', '🤍', '💖', '💝']
+random.shuffle(hearts)
 
 
 async def delete_message(message: types.Message):
@@ -17,10 +22,11 @@ async def delete_message(message: types.Message):
 async def open_menu(call: CallbackQuery):
     markup = await start_keyboard()
     await delete_message(call.message)
-    await call.message.answer(f"<b>❤️️ DATE_BOT</b> - платформа для поиска новых знакомств.\n\n"
+
+    await call.message.answer(f"<b>{hearts[0]} DATE_BOT</b> - платформа для поиска новых знакомств.\n\n"
                               f"<b>🤝 Сотрудничество: </b>\n"
                               f"Если у вас есть предложение о сотрудничестве, пишите сюда - "
-                              f"@borisLobkov\n\n",
+                              f"@Support\n\n",
                               reply_markup=markup)
 
 
@@ -28,8 +34,8 @@ async def open_menu(call: CallbackQuery):
 async def open_second_menu(call: CallbackQuery):
     markup = await second_menu_keyboard()
     await delete_message(call.message)
-    await call.message.answer(f"<b>❤️️ DATE_BOT</b> - платформа для поиска новых знакомств.\n\n"
+    await call.message.answer(f"<b>{hearts[1]} DATE_BOT</b> - платформа для поиска новых знакомств.\n\n"
                               f"<b>🤝 Сотрудничество: </b>\n"
                               f"Если у вас есть предложение о сотрудничестве, пишите сюда - "
-                              f"@borisLobkov\n\n",
+                              f"@Support\n\n",
                               reply_markup=markup)
