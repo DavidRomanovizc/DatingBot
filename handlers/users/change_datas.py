@@ -1,19 +1,19 @@
 import asyncio
+import re
 
+from aiogram import types
+from aiogram.dispatcher import FSMContext
+from aiogram.types import CallbackQuery, ContentType
 from loguru import logger
 
 from handlers.users.back_handler import delete_message
-from keyboards.inline.change_inline import gender_keyboard
-from keyboards.inline.change_data_profile_inline import change_info_keyboard
-
-from aiogram.types import CallbackQuery, ContentType
-
+from keyboards.inline.change_data_profile_inline import change_info_keyboard, gender_keyboard
+from keyboards.inline.registration_inline import confirm_keyboard
+from keyboards.inline.second_menu_inline import second_menu_keyboard
+from loader import dp, client
 from states.new_data_state import NewData
-from aiogram.dispatcher import FSMContext
-from loader import dp
-from aiogram import types
-
 from utils.db_api import db_commands
+from utils.misc.check_name import mat_validator
 
 
 @dp.callback_query_handler(text='change_profile')
@@ -75,18 +75,32 @@ async def change_city(call: CallbackQuery):
 
 
 @dp.message_handler(state=NewData.city)
-async def change_city(message: types.Message, state: FSMContext):
-    markup = await change_info_keyboard()
+async def change_city(message: types.Message):
     try:
-        await db_commands.update_user_data(city=message.text, telegram_id=message.from_user.id)
-        await message.answer(f'Ваш новый город: <b>{message.text}</b>')
-        await message.answer(f'Выберите, что вы хотите изменить: ', reply_markup=markup)
-        await state.reset_state()
+        markup = await confirm_keyboard()
+        x, y = client.coordinates(message.text)
+        city = client.address(f"{x}", f"{y}")
+        censored = mat_validator(message.text)
+        if censored:
+            await message.answer(f'Я нашел такой адрес:\n'
+                                 f'<b>{city}</b>\n'
+                                 f'Если все правильно то подтвердите.', reply_markup=markup)
+            await db_commands.update_user_data(telegram_id=message.from_user.id, city=city)
+            await db_commands.update_user_data(telegram_id=message.from_user.id, longitude=x)
+            await db_commands.update_user_data(telegram_id=message.from_user.id, latitude=y)
+        else:
+            await message.answer(f"Вы ввели запрещенное слово. Попробуйте ещё раз")
+            return
     except Exception as err:
         logger.error(err)
-        await message.answer(f'Произошла неизвестная ошибка. Попробуйте ещё раз', reply_markup=markup)
-        await state.reset_state()
+        await message.answer(f'Произошла неизвестная ошибка. Попробуйте ещё раз',
+                             reply_markup=await change_info_keyboard())
 
+
+@dp.callback_query_handler(text="yes_all_good", state=NewData.city)
+async def get_hobbies(call: CallbackQuery, state: FSMContext):
+    await call.message.edit_text(f'Данные успешно изменены.\nВыберите, что вы хотите изменить: ',
+                                 reply_markup=await change_info_keyboard())
     await state.reset_state()
 
 
@@ -196,3 +210,28 @@ async def update_comment_complete(message: types.Message, state: FSMContext):
                              f'Возможно, Ваше сообщение слишком большое\n'
                              f'Если ошибка осталась, напишите системному администратору.')
         await state.reset_state()
+
+
+@dp.callback_query_handler(text="add_inst")
+async def add_inst(call: CallbackQuery, state: FSMContext):
+    await delete_message(call.message)
+    await call.message.answer("Напишите имя своего аккаунта")
+    await state.set_state("inst")
+
+
+@dp.message_handler(state="inst")
+async def add_inst_state(message: types.Message, state: FSMContext):
+    try:
+        markup = await second_menu_keyboard()
+        inst_regex = r"^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$"
+        if bool(re.match(pattern=inst_regex, string=message.text)):
+            await state.update_data(inst=message.text)
+            await db_commands.update_user_data(instagram=message.text, telegram_id=message.from_user.id)
+            await message.answer(f"Ваш аккаунт успешно добавлен")
+            await state.reset_state()
+            await delete_message(message)
+            await asyncio.sleep(1)
+            await message.answer("Вы были возвращены в меню", reply_markup=markup)
+    except Exception as err:
+        logger.error(err)
+        await message.answer("Возникла ошибка. Попробуйте еще раз")
