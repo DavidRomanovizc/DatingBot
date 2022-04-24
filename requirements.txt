@@ -2,7 +2,7 @@ aiogram~=2.14
 environs~=8.0.0
 loguru~=0.5.3
 asyncpg~=0.24.0
-Django==3.1.13
+Django==3.1.14
 psycopg2-binary
 jsonfield
 asgiref~=3.4.1
