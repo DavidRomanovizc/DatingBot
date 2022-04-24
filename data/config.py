@@ -15,6 +15,8 @@ DB_PASS = env.str('DB_PASS')
 DB_HOST = env.str('DB_HOST')
 DB_NAME = env.str('DB_NAME')
 
+SECRET_KEY = env.str("SECRET_KEY")
+
 I18N_DOMAIN = "testbot"
 BASE_DIR = Path(__file__).parent
 LOCALES_DIR = BASE_DIR / "locales"
