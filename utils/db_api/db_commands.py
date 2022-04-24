@@ -1,5 +1,7 @@
-from django_project.telegrambot.usersmanage.models import User
 from asgiref.sync import sync_to_async
+
+
+from django_project.telegrambot.usersmanage.models import User
 
 
 @sync_to_async
@@ -21,7 +23,7 @@ def select_all_users():
 
 @sync_to_async
 def select_all_users_id(telegram_id: int):
-    users = User.objects.filter(id=telegram_id).all().values()
+    users = User.objects.filter(telegram_id=telegram_id).all().values()
     return users
 
 
@@ -39,3 +41,8 @@ def update_user_data(telegram_id, **kwargs):
 def select_user_username(username: str):
     user = User.objects.filter(username=username).values().first()
     return user
+
+
+@sync_to_async
+def search_user(need_partner_sex):
+    return User.objects.filter(sex=need_partner_sex).all().values()
