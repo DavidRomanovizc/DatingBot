@@ -2,7 +2,7 @@
 
 > An open source telegram bot with which you can find new acquaintances
 
-[![Python](https://img.shields.io/badge/Python-3.8%2B-blueviolet?style=flat-square)](https://www.python.org/downloads/)
+[![Python](https://img.shields.io/badge/Python-3.8%2B-blue?style=flat-square)](https://www.python.org/downloads/)
 [![Django](https://img.shields.io/badge/Django-3.1.13-ff69b49cf?style=flat-square)](https://pypi.org/project/aiogram/)
 [![Aiogram](https://img.shields.io/badge/aiogram-2.14-9cf?style=flat-square)](https://pypi.org/project/aiogram/)
 
