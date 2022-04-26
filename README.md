@@ -2,9 +2,7 @@
 
 > An open source telegram bot with which you can find new acquaintances
 
-[![Python](https://img.shields.io/badge/Python-3.8%2B-blue?style=flat-square)](https://www.python.org/downloads/)
-[![Django](https://img.shields.io/badge/Django-3.1.13-ff69b49cf?style=flat-square)](https://pypi.org/project/aiogram/)
-[![Aiogram](https://img.shields.io/badge/aiogram-2.14-9cf?style=flat-square)](https://pypi.org/project/aiogram/)
+[![Sparkline](https://stars.medv.io/DavidRomanovizc/DatingBot.svg)](https://stars.medv.io/DavidRomanovizc/DatingBot)
 
 ## :books: Table of Contents
 
@@ -13,6 +11,16 @@
 - [Django](#green_book-django)
 - [Contributing](#memo-contributing)
 - [License](#scroll-license)
+
+
+
+## 🖍 Used technology
+![Python](https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=blue)
+![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=green)
+![Django](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+
+
+
 
 ## :package: Installation
 
