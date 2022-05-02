@@ -2,8 +2,6 @@
 
 > An open source telegram bot with which you can find new acquaintances
 
-[![Sparkline](https://stars.medv.io/DavidRomanovizc/DatingBot.svg)](https://stars.medv.io/DavidRomanovizc/DatingBot)
-
 ## :books: Table of Contents
 
 - [Installation](#package-installation)
