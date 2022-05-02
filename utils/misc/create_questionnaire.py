@@ -1,4 +1,4 @@
-from keyboards.inline.questionnaires_inline import reciprocity_keyboard, questionnaires_keyboard
+from keyboards.inline.questionnaires_inline import reciprocity_keyboard, questionnaires_keyboard, back_viewing_ques
 from loader import bot
 from utils.db_api import db_commands
 from utils.db_api.db_commands import search_user
@@ -88,7 +88,7 @@ async def send_questionnaire(chat_id, user_data, markup=None, add_text=None):
                                                       f"<b>Город</b> - {str(user_data[3])}\n"
                                                       f"<b>Ваше занятие</b> - {str(user_data[4])}\n"
                                                       f"<b>О себе</b> - {str(user_data[5])}\n\n",
-                             photo=user_data[7])
+                             photo=user_data[7], reply_markup=await back_viewing_ques())
 
     else:
         await bot.send_photo(chat_id=chat_id, caption=f"{add_text}\n\n"

@@ -1,3 +1,4 @@
+import asyncio
 import random
 import typing
 
@@ -8,7 +9,7 @@ from loguru import logger
 from handlers.users.back_handler import delete_message
 from keyboards.inline.main_menu_inline import start_keyboard
 from keyboards.inline.questionnaires_inline import questionnaires_keyboard, action_keyboard, action_reciprocity_keyboard
-from loader import dp, bot
+from loader import dp
 from utils.db_api import db_commands
 from utils.misc.create_questionnaire import get_data, find_user_gender, send_questionnaire
 
@@ -20,7 +21,6 @@ async def select_all_users_list():
         id_user = i.get('telegram_id')
         list_id.append(id_user)
     return list_id
-
 
 
 async def create_questionnaire(state, random_user, chat_id, add_text=None):
@@ -96,11 +96,32 @@ async def like_questionnaire_reciprocity(call: CallbackQuery, state: FSMContext,
     liked_user = await state.get_data('questionnaire_owner')
     liked_user = liked_user.get('questionnaire_owner')
     if action == "like_reciprocity":
+        await asyncio.sleep(1)
+        await delete_message(call.message)
+        await call.message.answer("Ваша анкета отправлена другому пользователю", reply_markup=await start_keyboard())
         await create_questionnaire_reciprocity(random_user=like_from_user, chat_id=liked_user,
                                                add_text=f'Вам ответили взаимностью, пользователь - '
                                                         f'<a href="https://t.me/{username}">{username}</a>',
                                                state=state)
-        await state.finish()
+        await state.reset_state()
     elif action == "dislike_reciprocity":
+        await asyncio.sleep(1)
+        await delete_message(call.message)
         await call.message.answer("Меню: ", reply_markup=await start_keyboard())
-        await state.finish()
+        await state.reset_state()
+    await state.reset_state()
+
+
+@dp.callback_query_handler(text="go_back_to_viewing_ques", state='finding')
+async def like_questionnaire(call: CallbackQuery, state: FSMContext):
+    user_list = await find_user_gender(call.from_user.id)
+    random_user = random.choice(user_list)
+
+    await state.update_data(data={'questionnaire_owner': random_user})
+    try:
+        await create_questionnaire(random_user=random_user, chat_id=call.from_user.id, state=state)
+
+        await state.reset_data()
+    except Exception as err:
+        logger.error(err)
+        await create_questionnaire(random_user=random_user, chat_id=call.from_user.id, state=state)

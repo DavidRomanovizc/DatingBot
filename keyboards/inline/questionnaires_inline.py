@@ -27,3 +27,10 @@ async def reciprocity_keyboard():
 
     return markup
 
+
+async def back_viewing_ques():
+    markup = InlineKeyboardMarkup(row_width=1)
+    back = InlineKeyboardButton(text='Вернуться к просмотру анкет', callback_data="go_back_to_viewing_ques")
+    markup.row(back)
+
+    return markup
