@@ -75,7 +75,7 @@ After that, you need to fill it with data.
 
 #### :green_book: Django
 
-To create a `SECRET_KEY` you can use the site to generate secret keys [generate secret keys](https://djecrety.ir/)
+To create a `SECRET_KEY` you can use the site to generate secret keys [generate secret keys](https://djecrety.ir/)\
 And then paste it into the `.env` file
 
 ```sh
