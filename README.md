@@ -48,17 +48,18 @@ https://github.com/DavidRomanovizc/DatingBot.git
 First you need to rename the file `.env.dist` to `.env`.\
 After that, you need to fill it with data.
 
-| Variable     | Type        | Importance   |
-|--------------|-------------|--------------|
-| BOT_TOKEN    | str         | True         |
-| ADMINS       | list        | True         |
-| IP           | str         | True         |
-| DB_USER      | str         | True         |
-| DB_PASS      | str         | True         |
-| DB_HOST      | str         | True         |
-| DB_NAME      | str         | True         |
 
-<br>
+| Variable   | Type        | Importance   |
+|------------|-------------|--------------|
+| BOT_TOKEN  | str         | True         |
+| ADMINS     | list        | True         |
+| IP         | str         | True         |
+| DB_USER    | str         | True         |
+| DB_PASS    | str         | True         |
+| DB_HOST    | str         | True         |
+| DB_NAME    | str         | True         |
+| SECRET_KEY | str         | True         |
+| API_KEY    | str         | True         |
 
 `BOT_TOKEN` - Bot token\
 `ADMINS` - list of admins id\
@@ -69,7 +70,17 @@ After that, you need to fill it with data.
 `DB_HOST` - IP address of the database\
 `DB_NAME` - database name
 
+`SECRET_KEY` - secret key for django\
+`API_KEY` - yandex api key for yandex map
+
 #### :green_book: Django
+
+To create a `SECRET_KEY` you can use the site to generate secret keys [generate secret keys](https://djecrety.ir/)
+And then paste it into the `.env` file
+
+```sh
+SECRET_KEY=jjv@^0qv^=aydunfjo$qpd_66j+)egm1#-c1iwt%mtjinm)ftj
+```
 
 Install the jazzmin
 
