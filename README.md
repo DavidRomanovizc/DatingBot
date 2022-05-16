@@ -1,4 +1,4 @@
-# DatingMultiBot
+# DatingBot
 
 > An open source telegram bot with which you can find new acquaintances
 
