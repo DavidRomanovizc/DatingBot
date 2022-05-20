@@ -10,17 +10,7 @@ from handlers.users.back_handler import delete_message
 from keyboards.inline.main_menu_inline import start_keyboard
 from keyboards.inline.questionnaires_inline import questionnaires_keyboard, action_keyboard, action_reciprocity_keyboard
 from loader import dp
-from utils.db_api import db_commands
 from utils.misc.create_questionnaire import get_data, find_user_gender, send_questionnaire
-
-
-async def select_all_users_list():
-    users_records = await db_commands.select_all_users()
-    list_id = []
-    for i in users_records:
-        id_user = i.get('telegram_id')
-        list_id.append(id_user)
-    return list_id
 
 
 async def create_questionnaire(state, random_user, chat_id, add_text=None):

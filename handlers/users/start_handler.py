@@ -16,6 +16,8 @@ async def register_user(message: types.Message):
         await db_commands.add_user(name=message.from_user.full_name,
                                    telegram_id=message.from_user.id,
                                    username=message.from_user.username)
+        await db_commands.add_meetings_user(telegram_id=message.from_user.id,
+                                            username=message.from_user.username)
     except:
         pass
     await message.answer(text=_(f"Приветствую вас, {message.from_user.full_name}!!\n\n"

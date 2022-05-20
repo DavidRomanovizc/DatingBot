@@ -10,11 +10,13 @@ from keyboards.default.get_location_default import location_keyboard
 from keyboards.inline.change_data_profile_inline import gender_keyboard
 from keyboards.inline.registration_inline import confirm_keyboard, second_registration_keyboard
 from keyboards.inline.second_menu_inline import second_menu_keyboard
+
 from loader import dp, client
 from states.reg_state import RegData
+
 from utils.db_api import db_commands
-from utils.misc.check_name import mat_validator
 from utils.misc.create_questionnaire import get_data
+from utils.misc.profanityFilter import censored_message
 
 
 @dp.callback_query_handler(text='registration')
@@ -63,13 +65,10 @@ async def sex_reg(call: CallbackQuery):
 async def commentary_reg(message: types.Message):
     markup = await gender_keyboard()
     try:
-        censored = mat_validator(message.text)
-        if censored:
-            await db_commands.update_user_data(commentary=message.text, telegram_id=message.from_user.id)
-            await message.answer(f'Комментарий принят! Выберите, кого вы хотите найти: ', reply_markup=markup)
-        else:
-            await message.answer(f"Вы ввели запрещенное слово. Попробуйте ещё раз")
-            return
+        censored = censored_message(message.text)
+        await db_commands.update_user_data(commentary=censored, telegram_id=message.from_user.id)
+        await message.answer(f'Комментарий принят! Выберите, кого вы хотите найти: ', reply_markup=markup)
+
 
     except Exception as err:
         logger.error(err)
@@ -100,12 +99,9 @@ async def sex_reg(call: CallbackQuery):
 async def get_name(message: types.Message, state: FSMContext):
     await state.update_data(name=message.text)
     try:
-        censored = mat_validator(message.text)
-        if censored:
-            await db_commands.update_user_data(telegram_id=message.from_user.id, varname=message.text)
-        else:
-            await message.answer(f"Вы ввели запрещенное слово. Попробуйте ещё раз")
-            return
+        censored = censored_message(message.text)
+        await db_commands.update_user_data(telegram_id=message.from_user.id, varname=censored)
+
     except asyncpg.exceptions.UniqueViolationError as err:
         logger.error(err)
     await message.answer("Введите сколько вам лет:")
@@ -117,12 +113,8 @@ async def get_age(message: types.Message, state: FSMContext):
     markup = await location_keyboard()
     await state.update_data(age=message.text)
     try:
-        censored = mat_validator(message.text)
-        if censored:
-            await db_commands.update_user_data(telegram_id=message.from_user.id, age=message.text)
-        else:
-            await message.answer(f"Вы ввели запрещенное слово. Попробуйте ещё раз")
-            return
+        censored = censored_message(message.text)
+        await db_commands.update_user_data(telegram_id=message.from_user.id, age=censored)
     except asyncpg.exceptions.UniqueViolationError as err:
         logger.error(err)
     await message.answer(text="Введите город в котором проживаете.\n"
@@ -135,20 +127,15 @@ async def get_age(message: types.Message, state: FSMContext):
 async def get_city(message: types.Message):
     try:
         markup = await confirm_keyboard()
-        x, y = client.coordinates(message.text)
+        censored = censored_message(message.text)
+        x, y = client.coordinates(censored)
         city = client.address(f"{x}", f"{y}")
-        censored = mat_validator(message.text)
-        if censored:
-            await message.answer(f'Я нашел такой адрес:\n'
-                                 f'<b>{city}</b>\n'
-                                 f'Если все правильно то подтвердите.', reply_markup=markup)
-            await db_commands.update_user_data(telegram_id=message.from_user.id, city=city)
-            await db_commands.update_user_data(telegram_id=message.from_user.id, longitude=x)
-            await db_commands.update_user_data(telegram_id=message.from_user.id, latitude=y)
-        else:
-            await message.answer(f"Вы ввели запрещенное слово. Попробуйте ещё раз")
-            return
-
+        await message.answer(f'Я нашел такой адрес:\n'
+                             f'<b>{city}</b>\n'
+                             f'Если все правильно то подтвердите.', reply_markup=markup)
+        await db_commands.update_user_data(telegram_id=message.from_user.id, city=city)
+        await db_commands.update_user_data(telegram_id=message.from_user.id, longitude=x)
+        await db_commands.update_user_data(telegram_id=message.from_user.id, latitude=y)
 
     except Exception as err:
         logger.error(err)
@@ -192,10 +179,11 @@ async def get_hobbies(message: types.Message, state: FSMContext):
 
 @dp.message_handler(content_types=ContentType.PHOTO, state=RegData.photo)
 async def get_photo(message: types.Message, state: FSMContext):
+    telegram_id = message.from_user.id
     file_id = message.photo[-1].file_id
     markup = await second_menu_keyboard()
     try:
-        await db_commands.update_user_data(telegram_id=message.from_user.id, photo_id=file_id)
+        await db_commands.update_user_data(telegram_id=telegram_id, photo_id=file_id)
 
         await message.answer(f'Фото принято!')
     except Exception as err:
@@ -204,8 +192,8 @@ async def get_photo(message: types.Message, state: FSMContext):
                              f'Если ошибка осталась, напишите системному администратору.')
 
     await state.finish()
-    await db_commands.update_user_data(telegram_id=message.from_user.id, status=True)
-    telegram_id = message.from_user.id
+    await db_commands.update_user_data(telegram_id=telegram_id, status=True)
+
     user_data = await get_data(telegram_id)
     user = await db_commands.select_user(telegram_id=telegram_id)
     await message.answer_photo(caption=f"Регистрация завершена успешно! \n\n "

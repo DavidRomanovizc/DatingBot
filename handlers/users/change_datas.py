@@ -13,7 +13,7 @@ from keyboards.inline.second_menu_inline import second_menu_keyboard
 from loader import dp, client
 from states.new_data_state import NewData
 from utils.db_api import db_commands
-from utils.misc.check_name import mat_validator
+from utils.misc.profanityFilter import censored_message
 
 
 @dp.callback_query_handler(text='change_profile')
@@ -32,14 +32,14 @@ async def change_name(call: CallbackQuery):
 async def change_name(message: types.Message, state: FSMContext):
     markup = await change_info_keyboard()
     try:
-        await db_commands.update_user_data(varname=message.text, telegram_id=message.from_user.id)
-        await message.answer(f'Ваше новое имя: <b>{message.text}</b>')
+        censored = censored_message(message.text)
+        await db_commands.update_user_data(varname=censored, telegram_id=message.from_user.id)
+        await message.answer(f'Ваше новое имя: <b>{censored}</b>')
         await message.answer(f'Выберите, что вы хотите изменить: ', reply_markup=markup)
         await state.reset_state()
     except Exception as err:
         logger.error(err)
-        await message.answer(f'Произошла неизвестная ошибка',
-                             reply_markup=markup)
+        await message.answer(f'Произошла неизвестная ошибка. Попробуйте ещё раз', reply_markup=markup)
         await state.reset_state()
 
     await state.reset_state()
@@ -78,19 +78,16 @@ async def change_city(call: CallbackQuery):
 async def change_city(message: types.Message):
     try:
         markup = await confirm_keyboard()
-        x, y = client.coordinates(message.text)
+        censored = censored_message(message.text)
+        x, y = client.coordinates(censored)
         city = client.address(f"{x}", f"{y}")
-        censored = mat_validator(message.text)
-        if censored:
-            await message.answer(f'Я нашел такой адрес:\n'
-                                 f'<b>{city}</b>\n'
-                                 f'Если все правильно то подтвердите.', reply_markup=markup)
-            await db_commands.update_user_data(telegram_id=message.from_user.id, city=city)
-            await db_commands.update_user_data(telegram_id=message.from_user.id, longitude=x)
-            await db_commands.update_user_data(telegram_id=message.from_user.id, latitude=y)
-        else:
-            await message.answer(f"Вы ввели запрещенное слово. Попробуйте ещё раз")
-            return
+        await message.answer(f'Я нашел такой адрес:\n'
+                             f'<b>{city}</b>\n'
+                             f'Если все правильно то подтвердите.', reply_markup=markup)
+        await db_commands.update_user_data(telegram_id=message.from_user.id, city=city)
+        await db_commands.update_user_data(telegram_id=message.from_user.id, longitude=x)
+        await db_commands.update_user_data(telegram_id=message.from_user.id, latitude=y)
+
     except Exception as err:
         logger.error(err)
         await message.answer(f'Произошла неизвестная ошибка. Попробуйте ещё раз',
@@ -150,9 +147,10 @@ async def change_style(call: CallbackQuery):
 async def change_style(message: types.Message, state: FSMContext):
     markup = await change_info_keyboard()
     try:
-        await db_commands.update_user_data(lifestyle=message.text, telegram_id=message.from_user.id)
+        censored = censored_message(message.text)
+        await db_commands.update_user_data(lifestyle=censored, telegram_id=message.from_user.id)
         await message.answer(f'Данные были изменены!')
-        await asyncio.sleep(3)
+        await asyncio.sleep(2)
         await message.answer(f'Выберите, что вы хотите изменить: ', reply_markup=markup)
         await state.reset_state()
     except Exception as err:
@@ -198,7 +196,8 @@ async def new_comment(call: CallbackQuery):
 async def update_comment_complete(message: types.Message, state: FSMContext):
     markup = await change_info_keyboard()
     try:
-        await db_commands.update_user_data(commentary=message.text, telegram_id=message.from_user.id)
+        censored = censored_message(message.text)
+        await db_commands.update_user_data(commentary=censored, telegram_id=message.from_user.id)
         await message.answer(f'Комментарий принят!')
         await asyncio.sleep(3)
         await delete_message(message)
