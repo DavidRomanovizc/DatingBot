@@ -7,6 +7,5 @@ psycopg2-binary
 jsonfield
 asgiref~=3.4.1
 uuid~=1.30
-qiwipy
 pip~=21.2.4
 setuptools~=41.2.0
