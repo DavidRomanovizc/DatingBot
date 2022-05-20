@@ -14,8 +14,8 @@ class TimeBasedModel(models.Model):
 
 class User(TimeBasedModel):
     class Meta:
-        verbose_name = "Пользователь",
-        verbose_name_plural = "Пользователи"
+        verbose_name = "Пользователь Знакомств",
+        verbose_name_plural = "Пользователи Знакомств"
 
     id = models.AutoField(primary_key=True)
     telegram_id = models.BigIntegerField(unique=True, default=1, verbose_name="ID пользователя Телеграм")
@@ -47,3 +47,17 @@ class User(TimeBasedModel):
 
     def __str__(self):
         return f"№{self.id} ({self.telegram_id}) - {self.name}"
+
+
+class UserMeetings(TimeBasedModel):
+    class Meta:
+        verbose_name = "Пользователь Мероприятий",
+        verbose_name_plural = "Пользователи Мероприятий"
+
+    id = models.AutoField(primary_key=True)
+    telegram_id = models.BigIntegerField(unique=True, default=1, verbose_name="ID пользователя Телеграм")
+    username = models.CharField(max_length=255, verbose_name="Username Telegram")
+    meetings_description = models.CharField(max_length=255, verbose_name="Описание встречи", null=True)
+
+    def __str__(self):
+        return f"№{self.id} ({self.telegram_id} - {self.username})"

@@ -1,7 +1,6 @@
 from keyboards.inline.questionnaires_inline import reciprocity_keyboard, questionnaires_keyboard, back_viewing_ques
-from loader import bot
 from utils.db_api import db_commands
-from utils.db_api.db_commands import search_user
+from loader import bot
 
 
 async def get_data(telegram_id: int):
@@ -61,7 +60,7 @@ async def get_data_filters(telegram_id: int):
 async def find_user_gender(telegram_id):
     user = await db_commands.select_user(telegram_id=telegram_id)
     user_sex = user.get("need_partner_sex")
-    user_need_gender = await search_user(user_sex)
+    user_need_gender = await db_commands.search_user(user_sex)
     lst = []
     for i in range(len(user_need_gender)):
         lst.append(user_need_gender[i]['telegram_id'])
@@ -100,3 +99,34 @@ async def send_questionnaire(chat_id, user_data, markup=None, add_text=None):
                                                       f"<b>Ваше занятие</b> - {str(user_data[4])}\n"
                                                       f"<b>О себе</b> - {str(user_data[5])}\n\n",
                              photo=user_data[7], reply_markup=await reciprocity_keyboard())
+
+
+async def get_meeting_data(telegram_id):
+    user = await db_commands.select_meetings_user(telegram_id=telegram_id)
+
+    user_name = user.get("username")
+    meeting_description = user.get("meetings_description")
+
+    return (
+        user_name, meeting_description
+    )
+
+
+async def select_all_users_list(telegram_id: int):
+    users_records = await db_commands.select_all_user_meetings()
+    list_id = []
+    for i in users_records:
+        id_user = i.get('telegram_id')
+        list_id.append(id_user)
+    list_id.remove(telegram_id)
+    for j in list_id:
+        user = await get_meeting_data(j)
+        if user[1] is None:
+            list_id.remove(j)
+    return list_id
+
+
+async def send_ques_meeting(chat_id, user_data, markup):
+    await bot.send_message(chat_id=chat_id, text=f"{user_data[1]}\n\n"
+                                                 f'<a href="https://t.me/{user_data[0]}">{user_data[0]}</a>',
+                           reply_markup=markup)
