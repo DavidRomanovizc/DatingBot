@@ -32,7 +32,7 @@ async def approval_keyboard():
     return markup
 
 
-async def find_user():
+async def find_user_keyboard():
     markup = InlineKeyboardMarkup(row_width=2)
     found_id_user_button = InlineKeyboardButton("Искать по ID", callback_data="find_id")
     found_name_user_button = InlineKeyboardButton("Искать по имени", callback_data="find_user")

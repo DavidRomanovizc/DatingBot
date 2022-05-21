@@ -8,7 +8,7 @@ from loguru import logger
 
 from data.config import ADMINS
 from filters import IsPrivate
-from keyboards.inline.admin_inline import admin_mode_keyboard, approval_keyboard, find_user
+from keyboards.inline.admin_inline import admin_mode_keyboard, approval_keyboard, find_user_keyboard
 from keyboards.inline.main_menu_inline import start_keyboard
 from loader import dp, bot
 from utils.db_api import db_commands
@@ -62,7 +62,7 @@ async def count_users_db(call: CallbackQuery):
 
 @dp.callback_query_handler(text="find_users")
 async def start_find(call: CallbackQuery):
-    markup = await find_user()
+    markup = await find_user_keyboard()
     await call.message.edit_text("Выберите способ поиска пользователя", reply_markup=markup)
 
 
