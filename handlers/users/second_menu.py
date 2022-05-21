@@ -49,14 +49,6 @@ async def my_profile_menu(call: CallbackQuery):
 
 @dp.callback_query_handler(text="disable")
 async def disable_profile(call: CallbackQuery):
-    await db_commands.update_user_data(telegram_id=call.from_user.id, status=False)
+    await db_commands.delete_user(telegram_id=call.from_user.id)
     await delete_message(call.message)
-    await call.message.answer("Ваша анкета отключена!\nЯ надеюсь вы кого-нибудь нашли")
-    await asyncio.sleep(2)
-    await delete_message(call.message)
-    await call.message.answer("Вы были возвращены в главное меню", reply_markup=await start_keyboard())
-
-
-@dp.callback_query_handler(text="help")
-async def disable_profile(call: CallbackQuery):
-    await call.answer("Coming soon...")
+    await call.message.answer("Ваша анкета удалены!\nЯ надеюсь вы кого-нибудь нашли")
