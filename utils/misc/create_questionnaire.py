@@ -1,4 +1,4 @@
-from keyboards.inline.questionnaires_inline import reciprocity_keyboard, questionnaires_keyboard, back_viewing_ques
+from keyboards.inline.questionnaires_inline import reciprocity_keyboard, questionnaires_keyboard, back_viewing_ques_keyboard
 from utils.db_api import db_commands
 from loader import bot
 
@@ -87,7 +87,7 @@ async def send_questionnaire(chat_id, user_data, markup=None, add_text=None):
                                                       f"<b>Город</b> - {str(user_data[3])}\n"
                                                       f"<b>Ваше занятие</b> - {str(user_data[4])}\n"
                                                       f"<b>О себе</b> - {str(user_data[5])}\n\n",
-                             photo=user_data[7], reply_markup=await back_viewing_ques())
+                             photo=user_data[7], reply_markup=await back_viewing_ques_keyboard())
 
     else:
         await bot.send_photo(chat_id=chat_id, caption=f"{add_text}\n\n"
@@ -99,6 +99,19 @@ async def send_questionnaire(chat_id, user_data, markup=None, add_text=None):
                                                       f"<b>Ваше занятие</b> - {str(user_data[4])}\n"
                                                       f"<b>О себе</b> - {str(user_data[5])}\n\n",
                              photo=user_data[7], reply_markup=await reciprocity_keyboard())
+
+
+async def create_questionnaire(state, random_user, chat_id, add_text=None):
+    markup = await questionnaires_keyboard()
+    user_data = await get_data(random_user)
+    await send_questionnaire(chat_id=chat_id, user_data=user_data, markup=markup, add_text=add_text)
+    await state.update_data(data={'questionnaire_owner': random_user})
+
+
+async def create_questionnaire_reciprocity(state, random_user, chat_id, add_text=None):
+    user_data = await get_data(random_user)
+    await send_questionnaire(chat_id=chat_id, user_data=user_data, add_text=add_text)
+    await state.update_data(data={'questionnaire_owner': random_user})
 
 
 async def get_meeting_data(telegram_id):

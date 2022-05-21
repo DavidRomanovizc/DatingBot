@@ -8,31 +8,27 @@ from loguru import logger
 
 from handlers.users.back_handler import delete_message
 from keyboards.inline.main_menu_inline import start_keyboard
-from keyboards.inline.questionnaires_inline import questionnaires_keyboard, action_keyboard, action_reciprocity_keyboard
+from keyboards.inline.questionnaires_inline import action_keyboard, action_reciprocity_keyboard
+from keyboards.inline.registration_inline import registration_keyboard
 from loader import dp
-from utils.misc.create_questionnaire import get_data, find_user_gender, send_questionnaire
-
-
-async def create_questionnaire(state, random_user, chat_id, add_text=None):
-    markup = await questionnaires_keyboard()
-    user_data = await get_data(random_user)
-    await send_questionnaire(chat_id=chat_id, user_data=user_data, markup=markup, add_text=add_text)
-    await state.update_data(data={'questionnaire_owner': random_user})
-
-
-async def create_questionnaire_reciprocity(state, random_user, chat_id, add_text=None):
-    user_data = await get_data(random_user)
-    await send_questionnaire(chat_id=chat_id, user_data=user_data, add_text=add_text)
-    await state.update_data(data={'questionnaire_owner': random_user})
+from utils.misc.create_questionnaire import find_user_gender, create_questionnaire, create_questionnaire_reciprocity, \
+    get_data
 
 
 @dp.callback_query_handler(text='find_ancets')
 async def start_finding(call: CallbackQuery, state: FSMContext):
-    await delete_message(call.message)
-    user_list = await find_user_gender(call.from_user.id)
-    random_user = random.choice(user_list)
-    await create_questionnaire(random_user=random_user, chat_id=call.from_user.id, state=state)
-    await state.set_state('finding')
+    telegram_id = call.from_user.id
+    user_data = await get_data(telegram_id)
+    user_status = user_data[9]
+    if user_status:
+        await delete_message(call.message)
+        user_list = await find_user_gender(telegram_id)
+        random_user = random.choice(user_list)
+        await create_questionnaire(random_user=random_user, chat_id=telegram_id, state=state)
+        await state.set_state('finding')
+    else:
+        await call.message.edit_text("Вам необходимо зарегистрироваться, нажмите на кнопку ниже",
+                                     reply_markup=await registration_keyboard())
 
 
 @dp.callback_query_handler(action_keyboard.filter(action=["like", "dislike", "stopped"]),
