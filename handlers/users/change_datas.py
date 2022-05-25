@@ -214,7 +214,10 @@ async def update_comment_complete(message: types.Message, state: FSMContext):
 @dp.callback_query_handler(text="add_inst")
 async def add_inst(call: CallbackQuery, state: FSMContext):
     await delete_message(call.message)
-    await call.message.answer("Напишите имя своего аккаунта")
+    await call.message.answer("Напишите имя своего аккаунтаю\n\n"
+                              "Примеры:\n"
+                              "<code>@unknown</code>\n"
+                              "<code>https://www.instagram.com/unknown</code>")
     await state.set_state("inst")
 
 
@@ -222,15 +225,19 @@ async def add_inst(call: CallbackQuery, state: FSMContext):
 async def add_inst_state(message: types.Message, state: FSMContext):
     try:
         markup = await second_menu_keyboard()
-        inst_regex = r"^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$"
-        if bool(re.match(pattern=inst_regex, string=message.text)):
+        inst_regex = r"([A-Za-z0-9._](?:(?:[A-Za-z0-9._]|(?:\.(?!\.))){2,28}(?:[A-Za-z0-9._]))?)$"
+        regex = re.search(inst_regex, message.text)
+        result = regex
+        if bool(regex):
             await state.update_data(inst=message.text)
-            await db_commands.update_user_data(instagram=message.text, telegram_id=message.from_user.id)
+            await db_commands.update_user_data(instagram=result[0], telegram_id=message.from_user.id)
             await message.answer(f"Ваш аккаунт успешно добавлен")
             await state.reset_state()
-            await delete_message(message)
-            await asyncio.sleep(1)
             await message.answer("Вы были возвращены в меню", reply_markup=markup)
+        else:
+            await message.answer("Вы ввели неправильную ссылку или имя аккаунта.\n\nПримеры:\n"
+                                 "<code>@unknown</code>\n<code>https://www.instagram.com/unknown</code>")
+
     except Exception as err:
         logger.error(err)
         await message.answer("Возникла ошибка. Попробуйте еще раз")
