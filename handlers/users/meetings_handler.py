@@ -3,8 +3,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery
 from loguru import logger
 
-from keyboards.inline.back_inline import only_back_keyboard
-from keyboards.inline.meeting_inline import meeting_keyboard
+from keyboards.inline.meeting_inline import meeting_keyboard, meeting_back_keyboard
 from loader import dp
 from utils.db_api import db_commands
 from utils.misc.create_questionnaire import get_data, get_meeting_data
@@ -51,7 +50,7 @@ async def fill_questionary(message: types.Message, state: FSMContext):
         await message.answer("<b>Мероприятие создано!</b>\n\n"
                              f"{user_data[1]}\n\n"
                              f'<a href="https://t.me/{user_data[0]}">{user_data[0]}</a>',
-                             reply_markup=await only_back_keyboard())
+                             reply_markup=await meeting_back_keyboard())
     except Exception as err:
         logger.error(err)
         await message.answer("Произошла неизвестная ошибка! Попробуйте еще раз.")
