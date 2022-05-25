@@ -1,4 +1,5 @@
-from keyboards.inline.questionnaires_inline import reciprocity_keyboard, questionnaires_keyboard, back_viewing_ques_keyboard
+from keyboards.inline.questionnaires_inline import reciprocity_keyboard, questionnaires_keyboard, \
+    back_viewing_ques_keyboard
 from utils.db_api import db_commands
 from loader import bot
 
@@ -53,19 +54,21 @@ async def get_data_filters(telegram_id: int):
     user = await db_commands.select_user(telegram_id=telegram_id)
     user_need_age_min = user.get("need_partner_age_min")
     user_need_age_max = user.get("need_partner_age_max")
-    user_need_range = user.get("need_partner_range")
-    return user_need_age_min, user_need_age_max, user_need_range
+    user_need_gender = user.get("need_partner_sex")
+    return user_need_age_min, user_need_age_max, user_need_gender
 
 
 async def find_user_gender(telegram_id):
     user = await db_commands.select_user(telegram_id=telegram_id)
     user_sex = user.get("need_partner_sex")
-    user_need_gender = await db_commands.search_user(user_sex)
-    lst = []
+    user_need_age_min = user.get("need_partner_age_min")
+    user_need_age_max = user.get("need_partner_age_max")
+    user_need_gender = await db_commands.search_user(user_sex, user_need_age_min, user_need_age_max)
+    user_list = []
     for i in range(len(user_need_gender)):
-        lst.append(user_need_gender[i]['telegram_id'])
+        user_list.append(user_need_gender[i]['telegram_id'])
 
-    return lst
+    return user_list
 
 
 async def send_questionnaire(chat_id, user_data, markup=None, add_text=None):
