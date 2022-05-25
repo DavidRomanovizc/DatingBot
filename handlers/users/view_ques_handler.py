@@ -17,18 +17,21 @@ from utils.misc.create_questionnaire import find_user_gender, create_questionnai
 
 @dp.callback_query_handler(text='find_ancets')
 async def start_finding(call: CallbackQuery, state: FSMContext):
-    telegram_id = call.from_user.id
-    user_data = await get_data(telegram_id)
-    user_status = user_data[9]
-    if user_status:
-        await delete_message(call.message)
+    try:
+        telegram_id = call.from_user.id
+        user_data = await get_data(telegram_id)
         user_list = await find_user_gender(telegram_id)
-        random_user = random.choice(user_list)
-        await create_questionnaire(random_user=random_user, chat_id=telegram_id, state=state)
-        await state.set_state('finding')
-    else:
-        await call.message.edit_text("Вам необходимо зарегистрироваться, нажмите на кнопку ниже",
-                                     reply_markup=await registration_keyboard())
+        user_status = user_data[9]
+        if user_status:
+            random_user = random.choice(user_list)
+            await delete_message(call.message)
+            await create_questionnaire(random_user=random_user, chat_id=telegram_id, state=state)
+            await state.set_state('finding')
+        else:
+            await call.message.edit_text("Вам необходимо зарегистрироваться, нажмите на кнопку ниже",
+                                         reply_markup=await registration_keyboard())
+    except IndexError:
+        await call.answer("На данный момент у нас нет подходящих анкет для вас")
 
 
 @dp.callback_query_handler(action_keyboard.filter(action=["like", "dislike", "stopped"]),
