@@ -1,5 +1,6 @@
 from asgiref.sync import sync_to_async
 from django_project.telegrambot.usersmanage.models import User, UserMeetings
+from django.db.models import Q
 
 
 @sync_to_async
@@ -75,5 +76,6 @@ def select_user_username(username: str):
 
 
 @sync_to_async
-def search_user(need_partner_sex):
-    return User.objects.filter(sex=need_partner_sex).all().values()
+def search_user(need_partner_sex, need_age_min, need_age_max):
+    return User.objects.filter(
+        Q(sex=need_partner_sex) & Q(age__gte=need_age_min) & Q(age__lte=need_age_max)).all().values()

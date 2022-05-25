@@ -1,8 +1,5 @@
 from django.db import models
 
-# Create your models here.
-from sqlalchemy import null
-
 
 class TimeBasedModel(models.Model):
     class Meta:
@@ -37,13 +34,11 @@ class User(TimeBasedModel):
     need_partner_sex = models.CharField(max_length=50, verbose_name="Пол партнера", null=True)
     need_partner_age_min = models.IntegerField(verbose_name="Минимальный возраст партнера", default=16)
     need_partner_age_max = models.IntegerField(verbose_name="Максимальный возраст партнера", default=24)
-    need_partner_range = models.CharField(max_length=100, verbose_name="Расстояние от пользователя", null=True,
-                                          default=300)
     like = models.BigIntegerField(verbose_name="Количество лайков у пользователя", default=0)
     dislike = models.BigIntegerField(verbose_name="Количество дизлайков у пользователя", default=0)
     phone_number = models.BigIntegerField(verbose_name="Номер телефона", null=True)
     status = models.BooleanField(verbose_name="Статус анкеты", null=True, default=False)
-    instagram = models.CharField(max_length=30, verbose_name="Ник в инстаграме", null=True)
+    instagram = models.CharField(max_length=200, verbose_name="Ник в инстаграме", null=True)
 
     def __str__(self):
         return f"№{self.id} ({self.telegram_id}) - {self.name}"
