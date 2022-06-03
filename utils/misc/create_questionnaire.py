@@ -55,7 +55,8 @@ async def get_data_filters(telegram_id: int):
     user_need_age_min = user.get("need_partner_age_min")
     user_need_age_max = user.get("need_partner_age_max")
     user_need_gender = user.get("need_partner_sex")
-    return user_need_age_min, user_need_age_max, user_need_gender
+    user_need_city = user.get("need_city")
+    return user_need_age_min, user_need_age_max, user_need_gender, user_need_city
 
 
 async def find_user_gender(telegram_id):
@@ -63,11 +64,11 @@ async def find_user_gender(telegram_id):
     user_sex = user.get("need_partner_sex")
     user_need_age_min = user.get("need_partner_age_min")
     user_need_age_max = user.get("need_partner_age_max")
-    user_need_gender = await db_commands.search_user(user_sex, user_need_age_min, user_need_age_max)
+    user_need_city = user.get("need_city")
+    user_filter = await db_commands.search_user(user_sex, user_need_age_min, user_need_age_max, user_need_city)
     user_list = []
-    for i in range(len(user_need_gender)):
-        user_list.append(user_need_gender[i]['telegram_id'])
-
+    for i in range(len(user_filter)):
+        user_list.append(user_filter[i]['telegram_id'])
     return user_list
 
 

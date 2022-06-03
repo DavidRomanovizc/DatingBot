@@ -1,4 +1,5 @@
 import asyncio
+import re
 
 import asyncpg
 from aiogram import types
@@ -115,8 +116,10 @@ async def get_age(message: types.Message, state: FSMContext):
     try:
         censored = censored_message(message.text)
         await db_commands.update_user_data(telegram_id=message.from_user.id, age=censored)
-    except asyncpg.exceptions.UniqueViolationError as err:
+    except Exception as err:
         logger.error(err)
+        await message.answer("Вы ввели не число")
+        return
     await message.answer(text="Введите город в котором проживаете.\n"
                               "Для точного определения местоположения, можете нажать на кнопку ниже!",
                          reply_markup=markup)
@@ -126,24 +129,10 @@ async def get_age(message: types.Message, state: FSMContext):
 @dp.message_handler(state=RegData.town)
 async def get_city(message: types.Message):
     try:
-        markup = await confirm_keyboard()
-        censored = censored_message(message.text)
-        x, y = client.coordinates(censored)
-        city = client.address(f"{x}", f"{y}")
-        await message.answer(f'Я нашел такой адрес:\n'
-                             f'<b>{city}</b>\n'
-                             f'Если все правильно то подтвердите.', reply_markup=markup)
-        await db_commands.update_user_data(telegram_id=message.from_user.id, city=city)
-        await db_commands.update_user_data(telegram_id=message.from_user.id, longitude=x)
-        await db_commands.update_user_data(telegram_id=message.from_user.id, latitude=y)
-
+        await db_commands.update_user_data(telegram_id=message.from_user.id, city=message.text)
     except Exception as err:
         logger.error(err)
-
-
-@dp.callback_query_handler(text="yes_all_good", state=RegData.town)
-async def get_hobbies(call: CallbackQuery):
-    await call.message.edit_text("Чем вы занимаетесь:")
+    await message.answer("Чем вы занимаетесь:")
     await RegData.hobbies.set()
 
 
@@ -153,9 +142,10 @@ async def fill_form(message: types.Message):
         x = message.location.longitude
         y = message.location.latitude
         address = client.address(f"{x}", f"{y}")
-        address = address.split(",")[0:2]
-        address = ",".join(address)
-        await db_commands.update_user_data(telegram_id=message.from_user.id, city=address)
+        first_word = re.findall(r'\w+', address)[1]
+        print(first_word)
+        await db_commands.update_user_data(telegram_id=message.from_user.id, city=first_word)
+        await db_commands.update_user_data(telegram_id=message.from_user.id, need_city=first_word)
         await db_commands.update_user_data(telegram_id=message.from_user.id, longitude=x)
         await db_commands.update_user_data(telegram_id=message.from_user.id, latitude=y)
         await message.answer('Ваш город сохранен!')

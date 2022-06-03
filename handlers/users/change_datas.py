@@ -75,30 +75,17 @@ async def change_city(call: CallbackQuery):
 
 
 @dp.message_handler(state=NewData.city)
-async def change_city(message: types.Message):
+async def change_city(message: types.Message, state: FSMContext):
     try:
-        markup = await confirm_keyboard()
-        censored = censored_message(message.text)
-        x, y = client.coordinates(censored)
-        city = client.address(f"{x}", f"{y}")
-        await message.answer(f'Я нашел такой адрес:\n'
-                             f'<b>{city}</b>\n'
-                             f'Если все правильно то подтвердите.', reply_markup=markup)
-        await db_commands.update_user_data(telegram_id=message.from_user.id, city=city)
-        await db_commands.update_user_data(telegram_id=message.from_user.id, longitude=x)
-        await db_commands.update_user_data(telegram_id=message.from_user.id, latitude=y)
-
+        await db_commands.update_user_data(telegram_id=message.from_user.id, city=message.text)
     except Exception as err:
         logger.error(err)
         await message.answer(f'Произошла неизвестная ошибка. Попробуйте ещё раз',
                              reply_markup=await change_info_keyboard())
-
-
-@dp.callback_query_handler(text="yes_all_good", state=NewData.city)
-async def get_hobbies(call: CallbackQuery, state: FSMContext):
-    await call.message.edit_text(f'Данные успешно изменены.\nВыберите, что вы хотите изменить: ',
-                                 reply_markup=await change_info_keyboard())
-    await state.reset_state()
+    await asyncio.sleep(1)
+    await message.answer(f'Данные успешно изменены.\nВыберите, что вы хотите изменить: ',
+                         reply_markup=await change_info_keyboard())
+    await state.finish()
 
 
 @dp.callback_query_handler(text='gender')
