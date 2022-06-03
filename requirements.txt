@@ -9,3 +9,6 @@ asgiref~=3.4.1
 uuid~=1.30
 pip~=21.2.4
 setuptools~=41.2.0
+requests~=2.27.1
+django-jazzmin
+better_profanity
