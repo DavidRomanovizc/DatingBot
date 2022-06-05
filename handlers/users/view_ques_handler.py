@@ -38,6 +38,7 @@ async def start_finding(call: CallbackQuery, state: FSMContext):
                            state='finding')
 async def like_questionnaire(call: CallbackQuery, state: FSMContext, callback_data: typing.Dict[str, str]):
     user_list = await find_user_gender(call.from_user.id)
+    print(user_list)
     random_user = random.choice(user_list)
     action = callback_data['action']
 
@@ -76,7 +77,13 @@ async def like_questionnaire(call: CallbackQuery, state: FSMContext, callback_da
 @dp.callback_query_handler(action_reciprocity_keyboard.filter(action=["like_reciprocity", "dislike_reciprocity"]))
 async def like_questionnaire_reciprocity(call: CallbackQuery, state: FSMContext, callback_data: typing.Dict[str, str]):
     user_list = await find_user_gender(call.from_user.id)
-    random_user = random.choice(user_list)
+    try:
+        random_user = random.choice(user_list)
+    except Exception as err:
+        logger.error(err)
+        await call.message.delete()
+        await call.answer(text="Для вас кончились анкеты!", show_alert=True)
+
     action = callback_data['action']
 
     await state.update_data(data={'questionnaire_owner': random_user})

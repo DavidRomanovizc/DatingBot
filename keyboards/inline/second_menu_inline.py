@@ -10,7 +10,7 @@ async def second_menu_keyboard():
     filters = InlineKeyboardButton(text="⚙️ Фильтры", callback_data="filters")
     meetings = InlineKeyboardButton(text="💎 Тусовки", callback_data="meetings")
     markup.row(my_profile, verification)
-    markup.add(meetings)
-    markup.row(edit_profile, filters)
+    markup.add(filters)
+    markup.row(edit_profile, meetings)
     markup.add(back_to_menu)
     return markup

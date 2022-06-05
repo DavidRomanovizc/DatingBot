@@ -149,3 +149,4 @@ async def complete_ban(message: types.Message, state: FSMContext):
         await message.answer(text="Не удалось забанить юзера - проверьте введенные данные")
 
     await state.reset_state()
+
