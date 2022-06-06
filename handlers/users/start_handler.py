@@ -15,11 +15,19 @@ from utils.db_api import db_commands
 async def register_user(message: types.Message):
     markup = await start_keyboard()
     try:
-        await db_commands.add_user(name=message.from_user.full_name,
-                                   telegram_id=message.from_user.id,
-                                   username=message.from_user.username)
-        await db_commands.add_meetings_user(telegram_id=message.from_user.id,
-                                            username=message.from_user.username)
+        if message.from_user.username is not None:
+            await db_commands.add_user(name=message.from_user.full_name,
+                                       telegram_id=message.from_user.id,
+                                       username=message.from_user.username)
+            await db_commands.add_meetings_user(telegram_id=message.from_user.id,
+                                                username=message.from_user.username)
+        else:
+            await db_commands.add_user(name=message.from_user.full_name,
+                                       telegram_id=message.from_user.id,
+                                       username="None")
+            await db_commands.add_meetings_user(telegram_id=message.from_user.id,
+                                                username="None")
+
     except:
         pass
     support = await db_commands.select_user(telegram_id=support_ids[0])
