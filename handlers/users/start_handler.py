@@ -3,13 +3,14 @@ from aiogram.dispatcher.filters.builtin import CommandStart
 from aiogram.types import CallbackQuery
 from loguru import logger
 
+from filters import IsPrivate
 from handlers.users.back_handler import hearts
 from keyboards.inline.main_menu_inline import start_keyboard
 from loader import dp, _
 from utils.db_api import db_commands
 
 
-@dp.message_handler(CommandStart())
+@dp.message_handler(IsPrivate(), CommandStart())
 async def register_user(message: types.Message):
     markup = await start_keyboard()
     try:

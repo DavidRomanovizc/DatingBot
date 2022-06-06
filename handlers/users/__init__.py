@@ -2,7 +2,6 @@ from . import start_handler
 from . import verification_handler
 from . import meetings_handler
 from . import registration_handler
-from . import admin_handler
 from . import change_datas
 from . import second_menu
 from . import statistics
