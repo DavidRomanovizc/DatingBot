@@ -6,11 +6,8 @@ from aiogram.types import CallbackQuery
 from aiogram.utils.exceptions import MessageCantBeDeleted, MessageToDeleteNotFound
 
 from keyboards.inline.main_menu_inline import start_keyboard
-from keyboards.inline.second_menu_inline import second_menu_keyboard
 from loader import dp
-
-hearts = ['💙', '💚', '💛', '🧡', '💜', '🖤', '❤', '🤍', '💖', '💝']
-random.shuffle(hearts)
+from utils.db_api import db_commands
 
 
 async def delete_message(message: types.Message):
@@ -20,21 +17,12 @@ async def delete_message(message: types.Message):
 
 @dp.callback_query_handler(text="back_with_delete")
 async def open_menu(call: CallbackQuery):
-    markup = await start_keyboard()
+    heart = random.choice(['💙', '💚', '💛', '🧡', '💜', '🖤', '❤', '🤍', '💖', '💝'])
+    user_db = await db_commands.select_user(telegram_id=call.from_user.id)
+    markup = await start_keyboard(status=user_db['status'])
     await delete_message(call.message)
 
-    await call.message.answer(f"<b>{hearts[0]} DATE_BOT</b> - платформа для поиска новых знакомств.\n\n"
-                              f"<b>🤝 Сотрудничество: </b>\n"
-                              f"Если у вас есть предложение о сотрудничестве, пишите сюда - "
-                              f"@Support\n\n",
-                              reply_markup=markup)
-
-
-@dp.callback_query_handler(text="back_to_sec_menu")
-async def open_second_menu(call: CallbackQuery):
-    markup = await second_menu_keyboard()
-    await delete_message(call.message)
-    await call.message.answer(f"<b>{hearts[1]} DATE_BOT</b> - платформа для поиска новых знакомств.\n\n"
+    await call.message.answer(f"<b>{heart} QueDateBot </b> - платформа для поиска новых знакомств.\n\n"
                               f"<b>🤝 Сотрудничество: </b>\n"
                               f"Если у вас есть предложение о сотрудничестве, пишите сюда - "
                               f"@Support\n\n",

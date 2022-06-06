@@ -7,6 +7,7 @@ from handlers.users.back_handler import delete_message
 from keyboards.inline.main_menu_inline import start_keyboard
 from keyboards.inline.meeting_inline import reaction_meetings_keyboard
 from loader import dp
+from utils.db_api import db_commands
 from utils.misc.create_questionnaire import select_all_users_list, get_meeting_data, send_ques_meeting
 
 
@@ -36,7 +37,8 @@ async def like_questionnaire_reciprocity(call: CallbackQuery, state: FSMContext)
 @dp.callback_query_handler(state='finding_meetings', text="stopped")
 async def like_questionnaire(call: CallbackQuery, state: FSMContext):
     await state.finish()
-    markup = await start_keyboard()
+    user_db = await db_commands.select_user(telegram_id=call.from_user.id)
+    markup = await start_keyboard(status=user_db['status'])
     await call.message.delete()
     await call.message.answer(f"Рад был помочь, {call.from_user.full_name}!\n"
                               f"Надеюсь, ты нашел кого-то благодаря мне", reply_markup=markup)

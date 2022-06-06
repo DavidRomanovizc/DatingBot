@@ -8,9 +8,8 @@ from loguru import logger
 
 from handlers.users.back_handler import delete_message
 from keyboards.inline.change_data_profile_inline import change_info_keyboard, gender_keyboard
-from keyboards.inline.registration_inline import confirm_keyboard
-from keyboards.inline.second_menu_inline import second_menu_keyboard
-from loader import dp, client
+from keyboards.inline.main_menu_inline import start_keyboard
+from loader import dp
 from states.new_data_state import NewData
 from utils.db_api import db_commands
 from utils.misc.profanityFilter import censored_message
@@ -211,7 +210,8 @@ async def add_inst(call: CallbackQuery, state: FSMContext):
 @dp.message_handler(state="inst")
 async def add_inst_state(message: types.Message, state: FSMContext):
     try:
-        markup = await second_menu_keyboard()
+        user_db = await db_commands.select_user(telegram_id=message.from_user.id)
+        markup = await start_keyboard(user_db["status"])
         inst_regex = r"([A-Za-z0-9._](?:(?:[A-Za-z0-9._]|(?:\.(?!\.))){2,28}(?:[A-Za-z0-9._]))?)$"
         regex = re.search(inst_regex, message.text)
         result = regex

@@ -9,8 +9,8 @@ from loguru import logger
 
 from keyboards.default.get_location_default import location_keyboard
 from keyboards.inline.change_data_profile_inline import gender_keyboard
+from keyboards.inline.main_menu_inline import start_keyboard
 from keyboards.inline.registration_inline import confirm_keyboard, second_registration_keyboard
-from keyboards.inline.second_menu_inline import second_menu_keyboard
 
 from loader import dp, client
 from states.reg_state import RegData
@@ -171,7 +171,6 @@ async def get_hobbies(message: types.Message, state: FSMContext):
 async def get_photo(message: types.Message, state: FSMContext):
     telegram_id = message.from_user.id
     file_id = message.photo[-1].file_id
-    markup = await second_menu_keyboard()
     try:
         await db_commands.update_user_data(telegram_id=telegram_id, photo_id=file_id)
 
@@ -185,7 +184,8 @@ async def get_photo(message: types.Message, state: FSMContext):
     await db_commands.update_user_data(telegram_id=telegram_id, status=True)
 
     user_data = await get_data(telegram_id)
-    user = await db_commands.select_user(telegram_id=telegram_id)
+    user_db = await db_commands.select_user(telegram_id=telegram_id)
+    markup = await start_keyboard(status=user_db['status'])
     await message.answer_photo(caption=f"Регистрация завершена успешно! \n\n "
                                        f"<b>Статус анкеты</b> - \n{str(user_data[6])}\n\n"
                                        f"<b>Имя</b> - {str(user_data[0])}\n"
@@ -194,5 +194,5 @@ async def get_photo(message: types.Message, state: FSMContext):
                                        f"<b>Город</b> - {str(user_data[3])}\n"
                                        f"<b>Ваше занятие</b> - {str(user_data[4])}\n"
                                        f"<b>О себе</b> - {str(user_data[5])}\n\n",
-                               photo=user.get('photo_id'), reply_markup=ReplyKeyboardRemove())
+                               photo=user_db.get('photo_id'), reply_markup=ReplyKeyboardRemove())
     await message.answer("Меню: ", reply_markup=markup)
