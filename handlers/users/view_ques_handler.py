@@ -42,7 +42,7 @@ async def like_questionnaire(call: CallbackQuery, state: FSMContext, callback_da
     print(user_list)
     random_user = random.choice(user_list)
     action = callback_data['action']
-
+    user_db = await db_commands.select_user(telegram_id=call.from_user.id)
     username = call.from_user.username
     if action == "like":
         try:
@@ -64,7 +64,7 @@ async def like_questionnaire(call: CallbackQuery, state: FSMContext, callback_da
             logger.error(err)
             await create_questionnaire(form_owner=random_user, chat_id=call.from_user.id)
     elif action == "stopped":
-        markup = await start_keyboard()
+        markup = await start_keyboard(user_db["status"])
         await call.message.delete()
         await call.message.answer(f"Рад был помочь, {call.from_user.full_name}!\n"
                                   f"Надеюсь, ты нашел кого-то благодаря мне", reply_markup=markup)
@@ -73,15 +73,16 @@ async def like_questionnaire(call: CallbackQuery, state: FSMContext, callback_da
 
 @dp.callback_query_handler(action_reciprocity_keyboard.filter(action=["like_reciprocity", "dislike_reciprocity"]))
 async def like_questionnaire_reciprocity(call: CallbackQuery, state: FSMContext, callback_data: typing.Dict[str, str]):
-    user_list = await find_user_gender(call.from_user.id)
     action = callback_data['action']
     username = call.from_user.username
+    user_db = await db_commands.select_user(telegram_id=call.from_user.id)
     if action == "like_reciprocity":
         user_for_like = callback_data["user_for_like"]
         user_db = await db_commands.select_user(telegram_id=call.from_user.id)
         await asyncio.sleep(1)
         await call.message.delete()
-        await call.message.answer("Ваша анкета отправлена другому пользователю", reply_markup=await start_keyboard())
+        await call.message.answer("Ваша анкета отправлена другому пользователю",
+                                  reply_markup=await start_keyboard(user_db["status"]))
         await asyncio.sleep(5)
         await create_questionnaire_reciprocity(liker=call.from_user.id, chat_id=user_for_like,
                                                add_text=f'Вам ответили взаимностью, пользователь - '
@@ -91,7 +92,7 @@ async def like_questionnaire_reciprocity(call: CallbackQuery, state: FSMContext,
     elif action == "dislike_reciprocity":
         await asyncio.sleep(1)
         await delete_message(call.message)
-        await call.message.answer("Меню: ", reply_markup=await start_keyboard())
+        await call.message.answer("Меню: ", reply_markup=await start_keyboard(user_db["status"]))
         await state.reset_state()
     await state.reset_state()
 

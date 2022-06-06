@@ -7,6 +7,7 @@ from keyboards.inline.support_inline import support_keyboard, support_callback, 
     get_support_manager, \
     cancel_support, cancel_support_callback
 from loader import dp, bot
+from utils.db_api import db_commands
 from utils.misc.create_questionnaire import get_data
 
 
@@ -93,7 +94,8 @@ async def not_supported(message: types.Message, state: FSMContext):
 
 @dp.callback_query_handler(cancel_support_callback.filter(), state=["in_support", "wait_in_support", None])
 async def exit_support(call: types.CallbackQuery, state: FSMContext, callback_data: dict):
-    markup = await start_keyboard()
+    user_db = await db_commands.select_user(telegram_id=call.from_user.id)
+    markup = await start_keyboard(status=user_db["status"])
     user_id = int(callback_data.get("user_id"))
     second_state = dp.current_state(user=user_id, chat=user_id)
 

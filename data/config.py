@@ -7,7 +7,7 @@ env.read_env()
 
 support_ids = env.list("SUPPORTS")
 BOT_TOKEN = env.str("BOT_TOKEN")
-ADMINS = env.list("ADMINS")
+ADMINS = list(map(int, env.list("admins")))
 IP = env.str("ip")
 
 DB_USER = env.str('DB_USER')
