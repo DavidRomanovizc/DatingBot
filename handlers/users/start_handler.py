@@ -3,6 +3,7 @@ from aiogram.dispatcher.filters.builtin import CommandStart
 from aiogram.types import CallbackQuery
 from loguru import logger
 
+from data.config import support_ids
 from filters import IsPrivate
 from handlers.users.back_handler import hearts
 from keyboards.inline.main_menu_inline import start_keyboard
@@ -21,11 +22,12 @@ async def register_user(message: types.Message):
                                             username=message.from_user.username)
     except:
         pass
+    support = await db_commands.select_user(telegram_id=support_ids[0])
     await message.answer(text=_(f"Приветствую вас, {message.from_user.full_name}!!\n\n"
                                 f"<b>{hearts[2]} DATE_BOT</b> - платформа для поиска новых знакомств.\n\n"
                                 f"<b>🤝 Сотрудничество: </b>\n"
                                 f"Если у вас есть предложение о сотрудничестве, пишите сюда - "
-                                f"@Support\n\n"
+                                f"@{support['username']}\n\n"
                                 ),
                          reply_markup=markup)
 
