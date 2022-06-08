@@ -8,7 +8,8 @@ from keyboards.inline.main_menu_inline import start_keyboard
 from keyboards.inline.meeting_inline import reaction_meetings_keyboard
 from loader import dp
 from utils.db_api import db_commands
-from utils.misc.create_questionnaire import select_all_users_list, get_meeting_data, send_ques_meeting
+from functions.select_all_users_func import select_all_users_list
+from functions.meetings_funcs import get_meeting_data, send_ques_meeting
 
 
 async def create_ques_meeting(state, random_user, chat_id):

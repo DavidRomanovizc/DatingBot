@@ -1,6 +1,7 @@
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 
+import functions.get_data_func
 from keyboards.inline.main_menu_inline import start_keyboard
 from keyboards.inline.registration_inline import registration_keyboard
 from keyboards.inline.support_inline import support_keyboard, support_callback, check_support_available, \
@@ -8,7 +9,7 @@ from keyboards.inline.support_inline import support_keyboard, support_callback, 
     cancel_support, cancel_support_callback
 from loader import dp, bot
 from utils.db_api import db_commands
-from utils.misc.create_questionnaire import get_data
+from functions.get_data_func import get_data
 
 
 @dp.callback_query_handler(text="support")
@@ -100,7 +101,7 @@ async def exit_support(call: types.CallbackQuery, state: FSMContext, callback_da
     second_state = dp.current_state(user=user_id, chat=user_id)
 
     if await second_state.get_state() is not None:
-        data_second = await second_state.get_data()
+        data_second = await functions.get_data_func.get_data()
         second_id = data_second.get("second_id")
         if int(second_id) == call.from_user.id:
             await second_state.reset_state()

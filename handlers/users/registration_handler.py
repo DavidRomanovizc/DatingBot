@@ -16,7 +16,7 @@ from loader import dp, client
 from states.reg_state import RegData
 
 from utils.db_api import db_commands
-from utils.misc.create_questionnaire import get_data
+from functions.get_data_func import get_data
 from utils.misc.profanityFilter import censored_message
 
 
