@@ -15,10 +15,20 @@ from utils.db_api import db_commands
 from utils.misc.profanityFilter import censored_message
 
 
+# функция для проверки валидности имени пользователя
+def check_name(name):
+    if len(name) > 20:
+        return False
+    if re.search(r'[^a-zA-Zа-яА-Я0-9_\-\.]', name):
+        return False
+    return True
+
+
 @dp.callback_query_handler(text='change_profile')
 async def start_change_data(call: CallbackQuery):
     markup = await change_info_keyboard()
-    await call.message.edit_text(f'Выберите, что вы хотите изменить: ', reply_markup=markup)
+    await delete_message(call.message)
+    await call.message.answer(f'Выберите, что вы хотите изменить: ', reply_markup=markup)
 
 
 @dp.callback_query_handler(text='name')
@@ -54,10 +64,15 @@ async def change_age(call: CallbackQuery):
 async def change_age(message: types.Message, state: FSMContext):
     markup = await change_info_keyboard()
     try:
-        await db_commands.update_user_data(age=message.text, telegram_id=message.from_user.id)
-        await message.answer(f'Ваш новый возраст: <b>{message.text}</b>')
-        await message.answer(f'Выберите, что вы хотите изменить: ', reply_markup=markup)
-        await state.reset_state()
+        if int(message.text) and 0 < int(message.text) < 150:
+            await db_commands.update_user_data(age=message.text, telegram_id=message.from_user.id)
+            await message.answer(f'Ваш новый возраст: <b>{message.text}</b>')
+            await asyncio.sleep(3)
+            await message.answer(f'Выберите, что вы хотите изменить: ', reply_markup=markup)
+            await state.reset_state()
+        else:
+            await message.answer(f'Неправильные данные!. Попробуйте ещё раз', reply_markup=markup)
+            await state.reset_state()
 
     except Exception as err:
         logger.error(err)
