@@ -6,7 +6,8 @@ from loguru import logger
 from keyboards.inline.meeting_inline import meeting_keyboard, meeting_back_keyboard
 from loader import dp
 from utils.db_api import db_commands
-from utils.misc.create_questionnaire import get_data, get_meeting_data
+from functions.meetings_funcs import get_meeting_data
+from functions.get_data_func import get_data
 
 
 @dp.callback_query_handler(text="meetings")

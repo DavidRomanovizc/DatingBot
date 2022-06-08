@@ -4,7 +4,7 @@ from handlers.users.back_handler import delete_message
 from keyboards.inline.menu_profile_inline import get_profile_keyboard
 from loader import dp
 from utils.db_api import db_commands
-from utils.misc.create_questionnaire import get_data
+from functions.get_data_func import get_data
 
 
 @dp.callback_query_handler(text="my_profile")

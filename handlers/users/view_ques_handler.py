@@ -6,14 +6,15 @@ from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery
 from loguru import logger
 
+from functions.create_forms_funcs import create_questionnaire, create_questionnaire_reciprocity
+from functions.get_data_func import get_data
+from functions.get_next_user_func import get_next_user
 from handlers.users.back_handler import delete_message
 from keyboards.inline.main_menu_inline import start_keyboard
 from keyboards.inline.questionnaires_inline import action_keyboard, action_reciprocity_keyboard
 from keyboards.inline.registration_inline import registration_keyboard
 from loader import dp
 from utils.db_api import db_commands
-from utils.misc.create_questionnaire import find_user_gender, create_questionnaire, create_questionnaire_reciprocity, \
-    get_data
 
 
 @dp.callback_query_handler(text='find_ancets')
@@ -21,7 +22,7 @@ async def start_finding(call: CallbackQuery, state: FSMContext):
     try:
         telegram_id = call.from_user.id
         user_data = await get_data(telegram_id)
-        user_list = await find_user_gender(telegram_id)
+        user_list = await get_next_user(telegram_id)
         user_status = user_data[9]
         if user_status:
             random_user = random.choice(user_list)
@@ -38,7 +39,7 @@ async def start_finding(call: CallbackQuery, state: FSMContext):
 @dp.callback_query_handler(action_keyboard.filter(action=["like", "dislike", "stopped"]),
                            state='finding')
 async def like_questionnaire(call: CallbackQuery, state: FSMContext, callback_data: typing.Dict[str, str]):
-    user_list = await find_user_gender(call.from_user.id)
+    user_list = await get_next_user(call.from_user.id)
     print(user_list)
     random_user = random.choice(user_list)
     action = callback_data['action']
@@ -99,7 +100,7 @@ async def like_questionnaire_reciprocity(call: CallbackQuery, state: FSMContext,
 
 @dp.callback_query_handler(text="go_back_to_viewing_ques", state='finding')
 async def like_questionnaire(call: CallbackQuery, state: FSMContext):
-    user_list = await find_user_gender(call.from_user.id)
+    user_list = await get_next_user(call.from_user.id)
     random_user = random.choice(user_list)
 
     try:

@@ -14,7 +14,7 @@ from keyboards.inline.filters_inline import filters_keyboard
 from loader import dp
 
 from utils.db_api import db_commands
-from utils.misc.create_questionnaire import get_data_filters
+from functions.get_data_filters_func import get_data_filters
 
 
 @dp.callback_query_handler(text="filters")
