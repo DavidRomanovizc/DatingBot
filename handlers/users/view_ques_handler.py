@@ -2,6 +2,7 @@ import asyncio
 import random
 import typing
 
+from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery
 from loguru import logger
@@ -110,3 +111,10 @@ async def like_questionnaire(call: CallbackQuery, state: FSMContext):
     except Exception as err:
         logger.error(err)
         await create_questionnaire(form_owner=random_user, chat_id=call.from_user.id)
+
+
+@dp.message_handler(state='finding')
+async def echo_message_finding(message: types.Message, state: FSMContext):
+    user_db = await db_commands.select_user(telegram_id=message.from_user.id)
+    await message.answer("Меню: ", reply_markup=await start_keyboard(user_db["status"]))
+    await state.reset_state(with_data=True)
