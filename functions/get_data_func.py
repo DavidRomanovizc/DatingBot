@@ -4,7 +4,6 @@ from utils.db_api import db_commands
 
 
 async def get_data(telegram_id: int):
-    logger.debug(telegram_id)
     user = await db_commands.select_user(telegram_id=telegram_id)
     user_name = user.get("varname")
     user_age = user.get("age")
