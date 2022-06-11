@@ -4,6 +4,7 @@ import re
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery, ContentType
+from aiogram.utils.markdown import quote_html
 from loguru import logger
 
 from handlers.users.back_handler import delete_message
@@ -13,15 +14,6 @@ from loader import dp
 from states.new_data_state import NewData
 from utils.db_api import db_commands
 from utils.misc.profanityFilter import censored_message
-
-
-# функция для проверки валидности имени пользователя
-def check_name(name):
-    if len(name) > 20:
-        return False
-    if re.search(r'[^a-zA-Zа-яА-Я0-9_\-\.]', name):
-        return False
-    return True
 
 
 @dp.callback_query_handler(text='change_profile')
@@ -42,7 +34,7 @@ async def change_name(message: types.Message, state: FSMContext):
     markup = await change_info_keyboard()
     try:
         censored = censored_message(message.text)
-        await db_commands.update_user_data(varname=censored, telegram_id=message.from_user.id)
+        await db_commands.update_user_data(varname=quote_html(censored), telegram_id=message.from_user.id)
         await message.answer(f'Ваше новое имя: <b>{censored}</b>')
         await message.answer(f'Выберите, что вы хотите изменить: ', reply_markup=markup)
         await state.reset_state()
@@ -64,7 +56,7 @@ async def change_age(call: CallbackQuery):
 async def change_age(message: types.Message, state: FSMContext):
     markup = await change_info_keyboard()
     try:
-        if int(message.text) and 0 < int(message.text) < 150:
+        if int(message.text) and 0 < int(message.text) < 110:
             await db_commands.update_user_data(age=message.text, telegram_id=message.from_user.id)
             await message.answer(f'Ваш новый возраст: <b>{message.text}</b>')
             await asyncio.sleep(3)
@@ -91,7 +83,7 @@ async def change_city(call: CallbackQuery):
 @dp.message_handler(state=NewData.city)
 async def change_city(message: types.Message, state: FSMContext):
     try:
-        await db_commands.update_user_data(telegram_id=message.from_user.id, city=message.text)
+        await db_commands.update_user_data(telegram_id=message.from_user.id, city=quote_html(message.text))
     except Exception as err:
         logger.error(err)
         await message.answer(f'Произошла неизвестная ошибка. Попробуйте ещё раз',
@@ -149,7 +141,7 @@ async def change_style(message: types.Message, state: FSMContext):
     markup = await change_info_keyboard()
     try:
         censored = censored_message(message.text)
-        await db_commands.update_user_data(lifestyle=censored, telegram_id=message.from_user.id)
+        await db_commands.update_user_data(lifestyle=quote_html(censored), telegram_id=message.from_user.id)
         await message.answer(f'Данные были изменены!')
         await asyncio.sleep(2)
         await message.answer(f'Выберите, что вы хотите изменить: ', reply_markup=markup)
@@ -165,7 +157,7 @@ async def change_style(message: types.Message, state: FSMContext):
 async def new_photo(call: CallbackQuery):
     await call.message.edit_text(f'Отправьте мне новую фотографию')
     await NewData.photo.set()
-    await asyncio.sleep(5)
+    await asyncio.sleep(3)
     await delete_message(call.message)
 
 
@@ -198,7 +190,7 @@ async def update_comment_complete(message: types.Message, state: FSMContext):
     markup = await change_info_keyboard()
     try:
         censored = censored_message(message.text)
-        await db_commands.update_user_data(commentary=censored, telegram_id=message.from_user.id)
+        await db_commands.update_user_data(commentary=quote_html(censored), telegram_id=message.from_user.id)
         await message.answer(f'Комментарий принят!')
         await asyncio.sleep(3)
         await delete_message(message)
@@ -215,7 +207,7 @@ async def update_comment_complete(message: types.Message, state: FSMContext):
 @dp.callback_query_handler(text="add_inst")
 async def add_inst(call: CallbackQuery, state: FSMContext):
     await delete_message(call.message)
-    await call.message.answer("Напишите имя своего аккаунтаю\n\n"
+    await call.message.answer("Напишите имя своего аккаунта\n\n"
                               "Примеры:\n"
                               "<code>@unknown</code>\n"
                               "<code>https://www.instagram.com/unknown</code>")

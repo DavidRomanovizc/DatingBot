@@ -5,12 +5,13 @@ import asyncpg
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery, ContentType, ReplyKeyboardRemove, InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.utils.markdown import quote_html
 from loguru import logger
 
 from keyboards.default.get_location_default import location_keyboard
 from keyboards.inline.change_data_profile_inline import gender_keyboard
 from keyboards.inline.main_menu_inline import start_keyboard
-from keyboards.inline.registration_inline import confirm_keyboard, second_registration_keyboard
+from keyboards.inline.registration_inline import second_registration_keyboard
 
 from loader import dp, client
 from states.reg_state import RegData
@@ -67,7 +68,7 @@ async def commentary_reg(message: types.Message):
     markup = await gender_keyboard()
     try:
         censored = censored_message(message.text)
-        await db_commands.update_user_data(commentary=censored, telegram_id=message.from_user.id)
+        await db_commands.update_user_data(commentary=quote_html(censored), telegram_id=message.from_user.id)
         await message.answer(f'Комментарий принят! Выберите, кого вы хотите найти: ', reply_markup=markup)
 
 
@@ -101,7 +102,7 @@ async def get_name(message: types.Message, state: FSMContext):
     await state.update_data(name=message.text)
     try:
         censored = censored_message(message.text)
-        await db_commands.update_user_data(telegram_id=message.from_user.id, varname=censored)
+        await db_commands.update_user_data(telegram_id=message.from_user.id, varname=quote_html(censored))
 
     except asyncpg.exceptions.UniqueViolationError as err:
         logger.error(err)
@@ -115,7 +116,7 @@ async def get_age(message: types.Message, state: FSMContext):
     await state.update_data(age=message.text)
     try:
         censored = censored_message(message.text)
-        await db_commands.update_user_data(telegram_id=message.from_user.id, age=censored)
+        await db_commands.update_user_data(telegram_id=message.from_user.id, age=quote_html(censored))
     except Exception as err:
         logger.error(err)
         await message.answer("Вы ввели не число")
@@ -129,7 +130,8 @@ async def get_age(message: types.Message, state: FSMContext):
 @dp.message_handler(state=RegData.town)
 async def get_city(message: types.Message):
     try:
-        await db_commands.update_user_data(telegram_id=message.from_user.id, city=message.text)
+        await db_commands.update_user_data(telegram_id=message.from_user.id, city=quote_html(message.text))
+        await db_commands.update_user_data(telegram_id=message.from_user.id, need_city=message.text)
     except Exception as err:
         logger.error(err)
     await message.answer("Чем вы занимаетесь:")
@@ -143,7 +145,7 @@ async def fill_form(message: types.Message):
         y = message.location.latitude
         address = client.address(f"{x}", f"{y}")
         first_word = re.findall(r'\w+', address)[1]
-        print(first_word)
+
         await db_commands.update_user_data(telegram_id=message.from_user.id, city=first_word)
         await db_commands.update_user_data(telegram_id=message.from_user.id, need_city=first_word)
         await db_commands.update_user_data(telegram_id=message.from_user.id, longitude=x)
@@ -159,7 +161,7 @@ async def fill_form(message: types.Message):
 @dp.message_handler(state=RegData.hobbies)
 async def get_hobbies(message: types.Message, state: FSMContext):
     try:
-        await db_commands.update_user_data(telegram_id=message.from_user.id, lifestyle=message.text)
+        await db_commands.update_user_data(telegram_id=message.from_user.id, lifestyle=quote_html(message.text))
         await state.update_data(hobbies=message.text)
     except asyncpg.exceptions.UniqueViolationError as err:
         logger.error(err)

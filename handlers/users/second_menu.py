@@ -15,7 +15,7 @@ async def my_profile_menu(call: CallbackQuery):
     user_db = await db_commands.select_user(telegram_id=telegram_id)
     markup = await get_profile_keyboard(verification=user_db["verification"])
     await call.message.answer_photo(caption=f"<b>Ваша анкета:</b>\n\n "
-                                            f"<b>Статус анкеты</b> - \n{str(user_data[6])}\n\n"
+                                            f"<b>Статус анкеты - {str(user_data[6])}</b>\n\n"
                                             f"<b>Имя</b> - {str(user_data[0])}\n"
                                             f"<b>Возраст</b> - {str(user_data[1])}\n"
                                             f"<b>Пол</b> - {str(user_data[2])}\n"

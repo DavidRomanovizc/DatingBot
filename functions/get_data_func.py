@@ -1,5 +1,3 @@
-from loguru import logger
-
 from utils.db_api import db_commands
 
 
@@ -22,9 +20,9 @@ async def get_data(telegram_id: int):
     if photo_random_user is None:
         photo_random_user = "https://www.meme-arsenal.com/memes/5eae5104f379baa355e031fa1ded886c.jpg"
     if user_verification:
-        user_verification = '✅ Подтвержденный'
+        user_verification = 'Подтвержденный'
     else:
-        user_verification = '❌ Неподтвержденный'
+        user_verification = 'Неподтвержденный'
     if user_name is None:
         user_name = "Не определено"
     if user_sex is None:
