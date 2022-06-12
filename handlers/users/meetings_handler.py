@@ -14,7 +14,7 @@ from functions.get_data_func import get_data
 async def meetings_menu_handler(call: CallbackQuery):
     try:
         user_data = await get_data(call.from_user.id)
-        if user_data[6] == "✅ Подтвержденный":
+        if user_data[6] == "Подтвержденный":
             await call.message.edit_text("Вы перешли в меню тусовок", reply_markup=await meeting_keyboard())
         else:
             await call.answer("Пожалуйста, пройдите верификацию, а потом возвращайтесь")

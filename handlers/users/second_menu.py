@@ -14,15 +14,13 @@ async def my_profile_menu(call: CallbackQuery):
     await delete_message(call.message)
     user_db = await db_commands.select_user(telegram_id=telegram_id)
     markup = await get_profile_keyboard(verification=user_db["verification"])
-    await call.message.answer_photo(caption=f"<b>Ваша анкета:</b>\n\n "
-                                            f"<b>Статус анкеты - {str(user_data[6])}</b>\n\n"
-                                            f"<b>Имя</b> - {str(user_data[0])}\n"
-                                            f"<b>Возраст</b> - {str(user_data[1])}\n"
-                                            f"<b>Пол</b> - {str(user_data[2])}\n"
-                                            f"<b>Город</b> - {str(user_data[3])}\n"
-                                            f"<b>Ваше занятие</b> - {str(user_data[4])}\n\n"
-                                            f"<b>О себе</b> - {str(user_data[5])}\n"
-                                            f"<b>Инстаграм</b> - <code>{str(user_data[8])}</code>\n",
+    await call.message.answer_photo(caption=f"<b>Ваша анкета:</b>\n\n"
+                                            f"{str(user_data[0])}, "
+                                            f"{str(user_data[1])} лет, "
+                                            f"{str(user_data[3])}\n\n"
+                                            f"<b>О себе</b> - {str(user_data[5])}\n\n"
+                                            f"<b>Инстаграм</b> - <code>{str(user_data[8])}</code>\n"
+                                            f"<b>Статус анкеты - {str(user_data[6])}</b>",
                                     photo=user_data[7], reply_markup=markup)
 
 

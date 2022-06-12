@@ -41,7 +41,6 @@ async def start_finding(call: CallbackQuery, state: FSMContext):
                            state='finding')
 async def like_questionnaire(call: CallbackQuery, state: FSMContext, callback_data: typing.Dict[str, str]):
     user_list = await get_next_user(call.from_user.id)
-    print(user_list)
     random_user = random.choice(user_list)
     action = callback_data['action']
     user_db = await db_commands.select_user(telegram_id=call.from_user.id)

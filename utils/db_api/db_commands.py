@@ -82,3 +82,6 @@ def search_user(need_partner_sex, need_age_min, need_age_max, user_need_city):
         & Q(city=user_need_city)).all().values()
 
 
+@sync_to_async
+def count_all_users_kwarg(**kwarg):
+    return User.objects.filter(**kwarg).all().values().count()
