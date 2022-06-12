@@ -11,10 +11,10 @@ async def get_inst(call: CallbackQuery):
     telegram_id = call.from_user.id
     user_data = await get_data(telegram_id)
     user_status = user_data[9]
-    users_gender_M = await db_commands.select_all_users_kwarg(sex="Мужской")
-    users_gender_F = await db_commands.select_all_users_kwarg(sex="Женский")
-    users_city = await db_commands.select_all_users_kwarg(city="Москва")
-    users_verified = await db_commands.select_all_users_kwarg(verification=True)
+    users_gender_M = await db_commands.count_all_users_kwarg(sex="Мужской")
+    users_gender_F = await db_commands.count_all_users_kwarg(sex="Женский")
+    users_city = await db_commands.count_all_users_kwarg(city="Москва")
+    users_verified = await db_commands.count_all_users_kwarg(verification=True)
     if user_status:
         markup = await only_back_keyboard()
         count_users = await db_commands.count_users()
