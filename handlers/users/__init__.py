@@ -5,7 +5,7 @@ from . import registration_handler
 from . import change_datas
 from . import second_menu
 from . import statistics
-from . import information
+from . import brandbook_handler
 from . import view_ques_handler
 from . import view_meetings_handler
 from . import support_handler
