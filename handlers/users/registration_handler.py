@@ -188,13 +188,10 @@ async def get_photo(message: types.Message, state: FSMContext):
     user_data = await get_data(telegram_id)
     user_db = await db_commands.select_user(telegram_id=telegram_id)
     markup = await start_keyboard(status=user_db['status'])
-    await message.answer_photo(caption=f"Регистрация завершена успешно! \n\n "
-                                       f"<b>Статус анкеты</b> - \n{str(user_data[6])}\n\n"
-                                       f"<b>Имя</b> - {str(user_data[0])}\n"
-                                       f"<b>Возраст</b> - {str(user_data[1])}\n"
-                                       f"<b>Пол</b> - {str(user_data[2])}\n"
-                                       f"<b>Город</b> - {str(user_data[3])}\n"
-                                       f"<b>Ваше занятие</b> - {str(user_data[4])}\n"
-                                       f"<b>О себе</b> - {str(user_data[5])}\n\n",
+    await message.answer_photo(caption=f"Регистрация успешно завершена! \n\n "
+                                       f"{str(user_data[0])}, "
+                                       f"{str(user_data[1])} лет, "
+                                       f"{str(user_data[3])}\n\n"
+                                       f"<b>О себе</b> - {str(user_data[5])}",
                                photo=user_db.get('photo_id'), reply_markup=ReplyKeyboardRemove())
     await message.answer("Меню: ", reply_markup=markup)
