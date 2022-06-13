@@ -101,8 +101,8 @@ async def exit_support(call: types.CallbackQuery, state: FSMContext, callback_da
     second_state = dp.current_state(user=user_id, chat=user_id)
 
     if await second_state.get_state() is not None:
-        data_second = await functions.get_data_func.get_data(telegram_id=call.from_user.id)
-        second_id = data_second.get("second_id")
+        data = await state.get_data()
+        second_id = data.get("second_id")
         if int(second_id) == call.from_user.id:
             await second_state.reset_state()
             await bot.send_message(user_id, "Пользователь завершил сеанс техподдержки")
