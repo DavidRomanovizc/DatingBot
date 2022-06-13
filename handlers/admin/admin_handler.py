@@ -47,8 +47,7 @@ async def mailing_final(call: CallbackQuery, state: FSMContext):
     users = await db_commands.select_all_users()
     for i in users:
         id_chat = i.get('telegram_id')
-        await bot.send_message(chat_id=id_chat, text=f'Вы получили следующую рассылку: \n\n'
-                                                     f'{answer1}\n\n')
+        await bot.send_message(chat_id=id_chat, text=f'{answer1}\n\n')
         await sleep(0.5)
 
     await state.reset_state()
