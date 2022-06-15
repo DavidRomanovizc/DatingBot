@@ -53,7 +53,7 @@ async def confirm_send_monitoring(call: types.CallbackQuery):
 
 @dp.callback_query_handler(action_keyboard_monitoring.filter(action="ban"))
 async def ban_form_owner(call: types.CallbackQuery):
-    target_id = call.data.split("_")[1]
+    target_id = call.data.split(":")[2]
     await db_commands.update_user_data(telegram_id=target_id, is_banned=False)
     await call.answer("Анкета пользователя была заблокирована")
     try:
