@@ -11,4 +11,5 @@ from . import view_meetings_handler
 from . import support_handler
 from . import filters_handler
 from . import back_handler
+from . import admin_handlers
 from . import echo_handler

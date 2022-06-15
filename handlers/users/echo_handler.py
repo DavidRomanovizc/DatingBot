@@ -11,14 +11,14 @@ from loader import dp
 async def bot_echo(message: types.Message):
     text = [
         "Эхо без состояния.",
-        "Сообщение:",
-        message.text
+        "Сообщение: ",
+        hcode(message.text)
     ]
 
     await message.answer('\n'.join(text))
 
 
-@dp.message_handler(state=None)
+@dp.message_handler(state="*")
 async def bot_echo_all(message: types.Message, state: FSMContext):
     state_name = await state.get_state()
     text = [
