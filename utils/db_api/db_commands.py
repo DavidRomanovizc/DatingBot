@@ -76,7 +76,7 @@ def select_user_username(username: str):
 
 
 @sync_to_async
-def search_user(need_partner_sex, need_age_min, need_age_max, user_need_city):
+def search_users(need_partner_sex, need_age_min, need_age_max, user_need_city):
     return User.objects.filter(
         Q(sex=need_partner_sex) & Q(age__gte=need_age_min) & Q(age__lte=need_age_max)
         & Q(city=user_need_city)).all().values()

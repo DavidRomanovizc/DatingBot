@@ -15,7 +15,7 @@
 ## 🖍 Used technology
 ![Python](https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=blue)
 ![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=green)
-![Django](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+![Postgresql](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
 
 
 
@@ -139,5 +139,7 @@ to [PEP 8](https://peps.python.org/pep-0008/#:~:text=Use%20the%20function%20nami
 ## :scroll: License
 
 License:\
-[MIT License](LICENSE)\
-© [David Dzhalaev](https://github.com/DavidRomanovizc)
+[MIT License](LICENSE)
+
+![image](https://user-images.githubusercontent.com/72649244/173241368-c40bd408-8df8-450f-9ac7-530de1692e1c.png)
+
