@@ -44,7 +44,7 @@ async def fill_questionary(message: types.Message, state: FSMContext):
     try:
         telegram_id = message.from_user.id
         await db_commands.update_user_meetings_data(telegram_id=telegram_id, meetings_description=message.text)
-        await state.finish()
+        await db_commands.update_user_meetings_data(telegram_id=telegram_id, status=True)
 
         user_data = await get_meeting_data(telegram_id)
 
@@ -52,6 +52,7 @@ async def fill_questionary(message: types.Message, state: FSMContext):
                              f"{user_data[1]}\n\n"
                              f'<a href="https://t.me/{user_data[0]}">{user_data[0]}</a>',
                              reply_markup=await meeting_back_keyboard())
+        await state.finish()
     except Exception as err:
         logger.error(err)
         await message.answer("Произошла неизвестная ошибка! Попробуйте еще раз.")
