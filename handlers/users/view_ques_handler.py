@@ -116,4 +116,4 @@ async def like_questionnaire(call: CallbackQuery, state: FSMContext):
 async def echo_message_finding(message: types.Message, state: FSMContext):
     user_db = await db_commands.select_user(telegram_id=message.from_user.id)
     await message.answer("Меню: ", reply_markup=await start_keyboard(user_db["status"]))
-    await state.reset_state(with_data=True)
+    await state.reset_state()
