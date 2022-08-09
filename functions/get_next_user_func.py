@@ -1,14 +1,11 @@
+from functions.get_data_filters_func import get_data_filters
 from utils.db_api import db_commands
 
 
 async def get_next_user(telegram_id, monitoring=False):
-    user = await db_commands.select_user(telegram_id=telegram_id)
-    user_sex = user.get("need_partner_sex")
-    user_need_age_min = user.get("need_partner_age_min")
-    user_need_age_max = user.get("need_partner_age_max")
-    user_need_city = user.get("need_city")
+    user = await get_data_filters(telegram_id)
     if not monitoring:
-        user_filter = await db_commands.search_users(user_sex, user_need_age_min, user_need_age_max, user_need_city)
+        user_filter = await db_commands.search_users(user[2], user[0], user[1], user[3])
     else:
         user_filter = await db_commands.select_all_users()
 
