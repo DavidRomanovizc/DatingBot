@@ -18,6 +18,10 @@ def add_user(telegram_id, name, username):
 def delete_user(telegram_id):
     return User.objects.filter(telegram_id=telegram_id).delete()
 
+@sync_to_async
+def delete_user_meetings(telegram_id):
+    return UserMeetings.objects.filter(telegram_id=telegram_id).delete()
+
 
 @sync_to_async
 def add_meetings_user(telegram_id, username):
