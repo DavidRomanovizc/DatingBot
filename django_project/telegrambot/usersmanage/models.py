@@ -51,6 +51,7 @@ class UserMeetings(TimeBasedModel):
     telegram_id = models.BigIntegerField(unique=True, default=1, verbose_name="ID пользователя Телеграм")
     username = models.CharField(max_length=255, verbose_name="Username Telegram")
     meetings_description = models.CharField(max_length=255, verbose_name="Описание встречи", null=True)
+    status = models.BooleanField(verbose_name="Статус мероприятия", default=False)
 
     def __str__(self):
         return f"№{self.id} ({self.telegram_id} - {self.username})"
