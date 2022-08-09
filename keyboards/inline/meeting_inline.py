@@ -22,6 +22,6 @@ async def reaction_meetings_keyboard():
 
 async def meeting_back_keyboard():
     markup = InlineKeyboardMarkup()
-    back = InlineKeyboardButton(text="⏪️ Вернуться в меню", callback_data="stopped")
+    back = InlineKeyboardButton(text="⏪️ Вернуться в меню", callback_data="back_with_delete")
     markup.add(back)
     return markup
