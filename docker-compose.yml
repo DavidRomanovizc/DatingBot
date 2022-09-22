@@ -5,8 +5,8 @@ services:
   db:
     container_name: database
     image: sameersbn/postgresql:10-2
-      env_file:
-        - ".env"
+    env_file:
+      - ".env"
     environment:
       PG_PASSWORD: $DB_PASS
     restart: always
