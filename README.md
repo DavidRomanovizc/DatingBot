@@ -27,20 +27,20 @@
 Before installing this DatingBot-project you need to check if you have python\
 To check if you have python installed, run this command in your terminal:
 
-```sh
-python -V
+```vim
+$ python -V
 ```
 
 If you get an answer like this, it means that `Python` is installed.
 
-```sh
-Python 3.9.5
+```vim
+$ Python 3.9.5
 ```
 
 #### Then fork the DatingBot
 
 ```sh
-https://github.com/DavidRomanovizc/DatingBot.git
+$ https://github.com/DavidRomanovizc/DatingBot.git
 ```
 
 ## :rocket: Usage
@@ -53,6 +53,7 @@ After that, you need to fill it with data.
 |------------|-------------|--------------|
 | BOT_TOKEN  | str         | True         |
 | ADMINS     | list        | True         |
+| SUPPORTS   | list        | True         |
 | IP         | str         | True         |
 | DB_USER    | str         | True         |
 | DB_PASS    | str         | True         |
@@ -63,6 +64,7 @@ After that, you need to fill it with data.
 
 `BOT_TOKEN` - Bot token\
 `ADMINS` - list of admins id\
+`SUPPORTS` - list of admins id\
 `IP` - ip for other services
 
 `DB_USER` - username of the database owner\
@@ -76,8 +78,8 @@ After that, you need to fill it with data.
 #### :green_book: Django
 
 Install Django 
-```sh
-pip install Django
+```vim
+$ pip install Django
 ```
 
 To create a `SECRET_KEY` you can use the site to [generate secret keys](https://djecrety.ir/)\
@@ -89,8 +91,8 @@ SECRET_KEY=jjv@^0qv^=aydunfjo$qpd_66j+)egm1#-c1iwt%mtjinm)ftj
 
 Install the jazzmin
 
-```sh
-pip install -U django-jazzmin
+```vim
+$ pip install -U django-jazzmin
 ```
 
 Add jazzmin to your `INSTALLED_APPS` before django.contrib.admin.
@@ -104,11 +106,11 @@ INSTALLED_APPS = [
 ]
 ```
 
-```shell
-python django_app.py makemigrations
-python django_app.py migrate
-python django_app.py createsuperuser
-python django_app.py runserver
+```vim
+$ python django_app.py makemigrations
+$ python django_app.py migrate
+$ python django_app.py createsuperuser
+$ python django_app.py runserver
 ```
 
 And after that you need to run the file `app.py `
