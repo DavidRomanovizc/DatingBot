@@ -76,12 +76,11 @@ async def like_questionnaire(call: CallbackQuery, state: FSMContext, callback_da
 async def like_questionnaire_reciprocity(call: CallbackQuery, state: FSMContext, callback_data: typing.Dict[str, str]):
     action = callback_data['action']
     username = call.from_user.username
-    user_db = await db_commands.select_user(telegram_id=call.from_user.id)
     if action == "like_reciprocity":
         user_for_like = callback_data["user_for_like"]
         user_db = await db_commands.select_user(telegram_id=call.from_user.id)
         await asyncio.sleep(1)
-        await call.message.delete()
+
         await call.message.answer("Ваша анкета отправлена другому пользователю",
                                   reply_markup=await start_keyboard(user_db["status"]))
         await asyncio.sleep(5)
@@ -90,11 +89,13 @@ async def like_questionnaire_reciprocity(call: CallbackQuery, state: FSMContext,
                                                         f'<a href="https://t.me/{username}">{username}</a>',
                                                user_db=user_db)
         await state.reset_state()
+        await state.reset_state()
     elif action == "dislike_reciprocity":
         await asyncio.sleep(1)
         await delete_message(call.message)
-        await call.message.answer("Меню: ", reply_markup=await start_keyboard(user_db["status"]))
         await state.reset_state()
+        user_db = await db_commands.select_user(telegram_id=call.from_user.id)
+        await call.message.answer("Меню: ", reply_markup=await start_keyboard(user_db["status"]))
     await state.reset_state()
 
 
@@ -102,14 +103,13 @@ async def like_questionnaire_reciprocity(call: CallbackQuery, state: FSMContext,
 async def like_questionnaire(call: CallbackQuery, state: FSMContext):
     user_list = await get_next_user(call.from_user.id)
     random_user = random.choice(user_list)
-
     try:
         await create_questionnaire(form_owner=random_user, chat_id=call.from_user.id)
 
         await state.reset_data()
-    except Exception as err:
-        logger.error(err)
-        await create_questionnaire(form_owner=random_user, chat_id=call.from_user.id)
+    except IndexError:
+        await call.answer("На данный момент у нас нет подходящих анкет для вас")
+        await state.reset_data()
 
 
 @dp.message_handler(state='finding')
