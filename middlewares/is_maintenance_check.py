@@ -1,7 +1,7 @@
 from aiogram import types
 from aiogram.dispatcher.middlewares import BaseMiddleware
 
-from data.config import ADMINS
+from data.config import load_config
 from utils.db_api import db_commands
 
 
@@ -13,7 +13,7 @@ class IsMaintenance(BaseMiddleware):
     async def on_process_message(self, message: types.Message, data: dict):
         setting = await db_commands.select_setting()
         try:
-            if setting.get('is_maintenance') and message.from_user.id not in ADMINS:
+            if setting.get('is_maintenance') and message.from_user.id not in load_config().tg_bot.admin_ids:
                 await message.answer('Ведутся технические работы!!!')
                 raise BaseException
         except Exception as err:

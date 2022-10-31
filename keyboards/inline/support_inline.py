@@ -3,7 +3,7 @@ import random
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.callback_data import CallbackData
 
-from data.config import support_ids
+from data.config import load_config
 from loader import dp
 
 support_callback = CallbackData("ask_support", "messages", "user_id", "as_user")
@@ -22,8 +22,8 @@ async def check_support_available(support_id):
 
 
 async def get_support_manager():
-    random.shuffle(support_ids)
-    for support_id in support_ids:
+    random.shuffle(load_config().tg_bot.support_ids)
+    for support_id in load_config().tg_bot.support_ids:
         support_id = await check_support_available(support_id)
         if support_id:
             return support_id

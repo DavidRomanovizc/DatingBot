@@ -1,24 +1,57 @@
-from pathlib import Path
+from dataclasses import dataclass
+from typing import List
 
 from environs import Env
 
-env = Env()
-env.read_env()
 
-support_ids = list(map(int, env.list("SUPPORTS")))
-BOT_TOKEN = env.str("BOT_TOKEN")
-ADMINS = list(map(int, env.list("ADMINS")))
-IP = env.str("IP")
+@dataclass
+class DataBaseConfig:
+    user: str
+    password: str
+    host: str
+    database: str
 
-DB_USER = env.str('DB_USER')
-DB_PASS = env.str('DB_PASS')
-DB_HOST = env.str('DB_HOST')
-DB_NAME = env.str('DB_NAME')
 
-SECRET_KEY = env.str("SECRET_KEY")
+@dataclass
+class TgBot:
+    token: str
+    admin_ids: List[int]
+    support_ids: List[int]
+    ip: str
 
-I18N_DOMAIN = "testbot"
-BASE_DIR = Path(__file__).parent
-LOCALES_DIR = BASE_DIR / "locales"
 
-Yandex_API_KEY = env.str('API_KEY')
+@dataclass
+class Miscellaneous:
+    secret_key: str
+    yandex_api_key: str
+
+
+@dataclass
+class Config:
+    tg_bot: TgBot
+    db: DataBaseConfig
+    misc: Miscellaneous
+
+
+def load_config() -> Config:
+    env = Env()
+    env.read_env()
+
+    return Config(
+        tg_bot=TgBot(
+            token=env.str("BOT_TOKEN"),
+            admin_ids=list(map(int, env.list("ADMINS"))),
+            support_ids=list(map(int, env.list("SUPPORTS"))),
+            ip=env.str("IP"),
+        ),
+        db=DataBaseConfig(
+            user=env.str('DB_USER'),
+            password=env.str('DB_PASS'),
+            host=env.str('DB_HOST'),
+            database=env.str('DB_NAME')
+        ),
+        misc=Miscellaneous(
+            secret_key=env.str("SECRET_KEY"),
+            yandex_api_key=env.str('API_KEY')
+        )
+    )
