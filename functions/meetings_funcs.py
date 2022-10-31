@@ -1,9 +1,10 @@
 from keyboards.inline.meeting_inline import reaction_meetings_keyboard
 from loader import bot
 from utils.db_api import db_commands
+from typing import Any
 
 
-async def get_meeting_data(telegram_id):
+async def get_meeting_data(telegram_id) -> tuple[str, str, Any]:
     user = await db_commands.select_meetings_user(telegram_id=telegram_id)
 
     user_name = user.get("username")

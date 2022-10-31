@@ -1,7 +1,7 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 
-async def change_info_keyboard():
+async def change_info_keyboard() -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup(row_width=2)
     name = InlineKeyboardButton(text="Имя", callback_data="name")
     gender = InlineKeyboardButton(text="Пол", callback_data="gender")
@@ -18,7 +18,7 @@ async def change_info_keyboard():
     return markup
 
 
-async def gender_keyboard():
+async def gender_keyboard() -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup(row_width=1)
     male = InlineKeyboardButton(text='Парень', callback_data='male')
     female = InlineKeyboardButton(text='Девушка', callback_data='female')

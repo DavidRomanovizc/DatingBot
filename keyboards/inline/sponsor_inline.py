@@ -1,7 +1,7 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 
-async def sponsors_keyboard():
+async def sponsors_keyboard() -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup()
     sponsor = InlineKeyboardButton("🕴️ Спонсорство", callback_data="sponsors")
     back_to_menu = InlineKeyboardButton(text="⏪️ Вернуться в меню", callback_data="start_menu")
@@ -10,8 +10,7 @@ async def sponsors_keyboard():
     return markup
 
 
-
-async def sponsor_keyboard():
+async def sponsor_keyboard() -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup()
     donate = InlineKeyboardButton("💰 Донат", url="https://www.donationalerts.com/r/quegroup")
     back = InlineKeyboardButton(text="⏪️ Вернуться в меню", callback_data="statistics")

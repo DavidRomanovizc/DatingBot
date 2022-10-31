@@ -1,7 +1,7 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 
-async def meeting_keyboard():
+async def meeting_keyboard() -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup()
     create_ques = InlineKeyboardButton("📝 Создать анкету", callback_data="create_ques")
     view_ques = InlineKeyboardButton("👔 Смотреть анкеты", callback_data="view_ques")
@@ -11,7 +11,7 @@ async def meeting_keyboard():
     return markup
 
 
-async def reaction_meetings_keyboard():
+async def reaction_meetings_keyboard() -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup()
     further = InlineKeyboardButton("➡️ Далее", callback_data="further")
     back_to_menu = InlineKeyboardButton("⏪️ Вернуться в меню", callback_data="stopped")
@@ -20,7 +20,7 @@ async def reaction_meetings_keyboard():
     return markup
 
 
-async def meeting_back_keyboard():
+async def meeting_back_keyboard() -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup()
     back = InlineKeyboardButton(text="⏪️ Вернуться в меню", callback_data="back_with_delete")
     markup.add(back)

@@ -1,7 +1,7 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 
-async def filters_keyboard():
+async def filters_keyboard() -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup()
     user_need_city = InlineKeyboardButton(text="🏙️ Город партнера", callback_data="needs_city")
     user_age_period = InlineKeyboardButton(text="🔞 Возр.диапазон", callback_data='user_age_period')

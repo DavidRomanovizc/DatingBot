@@ -1,7 +1,7 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 
-async def first_str_keyboard():
+async def first_str_keyboard() -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup()
     forward = InlineKeyboardButton(text='Вперед ➡️', callback_data='forward_f')
     back = InlineKeyboardButton(text='❌ Закрыть', callback_data='back_with_delete')
@@ -10,7 +10,7 @@ async def first_str_keyboard():
     return markup
 
 
-async def second_str_keyboard():
+async def second_str_keyboard() -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup()
     backward = InlineKeyboardButton(text='⏪️ Назад', callback_data='backward_s')
     forward = InlineKeyboardButton(text='Вперед ➡️', callback_data='forward_s')
@@ -20,7 +20,7 @@ async def second_str_keyboard():
     return markup
 
 
-async def third_str_keyboard():
+async def third_str_keyboard() -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup()
     backward = InlineKeyboardButton(text='⏪️ Назад', callback_data='backward_th')
     forward = InlineKeyboardButton(text='Вперед ➡️', callback_data='forward_th')
@@ -30,7 +30,7 @@ async def third_str_keyboard():
     return markup
 
 
-async def fourth_str_keyboard():
+async def fourth_str_keyboard() -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup()
     backward = InlineKeyboardButton(text='⏪️ Назад', callback_data='backward_four')
     back = InlineKeyboardButton(text='❌ Закрыть', callback_data='back_with_delete')

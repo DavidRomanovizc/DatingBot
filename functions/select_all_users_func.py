@@ -1,8 +1,9 @@
 from functions.meetings_funcs import get_meeting_data
 from utils.db_api import db_commands
+from typing import List
 
 
-async def select_all_users_list(telegram_id: int):
+async def select_all_users_list(telegram_id: int) -> List[int]:
     users_records = await db_commands.select_all_user_meetings()
     list_id = []
     for i in users_records:

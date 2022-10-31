@@ -1,7 +1,7 @@
 from utils.db_api import db_commands
 
 
-async def get_data(telegram_id: int):
+async def get_data(telegram_id: int) -> tuple[str, int, str, str, str, str, str, str, str, str, str]:
     user = await db_commands.select_user(telegram_id=telegram_id)
     user_name = user.get("varname")
     user_age = user.get("age")

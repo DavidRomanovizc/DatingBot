@@ -6,7 +6,7 @@ action_keyboard_monitoring = CallbackData("questionnaire_monitoring", "action", 
 action_reciprocity_keyboard = CallbackData("questionnaire", "action", "user_for_like")
 
 
-async def questionnaires_keyboard(target_id, monitoring=False):
+async def questionnaires_keyboard(target_id, monitoring=False) -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup(row_width=5)
     if not monitoring:
         like = InlineKeyboardButton(text='👍', callback_data=action_keyboard.new(action="like",
@@ -31,7 +31,7 @@ async def questionnaires_keyboard(target_id, monitoring=False):
         return markup
 
 
-async def reciprocity_keyboard(user_for_like):
+async def reciprocity_keyboard(user_for_like) -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup(row_width=2)
     like = InlineKeyboardButton(text='👍', callback_data=action_reciprocity_keyboard.new(action="like_reciprocity",
                                                                                          user_for_like=user_for_like))
@@ -43,7 +43,7 @@ async def reciprocity_keyboard(user_for_like):
     return markup
 
 
-async def back_viewing_ques_keyboard():
+async def back_viewing_ques_keyboard() -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup(row_width=1)
     back = InlineKeyboardButton(text='Вернуться к просмотру анкет', callback_data="go_back_to_viewing_ques")
     markup.row(back)

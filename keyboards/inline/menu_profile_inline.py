@@ -1,7 +1,7 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 
-async def get_profile_keyboard(verification):
+async def get_profile_keyboard(verification) -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup()
     if not verification:
         verification_btn = InlineKeyboardButton(text="✅ Верификация", callback_data="verification")
