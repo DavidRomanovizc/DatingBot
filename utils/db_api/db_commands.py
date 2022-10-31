@@ -1,6 +1,13 @@
 from asgiref.sync import sync_to_async
-from django_project.telegrambot.usersmanage.models import User, UserMeetings
+
 from django.db.models import Q
+import os
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_project.telegrambot.telegrambot.settings')
+import django
+
+django.setup()
+from django_project.telegrambot.usersmanage.models import User, UserMeetings
 
 
 @sync_to_async
@@ -17,6 +24,7 @@ def add_user(telegram_id, name, username):
 @sync_to_async
 def delete_user(telegram_id):
     return User.objects.filter(telegram_id=telegram_id).delete()
+
 
 @sync_to_async
 def delete_user_meetings(telegram_id):
