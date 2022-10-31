@@ -1,6 +1,4 @@
 import asyncio
-import re
-
 import asyncpg
 from aiogram import types
 from aiogram.dispatcher import FSMContext
@@ -8,6 +6,7 @@ from aiogram.types import CallbackQuery, ContentType, ReplyKeyboardRemove, Inlin
 from aiogram.utils.markdown import quote_html
 from loguru import logger
 
+from functions.auxiliary_tools import choice_gender, determining_location
 from keyboards.default.get_location_default import location_keyboard
 from keyboards.inline.change_data_profile_inline import gender_keyboard
 from keyboards.inline.main_menu_inline import start_keyboard
@@ -71,7 +70,6 @@ async def commentary_reg(message: types.Message):
         await db_commands.update_user_data(commentary=quote_html(censored), telegram_id=message.from_user.id)
         await message.answer(f'Комментарий принят! Выберите, кого вы хотите найти: ', reply_markup=markup)
 
-
     except Exception as err:
         logger.error(err)
         await message.answer(f'Произошла неизвестная ошибка! Попробуйте изменить комментарий позже в разделе '
@@ -82,17 +80,7 @@ async def commentary_reg(message: types.Message):
 
 @dp.callback_query_handler(state=RegData.need_partner_sex)
 async def sex_reg(call: CallbackQuery):
-    if call.data == 'male':
-        try:
-            await db_commands.update_user_data(telegram_id=call.from_user.id, need_partner_sex='Мужской')
-        except asyncpg.exceptions.UniqueViolationError as err:
-            logger.error(err)
-    elif call.data == 'female':
-        try:
-            await db_commands.update_user_data(telegram_id=call.from_user.id, need_partner_sex='Женский')
-        except asyncpg.exceptions.UniqueViolationError as err:
-            logger.error(err)
-
+    await choice_gender(call)
     await call.message.edit_text(f'Отлично! Теперь напишите мне ваше имя, которое будут все видеть в анкете')
     await RegData.name.set()
 
@@ -130,11 +118,14 @@ async def get_age(message: types.Message, state: FSMContext):
 @dp.message_handler(state=RegData.town)
 async def get_city(message: types.Message):
     try:
-        await db_commands.update_user_data(telegram_id=message.from_user.id, city=quote_html(message.text))
-        await db_commands.update_user_data(telegram_id=message.from_user.id, need_city=message.text)
+        await determining_location(message, flag=True)
     except Exception as err:
         logger.error(err)
-    await message.answer("Чем вы занимаетесь:")
+
+
+@dp.callback_query_handler(text="yes_all_good", state=RegData.town)
+async def get_hobbies(call: CallbackQuery):
+    await call.message.edit_text("Чем вы занимаетесь:")
     await RegData.hobbies.set()
 
 
@@ -144,10 +135,9 @@ async def fill_form(message: types.Message):
         x = message.location.longitude
         y = message.location.latitude
         address = client.address(f"{x}", f"{y}")
-        first_word = re.findall(r'\w+', address)[1]
-
-        await db_commands.update_user_data(telegram_id=message.from_user.id, city=first_word)
-        await db_commands.update_user_data(telegram_id=message.from_user.id, need_city=first_word)
+        address = address.split(",")[0:2]
+        address = ",".join(address)
+        await db_commands.update_user_data(telegram_id=message.from_user.id, city=address)
         await db_commands.update_user_data(telegram_id=message.from_user.id, longitude=x)
         await db_commands.update_user_data(telegram_id=message.from_user.id, latitude=y)
         await message.answer('Ваш город сохранен!')

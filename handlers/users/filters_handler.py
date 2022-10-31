@@ -1,6 +1,5 @@
 import asyncio
 
-import asyncpg
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery
@@ -8,6 +7,7 @@ import re
 
 from loguru import logger
 
+from functions.auxiliary_tools import choice_gender, determining_location
 from keyboards.inline.change_data_profile_inline import gender_keyboard
 from keyboards.inline.filters_inline import filters_keyboard
 
@@ -81,17 +81,7 @@ async def desired_max_range(call: CallbackQuery, state: FSMContext):
 
 @dp.callback_query_handler(state="gender")
 async def desired_gender(call: CallbackQuery, state: FSMContext):
-    if call.data == 'male':
-        try:
-            await db_commands.update_user_data(telegram_id=call.from_user.id, need_partner_sex='Мужской')
-        except asyncpg.exceptions.UniqueViolationError as err:
-            logger.error(err)
-    elif call.data == 'female':
-        try:
-            await db_commands.update_user_data(telegram_id=call.from_user.id, need_partner_sex='Женский')
-        except asyncpg.exceptions.UniqueViolationError as err:
-            logger.error(err)
-
+    await choice_gender(call)
     await call.message.edit_text("Данные сохранены")
     await asyncio.sleep(1)
     user_data = await get_data_filters(call.from_user.id)
@@ -110,19 +100,25 @@ async def user_city_filter(call: CallbackQuery, state: FSMContext):
 
 
 @dp.message_handler(state="city")
-async def user_city_filter_state(message: types.Message, state: FSMContext):
+async def user_city_filter_state(message: types.Message):
     try:
-        await db_commands.update_user_data(telegram_id=message.from_user.id, need_city=message.text)
+        await determining_location(message, flag=False)
+
     except Exception as err:
         logger.info(err)
         await message.answer("Произошла ошибка, попробуйте еще раз")
         return
-    await message.answer("Данные сохранены")
+
+
+@dp.callback_query_handler(text="yes_all_good", state="city")
+async def get_hobbies(call: CallbackQuery, state: FSMContext):
     await asyncio.sleep(1)
-    user_data = await get_data_filters(message.from_user.id)
-    await message.answer("Фильтр по подбору партнеров:\n\n"
-                         f"🚻 Необходимы пол партнера: {user_data[2]}\n"
-                         f"🔞 Возрастной диапазон: {user_data[0]}-{user_data[1]} лет\n\n"
-                         f"🏙️ Город партнера: {user_data[3]}",
-                         reply_markup=await filters_keyboard())
+    await call.message.edit_text("Данные сохранены")
+    await asyncio.sleep(2)
+    user_data = await get_data_filters(call.from_user.id)
+    await call.message.edit_text("Фильтр по подбору партнеров:\n\n"
+                                 f"🚻 Необходимы пол партнера: {user_data[2]}\n"
+                                 f"🔞 Возрастной диапазон: {user_data[0]}-{user_data[1]} лет\n\n"
+                                 f"🏙️ Город партнера: {user_data[3]}",
+                                 reply_markup=await filters_keyboard())
     await state.finish()

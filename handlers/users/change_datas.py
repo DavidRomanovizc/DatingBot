@@ -7,6 +7,7 @@ from aiogram.types import CallbackQuery, ContentType
 from aiogram.utils.markdown import quote_html
 from loguru import logger
 
+from functions.auxiliary_tools import determining_location
 from handlers.users.back_handler import delete_message
 from keyboards.inline.change_data_profile_inline import change_info_keyboard, gender_keyboard
 from keyboards.inline.main_menu_inline import start_keyboard
@@ -81,17 +82,20 @@ async def change_city(call: CallbackQuery):
 
 
 @dp.message_handler(state=NewData.city)
-async def change_city(message: types.Message, state: FSMContext):
+async def change_city(message: types.Message):
     try:
-        await db_commands.update_user_data(telegram_id=message.from_user.id, city=quote_html(message.text))
+        await determining_location(message, flag=True)
     except Exception as err:
         logger.error(err)
         await message.answer(f'Произошла неизвестная ошибка. Попробуйте ещё раз',
                              reply_markup=await change_info_keyboard())
-    await asyncio.sleep(1)
-    await message.answer(f'Данные успешно изменены.\nВыберите, что вы хотите изменить: ',
-                         reply_markup=await change_info_keyboard())
-    await state.finish()
+
+
+@dp.callback_query_handler(text="yes_all_good", state=NewData.city)
+async def get_hobbies(call: CallbackQuery, state: FSMContext):
+    await call.message.edit_text(f'Данные успешно изменены.\nВыберите, что вы хотите изменить: ',
+                                 reply_markup=await change_info_keyboard())
+    await state.reset_state()
 
 
 @dp.callback_query_handler(text='gender')

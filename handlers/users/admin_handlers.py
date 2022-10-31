@@ -1,4 +1,3 @@
-import random
 from asyncio import sleep
 
 from aiogram import types
@@ -9,15 +8,12 @@ from aiogram.utils.markdown import escape_md, quote_html
 from loguru import logger
 
 from filters.is_admin_filter import IsAdmin
-from functions.create_forms_funcs import create_questionnaire
-from functions.get_data_func import get_data
-from functions.get_next_user_func import get_next_user
-from handlers.users.back_handler import delete_message
+from functions.create_forms_funcs import monitoring_questionnaire
+
 from keyboards.default.admin_default import admin_keyboard
 from keyboards.inline.admin_inline import start_monitoring_keyboard, confirm_with_button_keyboard, add_buttons_keyboard
 from keyboards.inline.cancel_inline import cancel_keyboard
 from keyboards.inline.questionnaires_inline import action_keyboard_monitoring
-from keyboards.inline.registration_inline import registration_keyboard
 from loader import dp, bot
 from utils.db_api import db_commands
 
@@ -35,20 +31,7 @@ async def admin_monitoring(message: types.Message):
 
 @dp.callback_query_handler(text="confirm_send_monitoring")
 async def confirm_send_monitoring(call: types.CallbackQuery):
-    try:
-        telegram_id = call.from_user.id
-        user_data = await get_data(telegram_id)
-        user_list = await get_next_user(telegram_id, monitoring=True)
-        user_status = user_data[9]
-        if user_status:
-            random_user = random.choice(user_list)
-            await delete_message(call.message)
-            await create_questionnaire(form_owner=random_user, chat_id=telegram_id, monitoring=True)
-        else:
-            await call.message.edit_text("Вам необходимо зарегистрироваться, нажмите на кнопку ниже",
-                                         reply_markup=await registration_keyboard())
-    except IndexError:
-        await call.answer("На данный момент у нас нет подходящих анкет для вас")
+    await monitoring_questionnaire(call)
 
 
 @dp.callback_query_handler(action_keyboard_monitoring.filter(action="ban"))
@@ -58,38 +41,12 @@ async def ban_form_owner(call: types.CallbackQuery):
     await db_commands.delete_user(telegram_id=target_id)
     await db_commands.delete_user_meetings(telegram_id=target_id)
     await call.answer("Анкета пользователя была заблокирована")
-    try:
-        telegram_id = call.from_user.id
-        user_data = await get_data(telegram_id)
-        user_list = await get_next_user(telegram_id, monitoring=True)
-        user_status = user_data[9]
-        if user_status:
-            random_user = random.choice(user_list)
-            await delete_message(call.message)
-            await create_questionnaire(form_owner=random_user, chat_id=telegram_id, monitoring=True)
-        else:
-            await call.message.edit_text("Вам необходимо зарегистрироваться, нажмите на кнопку ниже",
-                                         reply_markup=await registration_keyboard())
-    except IndexError:
-        await call.answer("На данный момент у нас нет подходящих анкет для вас")
+    await monitoring_questionnaire(call)
 
 
 @dp.callback_query_handler(action_keyboard_monitoring.filter(action="next"))
 async def next_form_owner(call: types.CallbackQuery):
-    try:
-        telegram_id = call.from_user.id
-        user_data = await get_data(telegram_id)
-        user_list = await get_next_user(telegram_id, monitoring=True)
-        user_status = user_data[9]
-        if user_status:
-            random_user = random.choice(user_list)
-            await delete_message(call.message)
-            await create_questionnaire(form_owner=random_user, chat_id=telegram_id, monitoring=True)
-        else:
-            await call.message.edit_text("Вам необходимо зарегистрироваться, нажмите на кнопку ниже",
-                                         reply_markup=await registration_keyboard())
-    except IndexError:
-        await call.answer("На данный момент у нас нет подходящих анкет для вас")
+    await monitoring_questionnaire(call)
 
 
 @dp.message_handler(IsAdmin(), text="Посчитать людей и чаты")
