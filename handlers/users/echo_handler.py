@@ -15,7 +15,7 @@ async def bot_echo(message: types.Message):
         hcode(message.text)
     ]
 
-    await message.answer('\n'.join(text))
+    await message.answer(message.text)
 
 
 @dp.message_handler(state="*")
