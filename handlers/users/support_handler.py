@@ -1,7 +1,6 @@
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 
-import functions.get_data_func
 from keyboards.inline.main_menu_inline import start_keyboard
 from keyboards.inline.registration_inline import registration_keyboard
 from keyboards.inline.support_inline import support_keyboard, support_callback, check_support_available, \

@@ -1,5 +1,6 @@
 from aiogram import types
 from aiogram.dispatcher.middlewares import BaseMiddleware
+from loguru import logger
 
 from utils.db_api import db_commands
 
@@ -16,4 +17,4 @@ class BanMiddleware(BaseMiddleware):
                 await message.answer('Вы забанены!')
                 raise BaseException
         except Exception as err:
-            pass
+            ...

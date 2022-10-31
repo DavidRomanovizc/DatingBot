@@ -33,8 +33,6 @@ def setup_django():
 
 if __name__ == '__main__':
     setup_django()
-    from middlewares.language_middleware import setup_middleware
-    setup_middleware(dp)
     import middlewares
     import handlers
 

@@ -23,7 +23,6 @@ async def view_meetings(call: CallbackQuery, state: FSMContext):
         await call.message.answer("На данный момент у нас нет подходящих анкет для вас")
 
 
-
 @dp.callback_query_handler(state="finding_meetings", text="further")
 async def like_questionnaire_reciprocity(call: CallbackQuery, state: FSMContext):
     user_list = await select_all_users_list(call.from_user.id)

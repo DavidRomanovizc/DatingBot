@@ -12,8 +12,8 @@ async def get_inst(call: CallbackQuery):
     user_data = await get_data(telegram_id)
     user_city = user_data[3]
     user_status = user_data[9]
-    users_gender_M = await db_commands.count_all_users_kwarg(sex="Мужской")
-    users_gender_F = await db_commands.count_all_users_kwarg(sex="Женский")
+    users_gender_m = await db_commands.count_all_users_kwarg(sex="Мужской")
+    users_gender_f = await db_commands.count_all_users_kwarg(sex="Женский")
     users_city = await db_commands.count_all_users_kwarg(city=user_city)
     users_status= await db_commands.count_all_users_kwarg(status=True)
     users_verified = await db_commands.count_all_users_kwarg(verification=True)
@@ -22,8 +22,8 @@ async def get_inst(call: CallbackQuery):
         await call.message.edit_text(f"<b>📊 Статистика: </b>\n\n"
                                      f"└Сейчас в нашем боте <b>{count_users} пользователей</b>\n"
                                      f"└Из них:\n"
-                                     f"        ├<b>{users_gender_M} пользователей мужского пола</b>\n"
-                                     f"        ├<b>{users_gender_F} пользователей женского пола</b>\n"
+                                     f"        ├<b>{users_gender_m} пользователей мужского пола</b>\n"
+                                     f"        ├<b>{users_gender_f} пользователей женского пола</b>\n"
                                      f"        ├<b>{users_city} пользователей из города {user_city}</b>\n"
                                      f"        ├<b>{count_users - users_city} пользователей из других городов</b>\n"
                                      f"        ├<b>{users_verified} верифицированных пользователей</b>\n"

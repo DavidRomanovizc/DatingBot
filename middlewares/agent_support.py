@@ -1,5 +1,3 @@
-import logging
-
 from aiogram import types, Dispatcher
 from aiogram.dispatcher.handler import CancelHandler
 from aiogram.dispatcher.middlewares import BaseMiddleware
