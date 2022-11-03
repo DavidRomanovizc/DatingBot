@@ -1,4 +1,6 @@
 import asyncpg
+from aiogram import types
+from aiogram.types import CallbackQuery
 from loguru import logger
 
 from keyboards.inline.registration_inline import confirm_keyboard
@@ -6,7 +8,7 @@ from loader import client
 from utils.db_api import db_commands
 
 
-async def choice_gender(call) -> None:
+async def choice_gender(call: CallbackQuery) -> None:
     if call.data == 'male':
         try:
             await db_commands.update_user_data(telegram_id=call.from_user.id, need_partner_sex='Мужской')
@@ -19,7 +21,7 @@ async def choice_gender(call) -> None:
             logger.error(err)
 
 
-async def determining_location(message, flag: bool) -> None:
+async def determining_location(message: types.Message, flag: bool) -> None:
     if flag:
         markup = await confirm_keyboard()
         x, y = client.coordinates(message.text)

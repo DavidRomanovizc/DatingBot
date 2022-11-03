@@ -1,10 +1,12 @@
+from aiogram.dispatcher import FSMContext
+
 from keyboards.inline.meeting_inline import reaction_meetings_keyboard
 from loader import bot
 from utils.db_api import db_commands
 from typing import Any
 
 
-async def get_meeting_data(telegram_id) -> tuple[str, str, Any]:
+async def get_meeting_data(telegram_id: int) -> tuple[str, str, Any]:
     user = await db_commands.select_meetings_user(telegram_id=telegram_id)
 
     user_name = user.get("username")
@@ -16,7 +18,7 @@ async def get_meeting_data(telegram_id) -> tuple[str, str, Any]:
     )
 
 
-async def create_ques_meeting(state, random_user, chat_id):
+async def create_ques_meeting(state: FSMContext, random_user: int, chat_id: int):
     markup = await reaction_meetings_keyboard()
     user_data = await get_meeting_data(random_user)
     await send_ques_meeting(chat_id=chat_id, user_data=user_data, markup=markup)
