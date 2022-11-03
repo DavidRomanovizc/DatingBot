@@ -1,13 +1,14 @@
 import asyncio
 import random
 import typing
+import secrets
 
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery
 from loguru import logger
 
-from functions.create_forms_funcs import create_questionnaire, create_questionnaire_reciprocity
+from functions.create_forms_funcs import create_questionnaire, create_questionnaire_reciprocity, rand_user_list
 from functions.get_data_func import get_data
 from functions.get_next_user_func import get_next_user
 from handlers.users.back_handler import delete_message
@@ -27,7 +28,6 @@ async def start_finding(call: CallbackQuery, state: FSMContext):
         user_status = user_data[9]
         if user_status:
             random_user = random.choice(user_list)
-            await delete_message(call.message)
             await create_questionnaire(form_owner=random_user, chat_id=telegram_id)
             await state.set_state('finding')
         else:
@@ -40,8 +40,6 @@ async def start_finding(call: CallbackQuery, state: FSMContext):
 @dp.callback_query_handler(action_keyboard.filter(action=["like", "dislike", "stopped"]),
                            state='finding')
 async def like_questionnaire(call: CallbackQuery, state: FSMContext, callback_data: typing.Dict[str, str]):
-    user_list = await get_next_user(call.from_user.id)
-    random_user = random.choice(user_list)
     action = callback_data['action']
     user_db = await db_commands.select_user(telegram_id=call.from_user.id)
     username = call.from_user.username
@@ -51,19 +49,21 @@ async def like_questionnaire(call: CallbackQuery, state: FSMContext, callback_da
             await create_questionnaire(form_owner=call.from_user.id, chat_id=target_id,
                                        add_text=f'Вами заинтересовался пользователь '
                                                 f'<a href="https://t.me/{username}">{username}</a>')
-            await create_questionnaire(form_owner=random_user, chat_id=call.from_user.id)
+            await call.message.delete()
+            await create_questionnaire(form_owner=(await rand_user_list(call))[3], chat_id=call.from_user.id)
 
             await state.reset_data()
         except Exception as err:
             logger.error(err)
-            await create_questionnaire(form_owner=random_user, chat_id=call.from_user.id)
+            await create_questionnaire(form_owner=(await rand_user_list(call))[0], chat_id=call.from_user.id)
     elif action == "dislike":
         try:
-            await create_questionnaire(form_owner=random_user, chat_id=call.from_user.id)
+            await call.message.delete()
+            await create_questionnaire(form_owner=(await rand_user_list(call))[3], chat_id=call.from_user.id)
             await state.reset_data()
         except Exception as err:
             logger.error(err)
-            await create_questionnaire(form_owner=random_user, chat_id=call.from_user.id)
+            await create_questionnaire(form_owner=(await rand_user_list(call))[2], chat_id=call.from_user.id)
     elif action == "stopped":
         markup = await start_keyboard(user_db["status"])
         await call.message.delete()
@@ -99,10 +99,11 @@ async def like_questionnaire_reciprocity(call: CallbackQuery, state: FSMContext,
     await state.reset_state()
 
 
-@dp.callback_query_handler(text="go_back_to_viewing_ques", state='finding')
+@dp.callback_query_handler(text="go_back_to_viewing_ques", state="*")
 async def like_questionnaire(call: CallbackQuery, state: FSMContext):
+    await call.message.delete()
     user_list = await get_next_user(call.from_user.id)
-    random_user = random.choice(user_list)
+    random_user = secrets.choice(user_list)
     try:
         await create_questionnaire(form_owner=random_user, chat_id=call.from_user.id)
 
