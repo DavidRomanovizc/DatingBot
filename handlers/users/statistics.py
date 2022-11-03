@@ -15,7 +15,7 @@ async def get_inst(call: CallbackQuery):
     users_gender_m = await db_commands.count_all_users_kwarg(sex="Мужской")
     users_gender_f = await db_commands.count_all_users_kwarg(sex="Женский")
     users_city = await db_commands.count_all_users_kwarg(city=user_city)
-    users_status= await db_commands.count_all_users_kwarg(status=True)
+    users_status = await db_commands.count_all_users_kwarg(status=True)
     users_verified = await db_commands.count_all_users_kwarg(verification=True)
     if user_status:
         count_users = await db_commands.count_users()
