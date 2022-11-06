@@ -4,7 +4,8 @@ from typing import List
 from environs import Env
 
 
-@dataclass
+# параметр frozen=True защищает экземпляры класса от случайного изменения
+@dataclass(frozen=True)
 class DataBaseConfig:
     user: str
     password: str
@@ -12,7 +13,7 @@ class DataBaseConfig:
     database: str
 
 
-@dataclass
+@dataclass(frozen=True)
 class TgBot:
     token: str
     admin_ids: List[int]
@@ -20,13 +21,13 @@ class TgBot:
     ip: str
 
 
-@dataclass
+@dataclass(frozen=True)
 class Miscellaneous:
     secret_key: str
     yandex_api_key: str
 
 
-@dataclass
+@dataclass(frozen=True)
 class Config:
     tg_bot: TgBot
     db: DataBaseConfig
