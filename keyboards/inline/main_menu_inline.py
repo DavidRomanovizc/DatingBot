@@ -13,6 +13,7 @@ async def start_keyboard(status) -> InlineKeyboardMarkup:
     else:
         my_profile = InlineKeyboardButton(text="👤 Моя анекта", callback_data="my_profile")
         filters = InlineKeyboardButton(text="⚙️ Фильтры", callback_data="filters")
+        # TODO: Need to fix this typo
         view_ques = InlineKeyboardButton(text="💌 Найти пару", callback_data="find_ancets")
         information = InlineKeyboardButton(text="🌐 Руководство", callback_data="info")
         statistics = InlineKeyboardButton(text="📈 Статистика", callback_data="statistics")

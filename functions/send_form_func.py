@@ -5,6 +5,7 @@ from loader import bot
 
 async def send_questionnaire(chat_id, user_data, user_db, markup=None, add_text=None,
                              monitoring=False):
+    # TODO: If the user does not have an instagram attached, then do not show it
     user_telegram_id = user_db.get("telegram_id")
     if add_text is None:
         await bot.send_photo(chat_id=chat_id, caption=f"{str(user_data[0])}, "

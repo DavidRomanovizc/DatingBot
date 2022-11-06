@@ -19,12 +19,13 @@ from loader import dp
 from utils.db_api import db_commands
 
 
+# TODO: Need to fix this typo
 @dp.callback_query_handler(text='find_ancets')
 async def start_finding(call: CallbackQuery, state: FSMContext):
     try:
         telegram_id = call.from_user.id
         user_data = await get_data(telegram_id)
-        user_list = await get_next_user(telegram_id)
+        user_list = await get_next_user(telegram_id, call)
         user_status = user_data[9]
         if user_status:
             random_user = random.choice(user_list)
@@ -102,7 +103,7 @@ async def like_questionnaire_reciprocity(call: CallbackQuery, state: FSMContext,
 @dp.callback_query_handler(text="go_back_to_viewing_ques", state="*")
 async def like_questionnaire(call: CallbackQuery, state: FSMContext):
     await call.message.delete()
-    user_list = await get_next_user(call.from_user.id)
+    user_list = await get_next_user(call.from_user.id, call)
     random_user = secrets.choice(user_list)
     try:
         await create_questionnaire(form_owner=random_user, chat_id=call.from_user.id)
