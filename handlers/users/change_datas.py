@@ -58,19 +58,18 @@ async def change_age(message: types.Message, state: FSMContext):
     markup = await change_info_keyboard()
     try:
         if int(message.text) and 0 < int(message.text) < 110:
-            await db_commands.update_user_data(age=message.text, telegram_id=message.from_user.id)
+            await db_commands.update_user_data(age=int(message.text), telegram_id=message.from_user.id)
             await message.answer(f'Ваш новый возраст: <b>{message.text}</b>')
             await asyncio.sleep(3)
             await message.answer(f'Выберите, что вы хотите изменить: ', reply_markup=markup)
             await state.reset_state()
         else:
-            await message.answer(f'Неправильные данные!. Попробуйте ещё раз', reply_markup=markup)
-            await state.reset_state()
+            await message.answer("Вы ввели недопустимое число, попробуйте еще раз")
+            return
 
-    except Exception as err:
-        logger.error(err)
-        await message.answer(f'Произошла неизвестная ошибка. Попробуйте ещё раз', reply_markup=markup)
-        await state.reset_state()
+    except ValueError:
+        await message.answer("Вы ввели недопустимое число, попробуйте еще раз")
+        return
 
     await state.reset_state()
 

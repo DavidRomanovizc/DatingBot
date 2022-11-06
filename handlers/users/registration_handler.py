@@ -103,8 +103,11 @@ async def get_age(message: types.Message, state: FSMContext):
     markup = await location_keyboard()
     await state.update_data(age=message.text)
     try:
-        censored = censored_message(message.text)
-        await db_commands.update_user_data(telegram_id=message.from_user.id, age=quote_html(censored))
+        if 0 < int(message.text) < 110:
+            await db_commands.update_user_data(telegram_id=message.from_user.id, age=int(message.text))
+        else:
+            await message.answer("Вы ввели недопустимое число, попробуйте еще раз")
+            return
     except Exception as err:
         logger.error(err)
         await message.answer("Вы ввели не число")
