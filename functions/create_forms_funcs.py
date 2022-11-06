@@ -31,7 +31,7 @@ async def monitoring_questionnaire(call: CallbackQuery) -> None:
     try:
         telegram_id = call.from_user.id
         user_data = await get_data(telegram_id)
-        user_list = await get_next_user(telegram_id, monitoring=True)
+        user_list = await get_next_user(telegram_id, call, monitoring=True)
         user_status = user_data[9]
         if user_status:
             random_user = random.choice(user_list)
@@ -45,7 +45,7 @@ async def monitoring_questionnaire(call: CallbackQuery) -> None:
 
 
 async def rand_user_list(call: CallbackQuery) -> Tuple[int, int, int, int]:
-    user_list = await get_next_user(call.from_user.id)
+    user_list = await get_next_user(call.from_user.id, call)
     user_list_update = sorted(user_list, key=lambda A: random.random())
     random_user_1 = np.random.choice(user_list_update)
     random_user_2 = np.random.choice(user_list)
