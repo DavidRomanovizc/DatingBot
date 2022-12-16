@@ -1,13 +1,18 @@
+from typing import Tuple
+
 from utils.db_api import db_commands
+from utils.db_api.db_commands import select_user_meetings
 
 
-async def get_data(telegram_id: int) -> tuple[str, int, str, str, str, str, str, str, str, str, str]:
+async def get_data(telegram_id: int) -> Tuple[str, int, str, str, str, str, str, str, str, str, str, str, str]:
     user = await db_commands.select_user(telegram_id=telegram_id)
     user_name = user.get("varname")
     user_age = user.get("age")
     user_sex = user.get("sex")
     user_city = user.get("city")
+    user_need_city = user.get("need_city")
     user_life_style = user.get("lifestyle")
+    user_voice_comm = user.get("voice_id")
     user_comm = user.get("commentary")
     user_verification = user.get("verification")
     photo_random_user = user.get("photo_id")
@@ -20,9 +25,9 @@ async def get_data(telegram_id: int) -> tuple[str, int, str, str, str, str, str,
     if photo_random_user is None:
         photo_random_user = "https://www.meme-arsenal.com/memes/5eae5104f379baa355e031fa1ded886c.jpg"
     if user_verification:
-        user_verification = 'Подтвержденный'
+        user_verification = '✅'
     else:
-        user_verification = 'Неподтвержденный'
+        user_verification = '❌'
     if user_name is None:
         user_name = "Не определено"
     if user_sex is None:
@@ -36,5 +41,23 @@ async def get_data(telegram_id: int) -> tuple[str, int, str, str, str, str, str,
 
     return (
         user_name, user_age, user_sex, user_city,
-        user_life_style, user_comm, user_verification, photo_random_user, user_inst, user_status, user_need_gender
+        user_life_style, user_comm, user_verification, photo_random_user, user_inst, user_status, user_need_gender,
+        user_voice_comm, user_need_city
     )
+
+
+async def get_data_meetings(telegram_id: int) -> Tuple[str, str, str, str, str, bool]:
+    user = await select_user_meetings(telegram_id=telegram_id)
+    username = user.get("username")
+    company_name = user.get("company_name")
+    position_in_company = user.get("position_in_company")
+    level_game = user.get("level_game")
+    verification_status = user.get("verification_status")
+    is_premium = user.get("is_premium")
+
+    if verification_status:
+        verification_status = "Одобрено"
+    else:
+        verification_status = "Не одобрено"
+
+    return username, company_name, position_in_company, level_game, verification_status, is_premium
