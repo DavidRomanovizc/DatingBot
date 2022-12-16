@@ -1,4 +1,4 @@
-import asyncio
+from loader import _
 from typing import List
 
 from functions.get_data_filters_func import get_data_filters
@@ -19,13 +19,11 @@ async def get_next_user(telegram_id: int, call, monitoring=False) -> List[int]:
             user_list.append(i['telegram_id'])
 
     if len(user_list) == 0:
-        await call.message.answer(
-            "На данный момент у нас нет подходящих анкет для вас, но предлагаем вам посмотреть анкеты "
-            "всех пользователей")
-        await asyncio.sleep(5)
+        await call.answer(
+            _("Под ваши фильтры нет пользователей"))
 
-    for k in user_filter_2:
-        if len(user_filter) == 0 and int(k['telegram_id']) != int(telegram_id):
-            user_list.append(k['telegram_id'])
+        for k in user_filter_2:
+            if len(user_filter) == 0 and int(k['telegram_id']) != int(telegram_id):
+                user_list.append(k['telegram_id'])
 
     return user_list
