@@ -1,5 +1,5 @@
 import aiohttp
-from typing import Tuple
+from typing import Tuple, Any
 from utils.YandexMap.exceptions import UnexpectedResponse, InvalidKey, NothingFound
 
 
@@ -10,7 +10,7 @@ class Client:
     def __init__(self, api_key: str):
         self.api_key = api_key
 
-    async def _request(self, address: str):
+    async def _request(self, address: str) -> Any:
         async with aiohttp.ClientSession() as session:
             async with session.get(url="https://geocode-maps.yandex.ru/1.x/",
                                    params=dict(format="json",
@@ -36,7 +36,7 @@ class Client:
         longitude, latitude = tuple(coordinates.split(" "))
         return longitude, latitude
 
-    async def address(self, longitude, latitude):
+    async def address(self, longitude, latitude) -> Any:
         got = await self._request(f"{longitude},{latitude}")
         data = got["GeoObjectCollection"]["featureMember"]
 
