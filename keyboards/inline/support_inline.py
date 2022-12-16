@@ -4,7 +4,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.callback_data import CallbackData
 
 from data.config import load_config
-from loader import dp
+from loader import dp, _
 
 support_callback = CallbackData("ask_support", "messages", "user_id", "as_user")
 cancel_support_callback = CallbackData("cancel_support", "user_id")
@@ -35,7 +35,7 @@ async def support_keyboard(messages, user_id=None):
     if user_id:
         contact_id = int(user_id)
         as_user = "no"
-        text = "Ответить пользователю"
+        text = _("Ответить пользователю")
 
     else:
         contact_id = await get_support_manager()
@@ -43,7 +43,7 @@ async def support_keyboard(messages, user_id=None):
         if messages == "many" and contact_id is None:
             return False
 
-        text = "Написать оператору"
+        text = _("Написать оператору")
 
     keyboard = InlineKeyboardMarkup()
     keyboard.add(
@@ -60,7 +60,7 @@ async def support_keyboard(messages, user_id=None):
     if messages == "many":
         keyboard.add(
             InlineKeyboardButton(
-                text="Завершить сеанс",
+                text=_("Завершить сеанс"),
                 callback_data=cancel_support_callback.new(
                     user_id=contact_id
                 )
@@ -74,7 +74,7 @@ def cancel_support(user_id):
         inline_keyboard=[
             [
                 InlineKeyboardButton(
-                    text="Завершить сеанс",
+                    text=_("Завершить сеанс"),
                     callback_data=cancel_support_callback.new(
                         user_id=user_id
                     )

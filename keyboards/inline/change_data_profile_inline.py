@@ -1,26 +1,26 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from loader import _
 
 
 async def change_info_keyboard() -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup(row_width=2)
-    name = InlineKeyboardButton(text="Имя", callback_data="name")
-    gender = InlineKeyboardButton(text="Пол", callback_data="gender")
-    age = InlineKeyboardButton(text="Возраст", callback_data="age")
-    city = InlineKeyboardButton(text="Город", callback_data="city")
-    employment = InlineKeyboardButton(text="Занятость", callback_data="busyness")
-    photo = InlineKeyboardButton(text="Фото", callback_data="photo")
-    about_me = InlineKeyboardButton(text="О себе", callback_data="about_me")
-    back_to_menu = InlineKeyboardButton(text="⏪️ Вернуться в меню", callback_data="back_with_delete")
+    name = InlineKeyboardButton(text=_("Имя"), callback_data="name")
+    gender = InlineKeyboardButton(text=_("Пол"), callback_data="gender")
+    age = InlineKeyboardButton(text=_("Возраст"), callback_data="age")
+    city = InlineKeyboardButton(text=_("Город"), callback_data="city")
+    photo = InlineKeyboardButton(text=_("Фото"), callback_data="photo")
+    about_me = InlineKeyboardButton(text=_("О себе"), callback_data="about_me")
+    back_to_menu = InlineKeyboardButton(text=_("⏪️ Вернуться в меню"), callback_data="back_with_delete")
     markup.row(name, gender, age)
-    markup.add(city)
-    markup.row(employment, photo, about_me)
+    markup.row(city, photo, about_me)
     markup.add(back_to_menu)
     return markup
 
 
+# TODO: Можно установить у функции параметр text, чтобы текст кнопки менялся в зависимости от задачи
 async def gender_keyboard() -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup(row_width=1)
-    male = InlineKeyboardButton(text='Парень', callback_data='male')
-    female = InlineKeyboardButton(text='Девушка', callback_data='female')
+    male = InlineKeyboardButton(text=_("Парень"), callback_data="male")
+    female = InlineKeyboardButton(text=_("Девушка"), callback_data="female")
     markup.row(male, female)
     return markup
