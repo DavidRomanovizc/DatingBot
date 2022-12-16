@@ -5,6 +5,7 @@ from data.config import load_config
 from utils.db_api import db_commands
 
 
+# А что это? Как оно здесь появилось и за что оно отвечает
 class IsMaintenance(BaseMiddleware):
 
     def __init__(self):
