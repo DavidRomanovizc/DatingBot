@@ -1,58 +1,58 @@
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery
-from loguru import logger
 
-from keyboards.inline.meeting_inline import meeting_keyboard, meeting_back_keyboard
-from loader import dp
+from functions.get_data_func import get_data_meetings
+from keyboards.inline.game_inline import game_keyboard
+from keyboards.inline.sending_quest import moderate_keyboard
+from loader import dp, _
 from utils.db_api import db_commands
-from functions.meetings_funcs import get_meeting_data
-from functions.get_data_func import get_data
 
 
 @dp.callback_query_handler(text="meetings")
-async def meetings_menu_handler(call: CallbackQuery):
-    try:
-        user_data = await get_data(call.from_user.id)
-        if user_data[6] == "Подтвержденный":
-            await call.message.edit_text("Вы перешли в меню тусовок", reply_markup=await meeting_keyboard())
-        else:
-            await call.answer("Пожалуйста, пройдите верификацию, а потом возвращайтесь")
-    except Exception as err:
-        logger.error(err)
-        await call.answer("Произошла неизвестная ошибка! Попробуйте еще раз.")
+async def pre_registration(call: CallbackQuery, state: FSMContext):
+    user = await get_data_meetings(telegram_id=call.from_user.id)
+    user_premium = user[5]
+    if user[4] == "Одобрено" and not user_premium:
+        await call.message.edit_text(_("Спасибо, что заполнили анкету,"
+                                       " теперь у вас есть возможность приобрести подписку,"
+                                       " а после с вами свяжется менеджер"),
+                                     reply_markup=await game_keyboard(user_premium))
+    elif user[4] != "Одобрено":
+        await call.message.edit_text(_("Приветствую, вы перешли в раздел с поиском офлайн игр.\n"
+                                       "Для поиска вам необходимо пройти опрос.\n\n"
+                                       "Напишите, в какую игру вы бы хотели сыграть?"))
+        await state.set_state("registration_game")
+    if user_premium:
+        await call.message.edit_text(_("Спасибо, что оплатили подписку, теперь вам нужно выбрать дату проведения игры"),
+                                     reply_markup=await game_keyboard(user_premium))
 
 
-@dp.callback_query_handler(text="create_ques")
-async def create_ques(call: CallbackQuery, state: FSMContext):
-    try:
-        await call.message.edit_text("Приветствую, вы должны написать описание к своему мероприятию, например:\n\n"
-                                     "Традиционные завтраки, которые проходят каждый вторник\n\n"
-                                     "<b>Что делаем:</b>\n"
-                                     "- Знакомимся, завтракаем, пьем кофе\n"
-                                     "- Рассказываем кулстори из жизни и работы\n"
-                                     "<b>Время:</b>\n Вторник, начинаем в 9:30\n"
-                                     "<b>Место:</b>\n Манежный пер Санкт-Петербург Cake & Breakfast")
-        await state.set_state("fill_ques")
-    except Exception as err:
-        logger.error(err)
-        await call.answer("Произошла неизвестная ошибка! Попробуйте еще раз.")
+@dp.message_handler(state="registration_game")
+async def registration_level_game(message: types.Message, state: FSMContext):
+    await db_commands.update_user_meetings_data(telegram_id=message.from_user.id, level_game=message.text)
+    await state.update_data(level_game=message.text)
+    await message.answer(_("Напишите компанию, в которой вы работаете, если вы не работаете поставьте '-'"))
+    await state.set_state("registration_position")
 
 
-@dp.message_handler(state="fill_ques")
-async def fill_questionary(message: types.Message, state: FSMContext):
-    try:
-        telegram_id = message.from_user.id
-        await db_commands.update_user_meetings_data(telegram_id=telegram_id, meetings_description=message.text)
-        await db_commands.update_user_meetings_data(telegram_id=telegram_id, status=True)
+@dp.message_handler(state="registration_position")
+async def registration_pos(message: types.Message, state: FSMContext):
+    await db_commands.update_user_meetings_data(telegram_id=message.from_user.id, company_name=message.text)
+    await state.update_data(company_name=message.text)
+    await message.answer(_("Напишите вашу должность"))
+    await state.set_state("send_manager")
 
-        user_data = await get_meeting_data(telegram_id)
 
-        await message.answer("<b>Мероприятие создано!</b>\n\n"
-                             f"{user_data[1]}\n\n"
-                             f'<a href="https://t.me/{user_data[0]}">{user_data[0]}</a>',
-                             reply_markup=await meeting_back_keyboard())
-        await state.finish()
-    except Exception as err:
-        logger.error(err)
-        await message.answer("Произошла неизвестная ошибка! Попробуйте еще раз.")
+@dp.message_handler(state="send_manager")
+async def send_manager_form(message: types.Message, state: FSMContext):
+    await db_commands.update_user_meetings_data(telegram_id=message.from_user.id, position_in_company=message.text)
+    await state.update_data(position_in_company=message.text)
+    await state.finish()
+    user = await get_data_meetings(telegram_id=message.from_user.id)
+    text = _("Ваша заявка готова\n\n"
+             "Имя: @{user_0}\n"
+             "Уровень игры: {user_3}\n"
+             "Должность: {user_2}\n"
+             "Компания: {user_1}\n").format(user_0=user[0], user_3=user[3], user_2=user[2], user_1=user[1])
+    await message.answer(text, reply_markup=await moderate_keyboard(messages="many"))
