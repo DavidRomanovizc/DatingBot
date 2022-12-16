@@ -22,6 +22,7 @@ class User(TimeBasedModel):
     age = models.BigIntegerField(verbose_name="Возраст искателя", default=16)
     city = models.CharField(max_length=255, verbose_name="Город искателя", null=True)
     need_city = models.CharField(max_length=255, verbose_name="Город партнера", null=True)
+    need_distance = models.IntegerField(max_length=2000, verbose_name="Расстояние между партнерами", null=True)
     longitude = models.FloatField(verbose_name="координаты пользователя", null=True)
     latitude = models.FloatField(verbose_name="координаты пользователя", null=True)
     verification = models.BooleanField(verbose_name="Верификация", default=False)
@@ -30,6 +31,7 @@ class User(TimeBasedModel):
     lifestyle = models.CharField(max_length=100, verbose_name="Стиль жизни пользователя", null=True)
     is_banned = models.BooleanField(verbose_name="Забанен ли пользователь", default=False)
     photo_id = models.CharField(max_length=400, verbose_name="Photo_ID", null=True)
+    voice_id = models.CharField(max_length=500, verbose_name="Voice_ID", null=True)
     commentary = models.CharField(max_length=300, verbose_name="Комментарий пользователя", null=True)
     need_partner_sex = models.CharField(max_length=50, verbose_name="Пол партнера", null=True)
     need_partner_age_min = models.IntegerField(verbose_name="Минимальный возраст партнера", default=16)
@@ -50,8 +52,12 @@ class UserMeetings(TimeBasedModel):
     id = models.AutoField(primary_key=True)
     telegram_id = models.BigIntegerField(unique=True, default=1, verbose_name="ID пользователя Телеграм")
     username = models.CharField(max_length=255, verbose_name="Username Telegram")
-    meetings_description = models.CharField(max_length=255, verbose_name="Описание встречи", null=True)
-    status = models.BooleanField(verbose_name="Статус мероприятия", default=False)
+    company_name = models.CharField(max_length=50, verbose_name="Компания", null=True)
+    position_in_company = models.CharField(max_length=50, verbose_name="Должность пользователя", null=True)
+    level_game = models.CharField(max_length=50, verbose_name="Уровень игры", null=True)
+    verification_status = models.BooleanField(verbose_name="Статус пользователя", default=False)
+    is_premium = models.BooleanField(verbose_name="Премиум", default=False)
+    registration_status = models.BooleanField(verbose_name="Статус регистрации", default=False)
 
     def __str__(self):
         return f"№{self.id} ({self.telegram_id} - {self.username})"
