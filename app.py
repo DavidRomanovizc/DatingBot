@@ -4,10 +4,10 @@ import django
 from django_project.telegrambot.telegrambot import settings
 from aiogram import executor
 
-from loader import dp, db
+from loader import dp, db, scheduler
 import filters
+from utils.notify_admins import AdminNotification
 
-from utils.notify_admins import on_startup_notify
 from utils.set_bot_commands import set_default_commands
 
 
@@ -15,7 +15,7 @@ async def on_startup(dispatcher):
     # Устанавливаем дефолтные команды
     await set_default_commands(dispatcher)
     # Уведомляет о запуске
-    await on_startup_notify(dispatcher)
+    await AdminNotification.send(dispatcher)
     logging.info(f'Создаем подключение...')
     await db.create()
     logging.info(f'Подключение успешно!')
@@ -36,4 +36,5 @@ if __name__ == '__main__':
     import middlewares
     import handlers
 
+    scheduler.start()
     executor.start_polling(dp, on_startup=on_startup, skip_updates=True)
