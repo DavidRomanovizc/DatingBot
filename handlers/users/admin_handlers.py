@@ -18,8 +18,6 @@ from loader import dp, bot, _
 from utils.db_api import db_commands
 
 
-# TODO: Добавить возможность создавать меню с датами для мероприятий
-
 @dp.message_handler(IsAdmin(), Command("admin"))
 async def admin_start(message: types.Message):
     await message.reply(text=_("Вы вошли в админ панель!"), reply_markup=await admin_keyboard())
