@@ -46,18 +46,21 @@ async def get_data(telegram_id: int) -> Tuple[str, int, str, str, str, str, str,
     )
 
 
-async def get_data_meetings(telegram_id: int) -> Tuple[str, str, str, str, str, bool]:
+async def get_data_meetings(telegram_id: int) -> Tuple[str, str, str, str, str, str, str, bool, bool]:
     user = await select_user_meetings(telegram_id=telegram_id)
     username = user.get("username")
-    company_name = user.get("company_name")
-    position_in_company = user.get("position_in_company")
-    level_game = user.get("level_game")
     verification_status = user.get("verification_status")
     is_premium = user.get("is_premium")
+    is_moderation = user.get("moderation_process")
+    event_name = user.get("event_name")
+    commentary = user.get("commentary")
+    time_event = user.get("time_event")
+    venue = user.get("venue")
+    photo_id = user.get("photo_id")
 
     if verification_status:
         verification_status = "Одобрено"
     else:
         verification_status = "Не одобрено"
 
-    return username, company_name, position_in_company, level_game, verification_status, is_premium
+    return username, commentary, event_name, time_event, venue, photo_id, verification_status, is_premium, is_moderation
