@@ -22,6 +22,7 @@ class TgBot:
     timezone: str
     ip: str
     I18N_DOMAIN: str
+    moderate_chat: str
 
 
 @dataclass(frozen=True)
@@ -51,7 +52,8 @@ def load_config() -> Config:
             support_ids=list(map(int, env.list("SUPPORTS"))),
             ip=env.str("IP"),
             timezone=env.str("TIMEZONE"),
-            I18N_DOMAIN='dating'
+            I18N_DOMAIN='dating',
+            moderate_chat=env.str("MODERATE_CHAT"),
         ),
         db=DataBaseConfig(
             user=env.str('DB_USER'),

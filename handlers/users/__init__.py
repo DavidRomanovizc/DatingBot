@@ -7,9 +7,7 @@ from . import statistics_handler
 from . import brandbook_handler
 from . import view_ques_handler
 from . import sponsor_handler
-from . import meetings_handler
-from . import subsription_payment_handler
-from . import valid_questionnaire
+from . import event_handler
 from . import support_handler
 from . import filters_handler
 from . import back_handler

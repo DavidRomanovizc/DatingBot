@@ -1,4 +1,4 @@
-from typing import NoReturn
+from typing import NoReturn, Optional
 
 import asyncpg
 from aiogram import types
@@ -7,6 +7,7 @@ from loguru import logger
 
 from functions.get_data_filters_func import get_data_filters
 from functions.get_data_func import get_data
+
 from keyboards.inline.filters_inline import filters_keyboard
 from keyboards.inline.registration_inline import confirm_keyboard
 from loader import client, _
@@ -26,7 +27,7 @@ async def choice_gender(call: CallbackQuery) -> NoReturn:
             logger.error(err)
 
 
-async def determining_location(message: types.Message, flag: bool) -> NoReturn:
+async def determining_location(message: types.Message, flag: Optional[bool] = None, event: bool = False) -> NoReturn:
     markup = await confirm_keyboard()
     x, y = await client.coordinates(message.text)
     city = await client.address(f"{x}", f"{y}")
@@ -39,9 +40,14 @@ async def determining_location(message: types.Message, flag: bool) -> NoReturn:
         await db_commands.update_user_data(telegram_id=message.from_user.id, need_city=city)
         await db_commands.update_user_data(telegram_id=message.from_user.id, longitude=x)
         await db_commands.update_user_data(telegram_id=message.from_user.id, latitude=y)
-    else:
+    # Don't remove it otherwise it will break
+    elif flag == False:
         await message.answer(text, reply_markup=markup)
         await db_commands.update_user_data(telegram_id=message.from_user.id, need_city=city)
+
+    if event:
+        await message.answer(text, reply_markup=markup)
+        await db_commands.update_user_meetings_data(telegram_id=message.from_user.id, venue=city)
 
 
 async def display_profile(call: CallbackQuery, markup) -> NoReturn:
