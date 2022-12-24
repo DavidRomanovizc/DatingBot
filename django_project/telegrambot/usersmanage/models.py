@@ -22,7 +22,7 @@ class User(TimeBasedModel):
     age = models.BigIntegerField(verbose_name="Возраст искателя", default=16)
     city = models.CharField(max_length=255, verbose_name="Город искателя", null=True)
     need_city = models.CharField(max_length=255, verbose_name="Город партнера", null=True)
-    need_distance = models.IntegerField(max_length=2000, verbose_name="Расстояние между партнерами", null=True)
+    need_distance = models.IntegerField(verbose_name="Расстояние между партнерами", null=True)
     longitude = models.FloatField(verbose_name="координаты пользователя", null=True)
     latitude = models.FloatField(verbose_name="координаты пользователя", null=True)
     verification = models.BooleanField(verbose_name="Верификация", default=False)
@@ -52,12 +52,14 @@ class UserMeetings(TimeBasedModel):
     id = models.AutoField(primary_key=True)
     telegram_id = models.BigIntegerField(unique=True, default=1, verbose_name="ID пользователя Телеграм")
     username = models.CharField(max_length=255, verbose_name="Username Telegram")
-    company_name = models.CharField(max_length=50, verbose_name="Компания", null=True)
-    position_in_company = models.CharField(max_length=50, verbose_name="Должность пользователя", null=True)
-    level_game = models.CharField(max_length=50, verbose_name="Уровень игры", null=True)
+    commentary = models.CharField(max_length=50, verbose_name="Комментарий", null=True)
+    time_event = models.CharField(max_length=10, verbose_name="Время проведения", null=True)
+    venue = models.CharField(max_length=50, verbose_name="Место проведения", null=True)
+    event_name = models.CharField(max_length=50, verbose_name="Название мероприятия", null=True)
     verification_status = models.BooleanField(verbose_name="Статус пользователя", default=False)
+    moderation_process = models.BooleanField(verbose_name="Процесс модерации", default=True)
     is_premium = models.BooleanField(verbose_name="Премиум", default=False)
-    registration_status = models.BooleanField(verbose_name="Статус регистрации", default=False)
+    photo_id = models.CharField(max_length=400, verbose_name="Photo_ID", null=True)
 
     def __str__(self):
         return f"№{self.id} ({self.telegram_id} - {self.username})"
