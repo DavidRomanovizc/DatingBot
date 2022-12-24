@@ -279,20 +279,20 @@ msgstr ""
 
 #: handlers/users/change_datas.py:30
 msgid "Введите новое имя"
-msgstr ""
+msgstr "Geben Sie einen neuen Namen ein"
 
 #: handlers/users/change_datas.py:40
 msgid "Ваше новое имя: <b>{censored}</b>"
-msgstr ""
+msgstr "Ihr neuer Name ist <b>{censored}</b>"
 
 #: handlers/users/change_datas.py:45 handlers/users/change_datas.py:90
 #: handlers/users/change_datas.py:120 handlers/users/change_datas.py:131
 msgid "Произошла неизвестная ошибка. Попробуйте ещё раз"
-msgstr ""
+msgstr "Ein unbekannter Fehler ist aufgetreten. Versuchen Sie es erneut"
 
 #: handlers/users/change_datas.py:53
 msgid "Введите новый возраст"
-msgstr ""
+msgstr "Neues Alter eingeben"
 
 #: handlers/users/change_datas.py:63
 msgid "Ваш новый возраст: <b>{messages}</b>"
@@ -659,7 +659,7 @@ msgstr ""
 
 #: keyboards/default/get_contact_default.py:7
 msgid "📱 Отправить"
-msgstr ""
+msgstr "📱 Senden"
 
 #: keyboards/default/get_location_default.py:7
 msgid "🗺 Определить автоматически"
@@ -689,52 +689,52 @@ msgstr ""
 
 #: keyboards/inline/change_data_profile_inline.py:7
 msgid "Имя"
-msgstr ""
+msgstr "Vorname"
 
 #: keyboards/inline/change_data_profile_inline.py:8
 msgid "Пол"
-msgstr ""
+msgstr "Geschlecht"
 
 #: keyboards/inline/change_data_profile_inline.py:9
 msgid "Возраст"
-msgstr ""
+msgstr "Alter"
 
 #: keyboards/inline/change_data_profile_inline.py:10
 msgid "Город"
-msgstr ""
+msgstr "Stadt"
 
 #: keyboards/inline/change_data_profile_inline.py:11
 msgid "Фото"
-msgstr ""
+msgstr "Foto"
 
 #: keyboards/inline/change_data_profile_inline.py:12
 msgid "О себе"
-msgstr ""
+msgstr "Über mich"
 
 #: keyboards/inline/change_data_profile_inline.py:23
 msgid "Парень"
-msgstr ""
+msgstr "Junge"
 
 #: keyboards/inline/change_data_profile_inline.py:24
 msgid "Девушка"
-msgstr ""
+msgstr "Mädel"
 
 #: keyboards/inline/filters_inline.py:7
 msgid "🏙️ Город партнера"
-msgstr ""
+msgstr "🏙️ Stadt deines Partners"
 
 #: keyboards/inline/filters_inline.py:8
 msgid "🔞 Возр.диапазон"
-msgstr ""
+msgstr "🔞 Altersgruppe"
 
 #: keyboards/inline/filters_inline.py:9
 msgid "🚻 Пол партнера"
-msgstr ""
+msgstr "Geschlecht des partners"
 
 #: keyboards/inline/filters_inline.py:10 keyboards/inline/guide_inline.py:16
 #: keyboards/inline/guide_inline.py:26 keyboards/inline/guide_inline.py:36
 msgid "⏪️ Назад"
-msgstr ""
+msgstr "⏪️ Zurück"
 
 #: keyboards/inline/game_inline.py:7
 msgid "💸 Приобрести подписку"
@@ -742,89 +742,89 @@ msgstr ""
 
 #: keyboards/inline/game_inline.py:9
 msgid "🕕 Выберите дату"
-msgstr ""
+msgstr "🕕 ein Datum festlegen"
 
 #: keyboards/inline/guide_inline.py:7 keyboards/inline/guide_inline.py:17
 #: keyboards/inline/guide_inline.py:27
 msgid "Вперед ➡️"
-msgstr ""
+msgstr "Los ➡️"
 
 #: keyboards/inline/guide_inline.py:8 keyboards/inline/guide_inline.py:18
 #: keyboards/inline/guide_inline.py:28 keyboards/inline/guide_inline.py:37
 msgid "❌ Закрыть"
-msgstr ""
+msgstr "❌ Schließen"
 
 #: keyboards/inline/language_inline.py:7
 msgid "🇷🇺 Русский"
-msgstr ""
+msgstr "🇷🇺 Russisch"
 
 #: keyboards/inline/language_inline.py:8
 msgid "🇩🇪 Немецкий"
-msgstr ""
+msgstr "🇩🇪 Deutsch"
 
 #: keyboards/inline/language_inline.py:9
 msgid "🇬🇧 Английский"
-msgstr ""
+msgstr "🇬🇧 Englisch"
 
 #: keyboards/inline/language_inline.py:10
 msgid "🇮🇩 Индонезийский"
-msgstr ""
+msgstr "🇮🇩 Südseesprachen"
 
 #: keyboards/inline/main_menu_inline.py:8
 #: keyboards/inline/registration_inline.py:7
 msgid "➕ Регистрация"
-msgstr ""
+msgstr "➕ Registrierung"
 
 #: keyboards/inline/main_menu_inline.py:9
 #: keyboards/inline/main_menu_inline.py:21
 msgid "💬 Руководство"
-msgstr ""
+msgstr "💬 Anweisung"
 
 #: keyboards/inline/main_menu_inline.py:10
 #: keyboards/inline/main_menu_inline.py:23
 msgid "🆘 Поддержка"
-msgstr ""
+msgstr "🆘 Support"
 
 #: keyboards/inline/main_menu_inline.py:11
 #: keyboards/inline/menu_profile_inline.py:11
 msgid "🌐 Язык"
-msgstr ""
+msgstr "🌐 Sprache"
 
 #: keyboards/inline/main_menu_inline.py:17
 msgid "👤 Моя анекта"
-msgstr ""
+msgstr "👤 Mein Profil"
 
 #: keyboards/inline/main_menu_inline.py:18
 msgid "⚙️ Фильтры"
-msgstr ""
+msgstr "⚙️ Filter"
 
 #: keyboards/inline/main_menu_inline.py:19
 msgid "💌 Найти пару"
-msgstr ""
+msgstr "💌 finden ein Paar"
 
 #: keyboards/inline/main_menu_inline.py:20
-msgid "🚀 Игры"
-msgstr ""
+msgid "🗓️ Афиша"
+msgstr "🗓️ Poster"
 
 #: keyboards/inline/main_menu_inline.py:22
 msgid "📈 Статистика"
-msgstr ""
+msgstr "📈 Statistik"
 
 #: keyboards/inline/menu_profile_inline.py:8
 msgid "✅ Верификация"
-msgstr ""
+msgstr "✅ Richtigkeitsprüfung"
 
 #: keyboards/inline/menu_profile_inline.py:10
 msgid "Изменить анкету"
-msgstr ""
+msgstr "Ansichtsprofil ändern"
 
 #: keyboards/inline/menu_profile_inline.py:12
 msgid "📸 Instagram"
-msgstr ""
+msgstr "📸 Instagram"
 
 #: keyboards/inline/menu_profile_inline.py:13
 msgid "Удалить анкету"
-msgstr ""
+msgstr "Löschen Profil"
 
 #: keyboards/inline/menu_profile_inline.py:14
 msgid "⏪ Назад"
@@ -836,73 +836,73 @@ msgstr ""
 
 #: keyboards/inline/payments_inline.py:8
 msgid "🔄 Проверить цены"
-msgstr ""
+msgstr "🔄 Preise prüfen"
 
 #: keyboards/inline/questionnaires_inline.py:18
 msgid "⏪️ Остановить"
-msgstr ""
+msgstr "⏪️ Stoppen"
 
 #: keyboards/inline/questionnaires_inline.py:21
 msgid "🚫 Забанить"
-msgstr ""
+msgstr "🚫 Blockieren"
 
 #: keyboards/inline/questionnaires_inline.py:24
 msgid "Следующий"
-msgstr ""
+msgstr "Nächste Person"
 
 #: keyboards/inline/questionnaires_inline.py:53
 msgid "Вернуться к просмотру анкет"
-msgstr ""
+msgstr "Zurück zu Profile durchsuchen"
 
 #: keyboards/inline/questionnaires_inline.py:61
 msgid "🚀 Смотреть"
-msgstr ""
+msgstr "🚀 Ansehen"
 
 #: keyboards/inline/registration_inline.py:14
 msgid "🖌️ Пройти опрос в боте"
-msgstr ""
+msgstr "🖌️ Durchgehen Umfrage im Bot"
 
 #: keyboards/inline/registration_inline.py:22
 msgid "✅ Да все хорошо!"
-msgstr ""
+msgstr "✅ Ja, alles ist gut!"
 
 #: keyboards/inline/registration_inline.py:30
 msgid "💬 Текстом"
-msgstr ""
+msgstr "💬 Textnachricht"
 
 #: keyboards/inline/registration_inline.py:31
 msgid "🎤 Голосовым"
-msgstr ""
+msgstr "🎤 Sprachnachricht"
 
 #: keyboards/inline/sending_quest.py:17
 msgid "Одобрить"
-msgstr ""
+msgstr "Gutheißen"
 
 #: keyboards/inline/sending_quest.py:27
 msgid "Отправить форму"
-msgstr ""
+msgstr "Formular einreichen"
 
 #: keyboards/inline/sending_quest.py:44
 msgid "Отменить"
-msgstr ""
+msgstr "Abbrechen"
 
 #: keyboards/inline/sending_quest.py:58 keyboards/inline/support_inline.py:63
 #: keyboards/inline/support_inline.py:77
 msgid "Завершить сеанс"
-msgstr ""
+msgstr "Sitzung beenden"
 
 #: keyboards/inline/sponsor_inline.py:7
 msgid "🕴️ Спонсорство"
-msgstr ""
+msgstr "🕴️ Spendenbeiträge"
 
 #: keyboards/inline/sponsor_inline.py:16
 msgid "💰 Донат"
-msgstr ""
+msgstr "💰 Spenden"
 
 #: keyboards/inline/support_inline.py:38
 msgid "Ответить пользователю"
-msgstr ""
+msgstr "Dem Benutzer antworten"
 
 #: keyboards/inline/support_inline.py:46
 msgid "Написать оператору"
-msgstr ""
+msgstr "Schreiben Sie an den Betreiber"
