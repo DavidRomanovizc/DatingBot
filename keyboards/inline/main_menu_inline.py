@@ -17,7 +17,7 @@ async def start_keyboard(status) -> InlineKeyboardMarkup:
         my_profile = InlineKeyboardButton(text=_("👤 Моя анекта"), callback_data="my_profile")
         filters = InlineKeyboardButton(text=_("⚙️ Фильтры"), callback_data="filters")
         view_ques = InlineKeyboardButton(text=_("💌 Найти пару"), callback_data="find_ques")
-        meetings = InlineKeyboardButton(text=_("🚀 Игры"), callback_data="meetings")
+        meetings = InlineKeyboardButton(text=_("🗓️ Афиша"), callback_data="meetings")
         information = InlineKeyboardButton(text=_("💬 Руководство"), callback_data="info")
         statistics = InlineKeyboardButton(text=_("📈 Статистика"), callback_data="statistics")
         support = InlineKeyboardButton(text=_("🆘 Поддержка"), callback_data="support")
