@@ -60,6 +60,8 @@ class UserMeetings(TimeBasedModel):
     moderation_process = models.BooleanField(verbose_name="Процесс модерации", default=True)
     is_premium = models.BooleanField(verbose_name="Премиум", default=False)
     photo_id = models.CharField(max_length=400, verbose_name="Photo_ID", null=True)
+    is_admin = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=False)
 
     def __str__(self):
         return f"№{self.id} ({self.telegram_id} - {self.username})"
