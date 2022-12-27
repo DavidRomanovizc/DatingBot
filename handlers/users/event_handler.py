@@ -16,11 +16,15 @@ from utils.db_api import db_commands
 
 @dp.callback_query_handler(text="meetings")
 async def view_meetings_handler(call: CallbackQuery):
-    await call.message.edit_text(_("Вы перешли в меню афиш"), reply_markup=await poster_keyboard())
+    user = await get_data_meetings(call.from_user.id)
+    is_admin = user[-1]
+    await call.message.edit_text(_("Вы перешли в меню афиш"), reply_markup=await poster_keyboard(is_admin))
 
 
 @dp.callback_query_handler(text="create_poster")
 async def registrate_poster_name(call: CallbackQuery, state: FSMContext):
+    user = await get_data_meetings(call.from_user.id)
+    is_admin = user[-1]
     try:
         user = await get_data_meetings(call.from_user.id)
         moderation_process = user[8]
@@ -30,7 +34,7 @@ async def registrate_poster_name(call: CallbackQuery, state: FSMContext):
         else:
             await call.message.edit_text(
                 "Вы уже создали мероприятие, которое проходит модерацию. Дождитесь проверки, пожалуйста",
-                reply_markup=await poster_keyboard())
+                reply_markup=await poster_keyboard(is_admin))
     except AttributeError:
         if call.from_user.username is not None:
             await db_commands.add_meetings_user(telegram_id=call.from_user.id,
@@ -38,7 +42,8 @@ async def registrate_poster_name(call: CallbackQuery, state: FSMContext):
         else:
             await db_commands.add_meetings_user(telegram_id=call.from_user.id,
                                                 username="None")
-        await call.message.edit_text(_("Произошла ошибка, попробуйте еще раз"), reply_markup=await poster_keyboard())
+        await call.message.edit_text(_("Произошла ошибка, попробуйте еще раз"),
+                                     reply_markup=await poster_keyboard(is_admin))
 
 
 @dp.message_handler(state="register_handler_name")
@@ -99,6 +104,8 @@ async def registrate_poster_commentary(message: Message, state: FSMContext):
 
 @dp.message_handler(content_types=ContentType.PHOTO, state="register_handler_poster")
 async def finish_registration(message: Message, state: FSMContext):
+    user = await get_data_meetings(message.from_user.id)
+    is_admin = user[-1]
     photo_id = message.photo[-1].file_id
     try:
         await db_commands.update_user_data(telegram_id=message.from_user.id, photo_id=photo_id)
@@ -120,4 +127,4 @@ async def finish_registration(message: Message, state: FSMContext):
     }
     await db_commands.update_user_meetings_data(telegram_id=message.from_user.id, moderation_process=False)
     await ME.send_moderate_message(text=document, bot=bot)
-    await message.answer(_("Ваше мероприятие отправлено на модерацию"), reply_markup=await poster_keyboard())
+    await message.answer(_("Ваше мероприятие отправлено на модерацию"), reply_markup=await poster_keyboard(is_admin))

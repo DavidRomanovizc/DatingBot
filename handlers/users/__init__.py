@@ -5,6 +5,7 @@ from . import change_datas
 from . import user_profile
 from . import statistics_handler
 from . import brandbook_handler
+from . import event_filters_handler
 from . import view_ques_handler
 from . import sponsor_handler
 from . import event_handler

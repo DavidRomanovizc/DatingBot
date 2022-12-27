@@ -9,6 +9,7 @@ from aiogram.utils.exceptions import MessageCantBeDeleted, MessageToDeleteNotFou
 from data.config import load_config
 from keyboards.inline.calendar import search_cb
 from keyboards.inline.main_menu_inline import start_keyboard
+from keyboards.inline.poster_inline import poster_keyboard
 from loader import dp, _
 from utils.db_api import db_commands
 
@@ -48,6 +49,11 @@ async def open_menu(call: CallbackQuery):
                                     "@{supports}\n\n").format(fullname=fullname, heart=heart,
                                                               supports=support['username']),
                                   reply_markup=markup)
+
+
+@dp.callback_query_handler(text="event_menu")
+async def event_back_handler(call: CallbackQuery):
+    await call.message.edit_text("Вы вернулись в меню афиш", reply_markup=await poster_keyboard(call.from_user.id))
 
 
 @dp.callback_query_handler(search_cb.filter(action="cancel"))

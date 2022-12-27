@@ -109,3 +109,11 @@ async def show_filters(call=None, message=None):
                                                         user_3=user_data[3])
         await message.answer(text,
                              reply_markup=await filters_keyboard())
+
+
+async def check_availability_on_event():
+    ...
+
+
+async def check_event_date():
+    ...
