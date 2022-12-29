@@ -1,4 +1,4 @@
-# DatingBot
+<h1 align="center">DatingBot</h1>
 
 > An open source telegram bot with which you can find new acquaintances
 
