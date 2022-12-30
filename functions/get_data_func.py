@@ -4,7 +4,7 @@ from utils.db_api import db_commands
 from utils.db_api.db_commands import select_user_meetings
 
 
-async def get_data(telegram_id: int) -> Tuple[str, int, str, str, str, str, str, str, str, str, str, str, str]:
+async def get_data(telegram_id: int) -> Tuple[str, int, str, str, str, str, str, str, str, str, str, str, str, bool]:
     user = await db_commands.select_user(telegram_id=telegram_id)
     user_name = user.get("varname")
     user_age = user.get("age")
@@ -19,6 +19,7 @@ async def get_data(telegram_id: int) -> Tuple[str, int, str, str, str, str, str,
     user_inst = user.get("instagram")
     user_status = user.get("status")
     user_need_gender = user.get("need_partner_sex")
+    is_banned = user.get("is_banned")
 
     if user_inst is None:
         user_inst = "Пользователь не прикрепил Instagram"
@@ -42,7 +43,7 @@ async def get_data(telegram_id: int) -> Tuple[str, int, str, str, str, str, str,
     return (
         user_name, user_age, user_sex, user_city,
         user_life_style, user_comm, user_verification, photo_random_user, user_inst, user_status, user_need_gender,
-        user_voice_comm, user_need_city
+        user_voice_comm, user_need_city, is_banned
     )
 
 
