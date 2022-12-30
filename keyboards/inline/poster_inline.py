@@ -20,9 +20,9 @@ async def poster_keyboard(is_admin: bool) -> InlineKeyboardMarkup:
 
 async def event_filters_keyboard() -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup()
-    city_event = InlineKeyboardButton(text=_("Город"), callback_data="city_event")
-    cost_of_event = InlineKeyboardButton(text=_("Стоимость"), callback_data="cost_of_event")
-    event_category = InlineKeyboardButton(text=_("Категории"), callback_data="event_category")
+    city_event = InlineKeyboardButton(text=_("🏙️ Город"), callback_data="city_event")
+    cost_of_event = InlineKeyboardButton(text=_("💵 Стоимость"), callback_data="cost_of_event")
+    event_category = InlineKeyboardButton(text=_("📃 Категории"), callback_data="event_category")
     back = InlineKeyboardButton(text=_("⏪️ Вернуться в меню"), callback_data="event_menu")
     markup.add(city_event)
     markup.row(cost_of_event, event_category)
