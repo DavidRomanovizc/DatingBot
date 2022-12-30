@@ -1,8 +1,8 @@
 from dataclasses import dataclass
+from functools import lru_cache
 from pathlib import Path
-from typing import List
-
 from environs import Env
+from typing import List
 
 
 # Параметр frozen=True защищает экземпляры класса от случайного изменения
@@ -41,6 +41,7 @@ class Config:
     misc: Miscellaneous
 
 
+@lru_cache
 def load_config() -> Config:
     env = Env()
     env.read_env()
