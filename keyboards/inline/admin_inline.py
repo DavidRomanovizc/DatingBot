@@ -2,7 +2,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from loader import _
 
 
-# TODO: поменять названия кнопок
+# TODO: поменять названия переменных
 async def add_buttons_keyboard() -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup(row_width=1)
     btn1 = InlineKeyboardButton(text=_("Подтвердить отправку"), callback_data="confirm_send")
@@ -25,4 +25,11 @@ async def start_monitoring_keyboard() -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup(row_width=1)
     btn1 = InlineKeyboardButton(text=_("Подтвердить отправку"), callback_data="confirm_send_monitoring")
     markup.add(btn1)
+    return markup
+
+
+async def unban_user_keyboard() -> InlineKeyboardMarkup:
+    markup = InlineKeyboardMarkup()
+    unban_button = InlineKeyboardButton(_("Разблокировать"), callback_data="unban")
+    markup.add(unban_button)
     return markup
