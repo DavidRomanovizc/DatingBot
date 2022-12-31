@@ -159,7 +159,8 @@ async def get_city(message: types.Message):
 
 @dp.callback_query_handler(text="yes_all_good", state=RegData.town)
 async def get_hobbies(call: CallbackQuery):
-    await call.message.edit_text(_("И напоследок, Пришлите мне вашу фотографию"))
+    await call.message.delete()
+    await call.message.answer(_("И напоследок, Пришлите мне вашу фотографию"), reply_markup=ReplyKeyboardRemove())
     await RegData.photo.set()
 
 
@@ -179,7 +180,7 @@ async def fill_form(message: types.Message):
         logger.error(err)
     await asyncio.sleep(1)
 
-    await message.answer(_("И напоследок, Пришлите мне вашу фотографию"))
+    await message.answer(_("И напоследок, Пришлите мне вашу фотографию"), reply_markup=ReplyKeyboardRemove())
     await RegData.photo.set()
 
 
