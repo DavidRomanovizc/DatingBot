@@ -17,14 +17,14 @@ from utils.db_api import db_commands
 @dp.callback_query_handler(text="meetings")
 async def view_meetings_handler(call: CallbackQuery):
     user = await get_data_meetings(call.from_user.id)
-    is_admin = user[-1]
+    is_admin = user[10]
     await call.message.edit_text(_("Вы перешли в меню афиш"), reply_markup=await poster_keyboard(is_admin))
 
 
 @dp.callback_query_handler(text="create_poster")
 async def registrate_poster_name(call: CallbackQuery, state: FSMContext):
     user = await get_data_meetings(call.from_user.id)
-    is_admin = user[-1]
+    is_admin = user[10]
     try:
         user = await get_data_meetings(call.from_user.id)
         moderation_process = user[8]
@@ -105,7 +105,7 @@ async def registrate_poster_commentary(message: Message, state: FSMContext):
 @dp.message_handler(content_types=ContentType.PHOTO, state="register_handler_poster")
 async def finish_registration(message: Message, state: FSMContext):
     user = await get_data_meetings(message.from_user.id)
-    is_admin = user[-1]
+    is_admin = user[10]
     photo_id = message.photo[-1].file_id
     try:
         await db_commands.update_user_data(telegram_id=message.from_user.id, photo_id=photo_id)
