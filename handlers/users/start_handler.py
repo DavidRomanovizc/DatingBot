@@ -92,6 +92,6 @@ async def change_language(call: CallbackQuery):
         await db_commands.update_user_data(telegram_id=call.from_user.id, language="en")
     elif call.data == "Indonesian":
         await db_commands.update_user_data(telegram_id=call.from_user.id, language="in")
-    await call.answer(_("Язык был успешно изменен. Напишите /start"))
+    await call.answer(_("Язык был успешно изменен. Введите команду /start"), show_alert=True)
     await asyncio.sleep(5)
     await call.message.delete()
