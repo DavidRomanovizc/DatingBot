@@ -10,9 +10,10 @@ from loader import dp, _
 from utils.db_api import db_commands
 
 
+# TODO: Если город партнера == None, то писать 'город неопределён'
 @dp.callback_query_handler(text="filters")
 async def get_filters(call: CallbackQuery):
-    await show_filters(call)
+    await show_filters(call, message=None)
 
 
 @dp.callback_query_handler(text="user_age_period")
@@ -29,7 +30,7 @@ async def desired_min_age_state(message: types.Message, state: FSMContext):
         int_message = re.findall('[0-9]+', messages)
         int_messages = "".join(int_message)
         await db_commands.update_user_data(telegram_id=message.from_user.id, need_partner_age_min=int_messages)
-        await message.answer(_("Данные сохранены, теперь введите максимальный возраст"))
+        await message.answer(_("Теперь введите максимальный возраст"))
         await state.reset_state()
         await state.set_state("max_age_period")
 
@@ -41,14 +42,12 @@ async def desired_min_age_state(message: types.Message, state: FSMContext):
 @dp.message_handler(state="max_age_period")
 async def desired_max_age_state(message: types.Message, state: FSMContext):
     try:
-
         messages = message.text
         int_message = re.findall('[0-9]+', messages)
         int_messages = "".join(int_message)
         await db_commands.update_user_data(telegram_id=message.from_user.id, need_partner_age_max=int_messages)
-        await message.answer(_("Данные сохранены, теперь введите максимальный возраст"))
         await state.finish()
-        await show_filters(message)
+        await show_filters(call=None, message=message)
     except Exception as err:
         logger.error(err)
         await message.answer(_("Произошла неизвестная ошибка! Попробуйте еще раз"))
@@ -66,7 +65,7 @@ async def desired_gender(call: CallbackQuery, state: FSMContext):
     await choice_gender(call)
     await call.message.edit_text("Данные сохранены")
     await asyncio.sleep(1)
-    await show_filters(call)
+    await show_filters(call, message=None)
     await state.finish()
 
 
@@ -92,6 +91,6 @@ async def get_hobbies(call: CallbackQuery, state: FSMContext):
     await asyncio.sleep(1)
     await call.message.edit_text(_("Данные сохранены"))
     await asyncio.sleep(2)
-    await show_filters(call)
+    await show_filters(call, message=None)
 
     await state.finish()
