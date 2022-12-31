@@ -15,7 +15,7 @@ from functions.get_next_user_func import get_next_user
 from handlers.users.back_handler import delete_message
 from keyboards.inline.main_menu_inline import start_keyboard
 from keyboards.inline.questionnaires_inline import action_keyboard, action_reciprocity_keyboard
-from loader import dp, _
+from loader import dp, _, bot
 from utils.db_api import db_commands
 
 
@@ -82,8 +82,12 @@ async def like_questionnaire_reciprocity(call: CallbackQuery, state: FSMContext,
         user_db = await db_commands.select_user(telegram_id=call.from_user.id)
         await asyncio.sleep(1)
 
+        await bot.edit_message_reply_markup(chat_id=call.from_user.id,
+                                            message_id=call.message.message_id,
+                                            reply_markup=None)
         await call.message.answer(_("Ваша анкета отправлена другому пользователю"),
                                   reply_markup=await start_keyboard(user_db["status"]))
+
         await asyncio.sleep(5)
         await create_questionnaire_reciprocity(liker=call.from_user.id, chat_id=user_for_like,
                                                add_text=f'Вам ответили взаимностью, пользователь - '
