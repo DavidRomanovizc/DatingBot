@@ -91,9 +91,10 @@ async def display_profile(call: CallbackQuery, markup) -> NoReturn:
         await call.message.answer_voice(user_data[11], caption="Описание вашей анкеты")
 
 
-async def show_filters(call=None, message=None):
-    user_data = await get_data_filters(call.from_user.id)
-    if call:
+async def show_filters(call, message):
+    if message is None:
+        user_data = await get_data_filters(call.from_user.id)
+
         text = _("Фильтр по подбору партнеров:\n\n"
                  "🚻 Необходимы пол партнера: {user_2}\n"
                  "🔞 Возрастной диапазон: {user_0}-{user_1} лет\n\n"
@@ -101,7 +102,8 @@ async def show_filters(call=None, message=None):
                                                         user_3=user_data[3])
         await call.message.edit_text(text,
                                      reply_markup=await filters_keyboard())
-    if message:
+    if call is None:
+        user_data = await get_data_filters(message.from_user.id)
         text = _("Фильтр по подбору партнеров:\n\n"
                  "🚻 Необходимы пол партнера: {user_2}\n"
                  "🔞 Возрастной диапазон: {user_0}-{user_1} лет\n\n"
