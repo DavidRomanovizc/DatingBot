@@ -16,10 +16,18 @@ class BanMiddleware(BaseMiddleware):
         super(BanMiddleware, self).__init__()
 
     async def on_process_message(self, message: types.Message, data: dict):
-        await self.check_ban_user(message)
+        try:
+            user = await get_data(telegram_id=message.from_user.id)
+            await self.check_ban_user(message)
+        except AttributeError:
+            pass
 
     async def on_process_callback_query(self, call: types.CallbackQuery, data: dict):
-        await self.check_ban_user(call)
+        try:
+            user = await get_data(telegram_id=call.from_user.id)
+            await self.check_ban_user(call)
+        except AttributeError:
+            pass
 
     async def check_ban_user(self, message: Union[None, types.Message] = None,
                              call: Union[None, types.CallbackQuery] = None):
