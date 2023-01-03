@@ -8,7 +8,7 @@ async def start_keyboard(status) -> InlineKeyboardMarkup:
         registration = InlineKeyboardButton(text=_("➕ Регистрация"), callback_data="registration")
         information = InlineKeyboardButton(text=_("💬 Руководство"), callback_data="info")
         support = InlineKeyboardButton(text=_("🆘 Поддержка"), callback_data="support")
-        language = InlineKeyboardButton(text=_("🌐 Язык"), callback_data="language")
+        language = InlineKeyboardButton(text=_("🌐 Язык"), callback_data="language_reg")
         markup.row(registration)
         markup.row(support, information)
         markup.row(language)

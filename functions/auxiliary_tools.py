@@ -113,6 +113,23 @@ async def show_filters(call, message):
                              reply_markup=await filters_keyboard())
 
 
+async def registration_menu(call, scheduler, send_message_week, load_config, start_keyboard, random):
+    user_db = await db_commands.select_user(telegram_id=call.from_user.id)
+    support = await db_commands.select_user(telegram_id=load_config().tg_bot.support_ids[0])
+    markup = await start_keyboard(user_db["status"])
+    heart = random.choice(['💙', '💚', '💛', '🧡', '💜', '🖤', '❤', '🤍', '💖', '💝'])
+    await call.message.edit_text(_("Приветствую вас, {fullname}!!\n\n"
+                                   "{heart} <b> QueDateBot </b> - платформа для поиска новых знакомств.\n\n"
+                                   "🪧 Новости о проекте вы можете прочитать в нашем канале - "
+                                   "https://t.me/QueDateGroup \n\n"
+                                   "<b>🤝 Сотрудничество: </b>\n"
+                                   "Если у вас есть предложение о сотрудничестве, пишите агенту поддержки - "
+                                   "@{supports}\n\n").format(fullname=call.from_user.full_name, heart=heart,
+                                                             supports=support['username']),
+                                 reply_markup=markup)
+    scheduler.add_job(send_message_week, trigger="interval", weeks=3, jitter=120, args={call.message})
+
+
 async def check_availability_on_event():
     ...
 

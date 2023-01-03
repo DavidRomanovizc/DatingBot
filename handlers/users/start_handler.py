@@ -9,6 +9,7 @@ from aiogram.utils.exceptions import BadRequest
 from data.config import load_config
 from filters import IsPrivate
 from functions.app_scheduler import send_message_week
+from functions.auxiliary_tools import registration_menu
 from handlers.users.back_handler import delete_message
 from keyboards.inline.language_inline import language_keyboard
 
@@ -54,29 +55,24 @@ async def register_user(message: types.Message):
 
 @dp.callback_query_handler(text="start_menu")
 async def start_menu(call: CallbackQuery):
-    user_db = await db_commands.select_user(telegram_id=call.from_user.id)
-    support = await db_commands.select_user(telegram_id=load_config().tg_bot.support_ids[0])
-    markup = await start_keyboard(user_db["status"])
-    heart = random.choice(['💙', '💚', '💛', '🧡', '💜', '🖤', '❤', '🤍', '💖', '💝'])
-    await call.message.edit_text(_("Приветствую вас, {fullname}!!\n\n"
-                                   "{heart} <b> QueDateBot </b> - платформа для поиска новых знакомств.\n\n"
-                                   "🪧 Новости о проекте вы можете прочитать в нашем канале - "
-                                   "https://t.me/QueDateGroup \n\n"
-                                   "<b>🤝 Сотрудничество: </b>\n"
-                                   "Если у вас есть предложение о сотрудничестве, пишите агенту поддержки - "
-                                   "@{supports}\n\n").format(fullname=call.from_user.full_name, heart=heart,
-                                                             supports=support['username']),
-                                 reply_markup=markup)
-    scheduler.add_job(send_message_week, trigger="interval", weeks=3, jitter=120, args={call.message})
+    await registration_menu(call, scheduler, send_message_week, load_config, start_keyboard, random)
 
 
 @dp.callback_query_handler(text="language")
+@dp.callback_query_handler(text="language_reg")
 async def choice_language(call: CallbackQuery):
-    try:
-        await call.message.edit_text(_("Выберите язык"), reply_markup=await language_keyboard())
-    except BadRequest:
-        await delete_message(call.message)
-        await call.message.answer(_("Выберите язык"), reply_markup=await language_keyboard())
+    if call.data == "language_reg":
+        try:
+            await call.message.edit_text(_("Выберите язык"), reply_markup=await language_keyboard("registration"))
+        except BadRequest:
+            await delete_message(call.message)
+            await call.message.answer(_("Выберите язык"), reply_markup=await language_keyboard("registration"))
+    elif call.data == "language":
+        try:
+            await call.message.edit_text(_("Выберите язык"), reply_markup=await language_keyboard("profile"))
+        except BadRequest:
+            await delete_message(call.message)
+            await call.message.answer(_("Выберите язык"), reply_markup=await language_keyboard("profile"))
 
 
 @dp.callback_query_handler(text="Russian")
