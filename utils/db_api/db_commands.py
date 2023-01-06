@@ -7,7 +7,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_project.telegrambot.tele
 import django
 
 django.setup()
-from django_project.telegrambot.usersmanage.models import User, UserMeetings
+from django_project.telegrambot.usersmanage.models import User, UserMeetings, SettingModel
 
 
 @sync_to_async
@@ -98,6 +98,11 @@ def search_users(need_partner_sex, need_age_min, need_age_max, user_need_city):
 
 
 @sync_to_async
+def search_event_forms():
+    return UserMeetings.objects.filter(Q(is_active=True) & Q(verification_status=True))
+
+
+@sync_to_async
 def search_users_all():
     return User.objects.filter(is_banned=False).all().values()
 
@@ -105,3 +110,23 @@ def search_users_all():
 @sync_to_async
 def count_all_users_kwarg(**kwarg):
     return User.objects.filter(**kwarg).all().values().count()
+
+
+@sync_to_async
+def update_setting(telegram_id: int, **kwargs):
+    return SettingModel.objects.filter(telegram_id=telegram_id).update(**kwargs)
+
+
+@sync_to_async
+def select_setting(telegram_id):
+    return SettingModel.objects.filter(telegram_id=telegram_id).values().first()
+
+
+@sync_to_async
+def add_user_to_settings(telegram_id: int):
+    return SettingModel(telegram_id=int(telegram_id)).save()
+
+
+@sync_to_async
+def select_setting_tech_work():
+    return SettingModel.objects.filter(technical_works=True).values().first()
