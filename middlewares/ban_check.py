@@ -2,8 +2,6 @@ from typing import Union
 
 from aiogram.dispatcher.middlewares import BaseMiddleware
 from aiogram.dispatcher.handler import CancelHandler
-from loguru import logger
-
 from functions.main_app.get_data_func import get_data
 from keyboards.inline.admin_inline import unban_user_keyboard
 from utils.db_api import db_commands
