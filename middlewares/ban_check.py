@@ -3,7 +3,7 @@ from typing import Union
 from aiogram.dispatcher.middlewares import BaseMiddleware
 from aiogram.dispatcher.handler import CancelHandler
 
-from functions.get_data_func import get_data
+from functions.main_app.get_data_func import get_data
 from keyboards.inline.admin_inline import unban_user_keyboard
 from utils.db_api import db_commands
 from aiogram import types
@@ -25,7 +25,15 @@ class BanMiddleware(BaseMiddleware):
     async def on_process_callback_query(self, call: types.CallbackQuery, data: dict):
         try:
             user = await get_data(telegram_id=call.from_user.id)
-            await self.check_ban_user(call)
+            is_banned = user[13]
+            if (user is not None and is_banned) and \
+                    (call.data != "unban" and
+                     call.data != "unban_menu" and
+                     call.data != "check_price" and
+                     call.data != "pay_qiwi" and
+                     call.data != "check_payment" and
+                     call.data != "cancel_payment"):
+                await self.check_ban_user(call)
         except AttributeError:
             pass
 
