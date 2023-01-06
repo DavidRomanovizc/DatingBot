@@ -8,7 +8,7 @@ from keyboards.inline.support_inline import support_keyboard, support_callback, 
     cancel_support, cancel_support_callback
 from loader import dp, bot, _
 from utils.db_api import db_commands
-from functions.get_data_func import get_data
+from functions.main_app.get_data_func import get_data
 
 
 @dp.callback_query_handler(text="support")

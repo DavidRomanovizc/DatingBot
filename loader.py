@@ -6,7 +6,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from glQiwiApi import QiwiWrapper
 
 from data.config import load_config
-from functions.language_ware import setup_middleware
+from functions.main_app.language_ware import setup_middleware
 
 from utils.YandexMap.api import Client
 

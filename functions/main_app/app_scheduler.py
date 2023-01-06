@@ -1,6 +1,6 @@
 from aiogram.types import Message
 
-from functions.get_data_func import get_data
+from functions.main_app.get_data_func import get_data
 from keyboards.inline.questionnaires_inline import viewing_ques_keyboard
 from loader import bot, _
 

@@ -5,8 +5,8 @@ from aiogram import types
 from aiogram.types import CallbackQuery
 from loguru import logger
 
-from functions.get_data_filters_func import get_data_filters
-from functions.get_data_func import get_data
+from functions.dating.get_data_filters_func import get_data_filters
+from functions.main_app.get_data_func import get_data
 
 from keyboards.inline.filters_inline import filters_keyboard
 from keyboards.inline.registration_inline import confirm_keyboard
@@ -130,9 +130,4 @@ async def registration_menu(call, scheduler, send_message_week, load_config, sta
     scheduler.add_job(send_message_week, trigger="interval", weeks=3, jitter=120, args={call.message})
 
 
-async def check_availability_on_event():
-    ...
 
-
-async def check_event_date():
-    ...

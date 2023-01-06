@@ -8,8 +8,8 @@ from aiogram.utils.exceptions import BadRequest
 
 from data.config import load_config
 from filters import IsPrivate
-from functions.app_scheduler import send_message_week
-from functions.auxiliary_tools import registration_menu
+from functions.main_app.app_scheduler import send_message_week
+from functions.main_app.auxiliary_tools import registration_menu
 from handlers.users.back_handler import delete_message
 from keyboards.inline.language_inline import language_keyboard
 
@@ -33,7 +33,8 @@ async def register_user(message: types.Message):
                                        username="None")
             await db_commands.add_meetings_user(telegram_id=message.from_user.id,
                                                 username="None")
-
+        if message.from_user.id in load_config().tg_bot.admin_ids:
+            await db_commands.add_user_to_settings(telegram_id=message.from_user.id)
     except:
         pass
     support = await db_commands.select_user(telegram_id=load_config().tg_bot.support_ids[0])

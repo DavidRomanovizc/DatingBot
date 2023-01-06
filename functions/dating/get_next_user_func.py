@@ -1,7 +1,7 @@
 from loader import _
 from typing import List
 
-from functions.get_data_filters_func import get_data_filters
+from functions.dating.get_data_filters_func import get_data_filters
 from utils.db_api import db_commands
 
 

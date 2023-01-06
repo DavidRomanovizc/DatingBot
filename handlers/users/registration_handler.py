@@ -6,7 +6,7 @@ from aiogram.types import CallbackQuery, ContentType, ReplyKeyboardRemove, Inlin
 from aiogram.utils.markdown import quote_html
 from loguru import logger
 
-from functions.auxiliary_tools import choice_gender, determining_location
+from functions.main_app.auxiliary_tools import choice_gender, determining_location
 from keyboards.default.get_location_default import location_keyboard
 from keyboards.inline.change_data_profile_inline import gender_keyboard
 from keyboards.inline.main_menu_inline import start_keyboard
@@ -16,7 +16,7 @@ from loader import dp, client, _
 from states.reg_state import RegData
 
 from utils.db_api import db_commands
-from functions.get_data_func import get_data
+from functions.main_app.get_data_func import get_data
 from utils.misc.profanityFilter import censored_message
 
 

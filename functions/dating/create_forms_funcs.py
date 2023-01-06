@@ -5,9 +5,9 @@ from typing import Tuple, NoReturn
 import numpy as np
 from aiogram.types import CallbackQuery
 
-from functions.get_data_func import get_data
-from functions.get_next_user_func import get_next_user
-from functions.send_form_func import send_questionnaire
+from functions.main_app.get_data_func import get_data
+from functions.dating.get_next_user_func import get_next_user
+from functions.dating.send_form_func import send_questionnaire
 from handlers.users.back_handler import delete_message
 from keyboards.inline.questionnaires_inline import questionnaires_keyboard
 from keyboards.inline.registration_inline import registration_keyboard

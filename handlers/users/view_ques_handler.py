@@ -8,9 +8,9 @@ from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery
 from loguru import logger
 
-from functions.create_forms_funcs import create_questionnaire, create_questionnaire_reciprocity, rand_user_list
-from functions.get_data_func import get_data
-from functions.get_next_user_func import get_next_user
+from functions.dating.create_forms_funcs import create_questionnaire, create_questionnaire_reciprocity, rand_user_list
+from functions.main_app.get_data_func import get_data
+from functions.dating.get_next_user_func import get_next_user
 
 from handlers.users.back_handler import delete_message
 from keyboards.inline.main_menu_inline import start_keyboard

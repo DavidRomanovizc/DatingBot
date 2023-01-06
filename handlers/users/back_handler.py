@@ -7,8 +7,10 @@ from aiogram.types import CallbackQuery
 from aiogram.utils.exceptions import MessageCantBeDeleted, MessageToDeleteNotFound
 
 from data.config import load_config
-from functions.app_scheduler import send_message_week
-from functions.auxiliary_tools import display_profile, registration_menu
+from functions.main_app.app_scheduler import send_message_week
+from functions.main_app.auxiliary_tools import display_profile, registration_menu
+from functions.main_app.get_data_func import get_data_meetings
+from keyboards.inline.admin_inline import unban_user_keyboard
 from keyboards.inline.calendar import search_cb
 from keyboards.inline.main_menu_inline import start_keyboard
 from keyboards.inline.menu_profile_inline import get_profile_keyboard
@@ -50,7 +52,16 @@ async def open_menu(call: CallbackQuery):
 
 @dp.callback_query_handler(text="event_menu")
 async def event_back_handler(call: CallbackQuery):
-    await call.message.edit_text("Вы вернулись в меню афиш", reply_markup=await poster_keyboard(call.from_user.id))
+    user = await get_data_meetings(call.from_user.id)
+    is_admin = user[10]
+    is_verification = user[6]
+    try:
+        await call.message.edit_text("Вы вернулись в меню афиш",
+                                     reply_markup=await poster_keyboard(is_admin, is_verification))
+    except aiogram.utils.exceptions.BadRequest:
+        await delete_message(call.message)
+        await call.message.answer("Вы вернулись в меню афиш",
+                                  reply_markup=await poster_keyboard(is_admin, is_verification))
 
 
 @dp.callback_query_handler(text="back_to_reg_menu")
@@ -64,6 +75,11 @@ async def event_back_handler(call: CallbackQuery):
         user_db = await db_commands.select_user(telegram_id=telegram_id)
         markup = await get_profile_keyboard(verification=user_db["verification"])
         await display_profile(call, markup)
+
+
+@dp.callback_query_handler(text="unban_menu")
+async def unban_back_handler(call: CallbackQuery):
+    await call.message.edit_text(_("Вы забанены!"), reply_markup=await unban_user_keyboard())
 
 
 @dp.callback_query_handler(search_cb.filter(action="cancel"))

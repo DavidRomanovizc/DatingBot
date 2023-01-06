@@ -7,8 +7,8 @@ from aiogram.types import CallbackQuery, ContentType
 from aiogram.utils.markdown import quote_html
 from loguru import logger
 
-from functions.auxiliary_tools import determining_location
-from functions.get_data_func import get_data
+from functions.main_app.auxiliary_tools import determining_location
+from functions.main_app.get_data_func import get_data
 from handlers.users.back_handler import delete_message
 from keyboards.inline.change_data_profile_inline import change_info_keyboard, gender_keyboard
 from keyboards.inline.main_menu_inline import start_keyboard

@@ -1,4 +1,4 @@
-from functions.get_user_location import calculate_distance
+from functions.dating.get_user_location import calculate_distance
 
 
 def test_calculate_distance():

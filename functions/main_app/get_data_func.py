@@ -47,7 +47,7 @@ async def get_data(telegram_id: int) -> Tuple[str, int, str, str, str, str, str,
     )
 
 
-async def get_data_meetings(telegram_id: int) -> Tuple[str, str, str, str, str, str, str, bool, bool, bool, bool]:
+async def get_data_meetings(telegram_id: int) -> Tuple[str, str, str, str, str, str, bool, bool, bool, bool, bool]:
     user = await select_user_meetings(telegram_id=telegram_id)
     username = user.get("username")
     verification_status = user.get("verification_status")
@@ -60,11 +60,6 @@ async def get_data_meetings(telegram_id: int) -> Tuple[str, str, str, str, str, 
     photo_id = user.get("photo_id")
     is_admin = user.get("is_admin")
     is_active = user.get("is_active")
-
-    if verification_status:
-        verification_status = "Одобрено"
-    else:
-        verification_status = "Не одобрено"
 
     return (
         username,

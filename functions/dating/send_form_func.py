@@ -165,6 +165,3 @@ async def send_questionnaire(chat_id, user_data, user_db, markup=None, add_text=
         await bot.send_photo(chat_id=chat_id, caption=add_text_without_descr,
                              photo=user_data[7],
                              reply_markup=await reciprocity_keyboard(user_for_like=user_telegram_id))
-
-
-

@@ -2,7 +2,7 @@ from aiogram.types import CallbackQuery
 from keyboards.inline.sponsor_inline import sponsors_keyboard
 from loader import dp
 from utils.db_api import db_commands
-from functions.get_data_func import get_data
+from functions.main_app.get_data_func import get_data
 
 
 @dp.callback_query_handler(text="statistics")
