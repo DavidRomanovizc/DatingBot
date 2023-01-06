@@ -8,10 +8,11 @@ from aiogram.utils.markdown import escape_md, quote_html
 from loguru import logger
 
 from filters.is_admin_filter import IsAdmin
-from functions.create_forms_funcs import monitoring_questionnaire
+from functions.dating.create_forms_funcs import monitoring_questionnaire
 
 from keyboards.default.admin_default import admin_keyboard
-from keyboards.inline.admin_inline import start_monitoring_keyboard, confirm_with_button_keyboard, add_buttons_keyboard
+from keyboards.inline.admin_inline import start_monitoring_keyboard, confirm_with_button_keyboard, \
+    add_buttons_keyboard, tech_works_keyboard
 from keyboards.inline.cancel_inline import cancel_keyboard
 from keyboards.inline.questionnaires_inline import action_keyboard_monitoring
 from loader import dp, bot, _
@@ -299,3 +300,23 @@ async def confirm_with_button_no_photo(call: CallbackQuery, state: FSMContext):
             await call.message.edit_text(
                 text=_("Рассылка проведена успешно! Ее получили: {count} чатов!\n").format(count=count))
         await state.reset_state(with_data=True)
+
+
+@dp.message_handler(IsAdmin(), text="Тех.Работа")
+async def tech_works_menu(message: types.Message):
+    settings = await db_commands.select_setting(message.from_user.id)
+    tech_works = settings.get("technical_works")
+    await message.answer(text=_("Чтобы включить/выключить технические работы, нажмите на кнопку ниже"),
+                         reply_markup=await tech_works_keyboard(tech_works))
+
+
+@dp.callback_query_handler(text="set_up_tech_work")
+async def set_up_tech_works(call: CallbackQuery):
+    await db_commands.update_setting(telegram_id=call.from_user.id, technical_works=True)
+    await call.message.edit_text(_("Технические работы включены"))
+
+
+@dp.callback_query_handler(text="disable_tech_work")
+async def set_up_tech_works(call: CallbackQuery):
+    await db_commands.update_setting(telegram_id=call.from_user.id, technical_works=False)
+    await call.message.edit_text(_("Технические работы выключены"))

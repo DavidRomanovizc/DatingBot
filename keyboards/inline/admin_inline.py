@@ -28,6 +28,18 @@ async def start_monitoring_keyboard() -> InlineKeyboardMarkup:
     return markup
 
 
+async def tech_works_keyboard(tech_works: bool) -> InlineKeyboardMarkup:
+    markup = InlineKeyboardMarkup()
+    set_up_tech_work = InlineKeyboardButton(text=_("Включить"), callback_data="set_up_tech_work")
+    disable_technical_work = InlineKeyboardButton(text=_("Выключить"), callback_data="disable_tech_work")
+    if tech_works:
+        markup.add(disable_technical_work)
+        return markup
+    else:
+        markup.add(set_up_tech_work)
+        return markup
+
+
 async def unban_user_keyboard() -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup()
     unban_button = InlineKeyboardButton(_("Разблокировать"), callback_data="unban")
