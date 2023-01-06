@@ -2,7 +2,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from loader import _
 
 
-async def poster_keyboard(is_admin: bool) -> InlineKeyboardMarkup:
+async def poster_keyboard(is_admin: bool, verification_status: bool) -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup(row_width=6)
     create_poster = InlineKeyboardButton(text=_("✍️Создать афишу"), callback_data="create_poster")
     view_poster = InlineKeyboardButton(text=_("Смотреть афиши"), callback_data="view_poster")
@@ -10,7 +10,7 @@ async def poster_keyboard(is_admin: bool) -> InlineKeyboardMarkup:
     my_event = InlineKeyboardButton(text=_("🎭 Моё событие"), callback_data="my_event")
     event_filters = InlineKeyboardButton(text=_("⚙️ Фильтры"), callback_data="event_filters")
     back = InlineKeyboardButton(text=_("⏪️ Вернуться в меню"), callback_data="start_menu")
-    if is_admin:
+    if is_admin and verification_status:
         markup.add(my_event)
     markup.row(create_poster, event_filters)
     markup.row(view_poster, my_appointment)
@@ -30,6 +30,16 @@ async def event_filters_keyboard() -> InlineKeyboardMarkup:
     return markup
 
 
+async def event_settings_keyboard() -> InlineKeyboardMarkup:
+    markup = InlineKeyboardMarkup()
+    change_data = InlineKeyboardButton(text=_("✍️ Изменить"), callback_data="change_event_data")
+    delete_event = InlineKeyboardButton(text=_("❌ Удалить"), callback_data="delete_event")
+    back = InlineKeyboardButton(text=_("⏪️ Вернуться в меню"), callback_data="event_menu")
+    markup.row(change_data, delete_event)
+    markup.add(back)
+    return markup
+
+
 async def create_moderate_ik(telegram_id) -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup()
     accept = InlineKeyboardButton(_("✅ Одобрить"), callback_data="moderate_accept-{}".format(telegram_id))
@@ -38,7 +48,7 @@ async def create_moderate_ik(telegram_id) -> InlineKeyboardMarkup:
     return markup
 
 
-async def create_event_list_ik(telegram_id) -> InlineKeyboardMarkup:
+async def view_event_keyboard(telegram_id) -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup()
     meet = InlineKeyboardButton(_("Пойду!"), callback_data="answer_imgoing-{}".format(telegram_id))
     not_interested = InlineKeyboardButton(_("Не интересно"),
@@ -47,7 +57,7 @@ async def create_event_list_ik(telegram_id) -> InlineKeyboardMarkup:
     return markup
 
 
-async def cancel_event_list_ik(telegram_id) -> InlineKeyboardMarkup:
+async def cancel_event_keyboard(telegram_id) -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup()
     backed_out = InlineKeyboardButton(_("Отказаться от участия!"), callback_data="cancel-{}".format(telegram_id))
     markup.add(backed_out)
