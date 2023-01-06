@@ -65,3 +65,10 @@ class UserMeetings(TimeBasedModel):
 
     def __str__(self):
         return f"№{self.id} ({self.telegram_id} - {self.username})"
+
+
+class SettingModel(models.Model):
+    telegram_id = models.BigIntegerField(unique=True, default=1, verbose_name="ID пользователя Телеграм")
+    technical_works = models.BooleanField(default=False, verbose_name="Технические работы")
+
+    objects = models.Manager()
