@@ -10,15 +10,11 @@
 - [Contributing](#memo-contributing)
 - [License](#scroll-license)
 
-
-
 ## 🖍 Used technology
+
 ![Python](https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=blue)
 ![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=green)
 ![Postgresql](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
-
-
-
 
 ## :package: Installation
 
@@ -48,36 +44,48 @@ $ https://github.com/DavidRomanovizc/DatingBot.git
 First you need to rename the file `.env.dist` to `.env`.\
 After that, you need to fill it with data.
 
-
-| Variable   | Type        | Importance   |
-|------------|-------------|--------------|
-| BOT_TOKEN  | str         | True         |
-| ADMINS     | list        | True         |
-| SUPPORTS   | list        | True         |
-| IP         | str         | True         |
-| DB_USER    | str         | True         |
-| DB_PASS    | str         | True         |
-| DB_HOST    | str         | True         |
-| DB_NAME    | str         | True         |
-| SECRET_KEY | str         | True         |
-| API_KEY    | str         | True         |
+| Variable      | Type | Importance |
+|---------------|------|------------|
+| BOT_TOKEN     | str  | True       |
+| ADMINS        | list | True       |
+| SUPPORTS      | list | True       |
+| IP            | str  | True       |
+| TIMEZONE      | str  | True       |
+| MODERATE_CHAT | str  | True       |
+| DB_USER       | str  | True       |
+| DB_PASS       | str  | True       |
+| DB_HOST       | str  | True       |
+| DB_NAME       | str  | True       |
+| SECRET_KEY    | str  | True       |
+| API_KEY       | str  | True       |
+| QIWI_KEY      | str  | True       |
+| PHONE_NUMBER  | str  | True       |
+| SECRET_P2     | str  | True       |
 
 `BOT_TOKEN` - Bot token\
 `ADMINS` - list of admins id\
 `SUPPORTS` - list of admins id\
-`IP` - ip for other services
+`IP` - ip for other services\
+`TIMEZONE` - your time zone for working with the scheduler\
+`MODERATE_CHAT` - telegram chat where the event will be moderated
 
 `DB_USER` - username of the database owner\
 `DB_PASS` - password from the database\
 `DB_HOST` - IP address of the database\
 `DB_NAME` - database name
 
-`SECRET_KEY` - secret key for django\
+`SECRET_KEY` - secret key for django
+
 `API_KEY` - yandex api key for yandex map
+
+`QIWI_KEY` - qiwi api key for receiving payments\
+`PHONE_NUMBER` - your phone number (need for qiwi)\
+`SECRET_2` - public p2 key which allows you to issue an invoice and open a transfer form
 
 #### :green_book: Django
 
-Install Django 
+Install Django
+
 ```vim
 $ pip install Django
 ```
