@@ -36,7 +36,6 @@ class BanMiddleware(BaseMiddleware):
                      call.data != "cancel_payment"):
                 await self.check_ban_user(call)
         except AttributeError:
-            logger.info("Error")
             pass
 
     async def check_ban_user(self, message: Union[None, types.Message] = None,
