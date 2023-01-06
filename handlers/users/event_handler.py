@@ -3,11 +3,13 @@ import datetime
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery, Message, ContentType
+from aiogram.utils.exceptions import MessageNotModified
 from loguru import logger
 
-from functions.auxiliary_tools import determining_location
-from functions.get_data_func import get_data_meetings
-from functions.templates_messages import ME
+from data.config import load_config
+from functions.main_app.auxiliary_tools import determining_location
+from functions.main_app.get_data_func import get_data_meetings
+from functions.event.templates_messages import ME
 from keyboards.inline.calendar import calendar_callback, SimpleCalendar
 from keyboards.inline.poster_inline import poster_keyboard
 from loader import dp, _, bot
@@ -18,13 +20,16 @@ from utils.db_api import db_commands
 async def view_meetings_handler(call: CallbackQuery):
     user = await get_data_meetings(call.from_user.id)
     is_admin = user[10]
-    await call.message.edit_text(_("Вы перешли в меню афиш"), reply_markup=await poster_keyboard(is_admin))
+    is_verification = user[6]
+    await call.message.edit_text(_("Вы перешли в меню афиш"),
+                                 reply_markup=await poster_keyboard(is_admin, is_verification))
 
 
 @dp.callback_query_handler(text="create_poster")
 async def registrate_poster_name(call: CallbackQuery, state: FSMContext):
     user = await get_data_meetings(call.from_user.id)
     is_admin = user[10]
+    is_verification = user[6]
     try:
         user = await get_data_meetings(call.from_user.id)
         moderation_process = user[8]
@@ -32,9 +37,14 @@ async def registrate_poster_name(call: CallbackQuery, state: FSMContext):
             await call.message.edit_text(_("Введите название мероприятие"))
             await state.set_state("register_handler_name")
         else:
-            await call.message.edit_text(
-                "Вы уже создали мероприятие, которое проходит модерацию. Дождитесь проверки, пожалуйста",
-                reply_markup=await poster_keyboard(is_admin))
+            try:
+                await call.message.edit_text(
+                    "Вы уже создали мероприятие, которое проходит модерацию. Дождитесь проверки, пожалуйста",
+                    reply_markup=await poster_keyboard(is_admin, is_verification))
+            except MessageNotModified:
+                await call.answer(
+                    _("Прочитайте сообщение и не нажимайте на кнопку, пока ваше мероприятие не пройдет модерацию"),
+                    show_alert=True)
     except AttributeError:
         if call.from_user.username is not None:
             await db_commands.add_meetings_user(telegram_id=call.from_user.id,
@@ -43,7 +53,7 @@ async def registrate_poster_name(call: CallbackQuery, state: FSMContext):
             await db_commands.add_meetings_user(telegram_id=call.from_user.id,
                                                 username="None")
         await call.message.edit_text(_("Произошла ошибка, попробуйте еще раз"),
-                                     reply_markup=await poster_keyboard(is_admin))
+                                     reply_markup=await poster_keyboard(is_admin, is_verification))
 
 
 @dp.message_handler(state="register_handler_name")
@@ -106,14 +116,12 @@ async def registrate_poster_commentary(message: Message, state: FSMContext):
 async def finish_registration(message: Message, state: FSMContext):
     user = await get_data_meetings(message.from_user.id)
     is_admin = user[10]
+    is_verification = user[6]
     photo_id = message.photo[-1].file_id
-    try:
-        await db_commands.update_user_data(telegram_id=message.from_user.id, photo_id=photo_id)
-        await message.answer(_("Фото принято"))
-    except Exception as err:
-        logger.info(err)
-        await message.answer(_("Произошла ошибка! Попробуйте еще раз либо отправьте другую фотографию. \n"
-                               "Если ошибка осталась, напишите агенту поддержки."))
+
+    await db_commands.update_user_meetings_data(telegram_id=message.from_user.id, photo_id=photo_id)
+    await message.answer(_("Фото принято"))
+
     await state.finish()
     user = await get_data_meetings(telegram_id=message.from_user.id)
 
@@ -126,5 +134,21 @@ async def finish_registration(message: Message, state: FSMContext):
         "telegram_id": message.from_user.id
     }
     await db_commands.update_user_meetings_data(telegram_id=message.from_user.id, moderation_process=False)
-    await ME.send_moderate_message(text=document, bot=bot)
-    await message.answer(_("Ваше мероприятие отправлено на модерацию"), reply_markup=await poster_keyboard(is_admin))
+    await ME.send_event_message(text=document, bot=bot, chat_id=load_config().tg_bot.moderate_chat, moderate=True)
+    await message.answer(_("Ваше мероприятие отправлено на модерацию"),
+                         reply_markup=await poster_keyboard(is_admin, is_verification))
+
+
+@dp.callback_query_handler(text="my_event")
+async def view_own_event(call: CallbackQuery):
+    user = await get_data_meetings(telegram_id=call.from_user.id)
+
+    document = {
+        "title": user[2],
+        "date": user[3],
+        "place": user[4],
+        "description": user[1],
+        "photo_id": user[5],
+    }
+    await ME.send_event_message(text=document, bot=bot, chat_id=call.from_user.id, moderate=False,
+                                call=call)
