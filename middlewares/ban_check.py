@@ -2,6 +2,7 @@ from typing import Union
 
 from aiogram.dispatcher.middlewares import BaseMiddleware
 from aiogram.dispatcher.handler import CancelHandler
+from loguru import logger
 
 from functions.main_app.get_data_func import get_data
 from keyboards.inline.admin_inline import unban_user_keyboard
@@ -35,6 +36,7 @@ class BanMiddleware(BaseMiddleware):
                      call.data != "cancel_payment"):
                 await self.check_ban_user(call)
         except AttributeError:
+            logger.info("Error")
             pass
 
     async def check_ban_user(self, message: Union[None, types.Message] = None,
