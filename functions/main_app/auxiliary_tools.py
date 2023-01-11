@@ -2,13 +2,15 @@ from typing import NoReturn, Optional
 
 import asyncpg
 from aiogram import types
-from aiogram.types import CallbackQuery
+from aiogram.dispatcher import FSMContext
+from aiogram.types import CallbackQuery, ReplyKeyboardRemove
 from loguru import logger
 
 from functions.dating.get_data_filters_func import get_data_filters
 from functions.main_app.get_data_func import get_data
 
 from keyboards.inline.filters_inline import filters_keyboard
+from keyboards.inline.main_menu_inline import start_keyboard
 from keyboards.inline.registration_inline import confirm_keyboard
 from loader import client, _
 from utils.db_api import db_commands
@@ -130,4 +132,29 @@ async def registration_menu(call, scheduler, send_message_week, load_config, sta
     scheduler.add_job(send_message_week, trigger="interval", weeks=3, jitter=120, args={call.message})
 
 
+async def saving_photo(message: types.Message, telegram_id: int, file_id: int, state: FSMContext):
+    try:
+        await db_commands.update_user_data(telegram_id=telegram_id, photo_id=file_id)
 
+        await message.answer(_("Фото принято!"))
+    except Exception as err:
+        logger.error(err)
+        await message.answer(_("Произошла ошибка! Попробуйте еще раз либо отправьте другую фотографию. \n"
+                               "Если ошибка осталась, напишите агенту поддержки."))
+    await state.finish()
+    await db_commands.update_user_data(telegram_id=telegram_id, status=True)
+    user_data = await get_data(telegram_id)
+    user_db = await db_commands.select_user(telegram_id=telegram_id)
+    markup = await start_keyboard(status=user_db['status'])
+
+    text = (f"Регистрация успешно завершена! \n\n "
+            "{user_0}, "
+            "{user_1} лет, "
+            "{user_3}\n\n"
+            "<b>О себе</b> - {user_5}").format(user_0=str(user_data[0]), user_1=str(user_data[1]),
+                                               user_3=str(user_data[3]),
+                                               user_5=str(user_data[5]))
+
+    await message.answer_photo(caption=text,
+                               photo=user_db.get('photo_id'), reply_markup=ReplyKeyboardRemove())
+    await message.answer("Меню: ", reply_markup=markup)

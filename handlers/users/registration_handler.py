@@ -2,14 +2,14 @@ import asyncio
 import asyncpg
 from aiogram import types
 from aiogram.dispatcher import FSMContext
-from aiogram.types import CallbackQuery, ContentType, ReplyKeyboardRemove, InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.types import CallbackQuery, ContentType, InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.markdown import quote_html
 from loguru import logger
 
-from functions.main_app.auxiliary_tools import choice_gender, determining_location
+from functions.main_app.auxiliary_tools import choice_gender, determining_location, saving_photo
 from keyboards.default.get_location_default import location_keyboard
+from keyboards.default.get_photo import get_photo_from_profile
 from keyboards.inline.change_data_profile_inline import gender_keyboard
-from keyboards.inline.main_menu_inline import start_keyboard
 from keyboards.inline.registration_inline import second_registration_keyboard, about_yourself_keyboard
 
 from loader import dp, client, _
@@ -160,7 +160,8 @@ async def get_city(message: types.Message):
 @dp.callback_query_handler(text="yes_all_good", state=RegData.town)
 async def get_hobbies(call: CallbackQuery):
     await call.message.delete()
-    await call.message.answer(_("И напоследок, Пришлите мне вашу фотографию"), reply_markup=ReplyKeyboardRemove())
+    await call.message.answer(_("И напоследок, Пришлите мне вашу фотографию"),
+                              reply_markup=await get_photo_from_profile())
     await RegData.photo.set()
 
 
@@ -180,38 +181,20 @@ async def fill_form(message: types.Message):
         logger.error(err)
     await asyncio.sleep(1)
 
-    await message.answer(_("И напоследок, Пришлите мне вашу фотографию"), reply_markup=ReplyKeyboardRemove())
+    await message.answer(_("И напоследок, Пришлите мне вашу фотографию"), reply_markup=await get_photo_from_profile())
     await RegData.photo.set()
+
+
+@dp.message_handler(state=RegData.photo)
+async def get_photo_profile(message: types.Message, state: FSMContext):
+    telegram_id = message.from_user.id
+    profile_pictures = await dp.bot.get_user_profile_photos(telegram_id)
+    file_id = dict((profile_pictures.photos[0][0])).get("file_id")
+    await saving_photo(message, telegram_id, file_id, state)
 
 
 @dp.message_handler(content_types=ContentType.PHOTO, state=RegData.photo)
 async def get_photo(message: types.Message, state: FSMContext):
     telegram_id = message.from_user.id
     file_id = message.photo[-1].file_id
-    try:
-        await db_commands.update_user_data(telegram_id=telegram_id, photo_id=file_id)
-
-        await message.answer(_("Фото принято!"))
-    except Exception as err:
-        logger.error(err)
-        await message.answer(_("Произошла ошибка! Попробуйте еще раз либо отправьте другую фотографию. \n"
-                               "Если ошибка осталась, напишите агенту поддержки."))
-
-    await state.finish()
-    await db_commands.update_user_data(telegram_id=telegram_id, status=True)
-
-    user_data = await get_data(telegram_id)
-    user_db = await db_commands.select_user(telegram_id=telegram_id)
-    markup = await start_keyboard(status=user_db['status'])
-
-    text = (f"Регистрация успешно завершена! \n\n "
-            "{user_0}, "
-            "{user_1} лет, "
-            "{user_3}\n\n"
-            "<b>О себе</b> - {user_5}").format(user_0=str(user_data[0]), user_1=str(user_data[1]),
-                                               user_3=str(user_data[3]),
-                                               user_5=str(user_data[5]))
-
-    await message.answer_photo(caption=text,
-                               photo=user_db.get('photo_id'), reply_markup=ReplyKeyboardRemove())
-    await message.answer("Меню: ", reply_markup=markup)
+    await saving_photo(message, telegram_id, file_id, state)
