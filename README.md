@@ -231,7 +231,6 @@ For multi languages we use i18n. All the instructions we can find here - [Langua
 <br><br/>
 
 <h3 align="center">Works on Open Source</h3>
-<h4 align="center">[MIT License](LICENSE)</h3>
 
 ![image](https://user-images.githubusercontent.com/72649244/173241368-c40bd408-8df8-450f-9ac7-530de1692e1c.png)
 
