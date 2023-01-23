@@ -1,6 +1,7 @@
 import asyncio
 import random
 
+import aiogram
 from aiogram import types
 from aiogram.dispatcher.filters.builtin import CommandStart
 from aiogram.types import CallbackQuery
@@ -12,7 +13,6 @@ from functions.main_app.app_scheduler import send_message_week
 from functions.main_app.auxiliary_tools import registration_menu
 from handlers.users.back_handler import delete_message
 from keyboards.inline.language_inline import language_keyboard
-
 from keyboards.inline.main_menu_inline import start_keyboard
 from loader import dp, scheduler, _
 from utils.db_api import db_commands
@@ -56,7 +56,10 @@ async def register_user(message: types.Message):
 
 @dp.callback_query_handler(text="start_menu")
 async def start_menu(call: CallbackQuery):
-    await registration_menu(call, scheduler, send_message_week, load_config, start_keyboard, random)
+    try:
+        await registration_menu(call, scheduler, send_message_week, load_config, random)
+    except TypeError:
+        await call.message.answer(_("Вас нет в базе данной"))
 
 
 @dp.callback_query_handler(text="language")
@@ -81,14 +84,17 @@ async def choice_language(call: CallbackQuery):
 @dp.callback_query_handler(text="English")
 @dp.callback_query_handler(text="Indonesian")
 async def change_language(call: CallbackQuery):
-    if call.data == "Russian":
-        await db_commands.update_user_data(telegram_id=call.from_user.id, language="ru")
-    elif call.data == "Deutsch":
-        await db_commands.update_user_data(telegram_id=call.from_user.id, language="de")
-    elif call.data == "English":
-        await db_commands.update_user_data(telegram_id=call.from_user.id, language="en")
-    elif call.data == "Indonesian":
-        await db_commands.update_user_data(telegram_id=call.from_user.id, language="in")
-    await call.answer(_("Язык был успешно изменен. Введите команду /start"), show_alert=True)
-    await asyncio.sleep(5)
-    await call.message.delete()
+    try:
+        if call.data == "Russian":
+            await db_commands.update_user_data(telegram_id=call.from_user.id, language="ru")
+        elif call.data == "Deutsch":
+            await db_commands.update_user_data(telegram_id=call.from_user.id, language="de")
+        elif call.data == "English":
+            await db_commands.update_user_data(telegram_id=call.from_user.id, language="en")
+        elif call.data == "Indonesian":
+            await db_commands.update_user_data(telegram_id=call.from_user.id, language="in")
+        await call.answer(_("Язык был успешно изменен. Введите команду /start"), show_alert=True)
+        await asyncio.sleep(5)
+        await call.message.delete()
+    except aiogram.utils.exceptions.MessageToDeleteNotFound:
+        await call.message.answer(_("Произошла какая-то ошибка. Введите команду /start и попробуйте еще раз"))

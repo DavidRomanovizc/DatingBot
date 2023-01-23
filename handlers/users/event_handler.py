@@ -3,26 +3,34 @@ import datetime
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery, Message, ContentType
-from aiogram.utils.exceptions import MessageNotModified
+from aiogram.utils.exceptions import MessageNotModified, MessageToEditNotFound
 from loguru import logger
 
 from data.config import load_config
-from functions.main_app.auxiliary_tools import determining_location
-from functions.main_app.get_data_func import get_data_meetings
+from functions.event.extra_features import check_event_date
 from functions.event.templates_messages import ME
-from keyboards.inline.calendar import calendar_callback, SimpleCalendar
-from keyboards.inline.poster_inline import poster_keyboard
+from functions.main_app.determin_location import Location
+from functions.main_app.get_data_func import get_data_meetings
+from keyboards.inline.calendar import calendar_callback, SimpleCalendar, search_cb
+from keyboards.inline.poster_inline import poster_keyboard, cancel_registration_keyboard
 from loader import dp, _, bot
 from utils.db_api import db_commands
 
 
 @dp.callback_query_handler(text="meetings")
 async def view_meetings_handler(call: CallbackQuery):
+    try:
+        await check_event_date(call.from_user.id)
+    except TypeError:
+        pass
     user = await get_data_meetings(call.from_user.id)
     is_admin = user[10]
     is_verification = user[6]
-    await call.message.edit_text(_("Вы перешли в меню афиш"),
-                                 reply_markup=await poster_keyboard(is_admin, is_verification))
+    text = _("Вы перешли в меню афиш")
+    try:
+        await call.message.edit_text(text, reply_markup=await poster_keyboard(is_admin, is_verification))
+    except MessageToEditNotFound:
+        await call.message.answer(text, reply_markup=await poster_keyboard(is_admin, is_verification))
 
 
 @dp.callback_query_handler(text="create_poster")
@@ -30,11 +38,12 @@ async def registrate_poster_name(call: CallbackQuery, state: FSMContext):
     user = await get_data_meetings(call.from_user.id)
     is_admin = user[10]
     is_verification = user[6]
+    moderation_process = user[8]
     try:
-        user = await get_data_meetings(call.from_user.id)
-        moderation_process = user[8]
+        # TODO: Проверить как это работает
         if moderation_process:
-            await call.message.edit_text(_("Введите название мероприятие"))
+            await call.message.edit_text(_("Введите название мероприятие"),
+                                         reply_markup=await cancel_registration_keyboard())
             await state.set_state("register_handler_name")
         else:
             try:
@@ -58,35 +67,39 @@ async def registrate_poster_name(call: CallbackQuery, state: FSMContext):
 
 @dp.message_handler(state="register_handler_name")
 async def simple_calendar(message: Message):
-    try:
-        await message.answer(_("Пожалуйста, выберите дату: "),
-                             reply_markup=await SimpleCalendar().start_calendar())
-        await db_commands.update_user_meetings_data(telegram_id=message.from_user.id, event_name=message.text)
-    except:
-        pass
+    await message.answer(_("Пожалуйста, выберите дату: "),
+                         reply_markup=await SimpleCalendar().start_calendar())
+    await db_commands.update_user_meetings_data(telegram_id=message.from_user.id, event_name=message.text)
 
 
 @dp.callback_query_handler(calendar_callback.filter(), state="register_handler_name")
 async def process_simple_calendar(call: CallbackQuery, callback_data, state: FSMContext):
-    selected, date = await SimpleCalendar().process_selection(call, callback_data)
-    now = datetime.datetime.now()
+    try:
+        selected, date = await SimpleCalendar().process_selection(call, callback_data)
+        now = datetime.datetime.now()
 
-    if now.strftime("%d-%m-%Y") > date.strftime("%d-%m-%Y"):
-        await call.message.edit_text("Вы не можете проводить мероприятие в прошлом")
-        await simple_calendar(call.message)
-        return
-    if selected:
-        await call.message.edit_text(_("Теперь напишите место проведения"))
-        await db_commands.update_user_meetings_data(telegram_id=call.from_user.id, time_event=date.strftime("%d-%m-%Y"))
-    else:
-        return
-    await state.set_state("register_handler_place")
+        if now > date:
+            await call.message.edit_text("Вы не можете проводить мероприятие в прошлом")
+            await simple_calendar(call.message)
+            return
+        if selected:
+            await call.message.edit_text(_("Теперь напишите место проведения"),
+                                         reply_markup=await cancel_registration_keyboard())
+            await db_commands.update_user_meetings_data(telegram_id=call.from_user.id,
+                                                        time_event=date.strftime("%d-%m-%Y"))
+        else:
+            return
+        await state.set_state("register_handler_place")
+    except Exception as err:
+        logger.info(err)
+        pass
 
 
 @dp.message_handler(state="register_handler_place")
 async def send_city(message: types.Message):
     try:
-        await determining_location(message, event=True)
+        loc = await Location(message=message)
+        await loc.det_loc_in_event(message)
     except Exception as err:
         await message.answer(_("Произошла неизвестная ошибка! Попробуйте еще раз.\n"
                                "Вероятнее всего вы ввели город неправильно"))
@@ -96,7 +109,8 @@ async def send_city(message: types.Message):
 @dp.callback_query_handler(text="yes_all_good", state="register_handler_place")
 async def registrate_poster_commentary(call: CallbackQuery, state: FSMContext):
     try:
-        await call.message.edit_text(_("Хорошо, теперь напишите короткое или длинное описание вашего мероприятия"))
+        await call.message.edit_text(_("Хорошо, теперь напишите короткое или длинное описание вашего мероприятия"),
+                                     reply_markup=await cancel_registration_keyboard())
     except Exception as err:
         logger.info(err)
     await state.set_state("register_handler_commentary")
@@ -105,7 +119,8 @@ async def registrate_poster_commentary(call: CallbackQuery, state: FSMContext):
 @dp.message_handler(state="register_handler_commentary")
 async def registrate_poster_commentary(message: Message, state: FSMContext):
     try:
-        await message.answer(_("И напоследок, пришлите постер вашего мероприятия"))
+        await message.answer(_("И напоследок, пришлите постер вашего мероприятия"),
+                             reply_markup=await cancel_registration_keyboard())
         await db_commands.update_user_meetings_data(telegram_id=message.from_user.id, commentary=message.text)
     except Exception as err:
         logger.info(err)
@@ -152,3 +167,13 @@ async def view_own_event(call: CallbackQuery):
     }
     await ME.send_event_message(text=document, bot=bot, chat_id=call.from_user.id, moderate=False,
                                 call=call)
+
+
+@dp.callback_query_handler(search_cb.filter(action=["cancel"]), state="register_handler_name")
+@dp.callback_query_handler(text="cancel_registration", state="register_handler_name")
+@dp.callback_query_handler(text="cancel_registration", state="register_handler_poster")
+@dp.callback_query_handler(text="cancel_registration", state="register_handler_place")
+@dp.callback_query_handler(text="cancel_registration", state="register_handler_commentary")
+async def cancel_register_poster_name(call: CallbackQuery, state: FSMContext):
+    await state.reset_state()
+    await view_meetings_handler(call)
