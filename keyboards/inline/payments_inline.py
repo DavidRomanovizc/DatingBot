@@ -25,3 +25,10 @@ async def making_payment(bill) -> InlineKeyboardMarkup:
     markup.add(check_payment)
     markup.add(cancel)
     return markup
+
+
+async def check_payment_keyboard() -> InlineKeyboardMarkup:
+    markup = InlineKeyboardMarkup()
+    check_payment = InlineKeyboardButton(text=_("Проверить оплату"), callback_data='check_payment')
+    markup.add(check_payment)
+    return markup
