@@ -1,9 +1,9 @@
-from aiogram.contrib.middlewares.i18n import I18nMiddleware
 from typing import Tuple, Any, Optional
+
 from aiogram import types
+from aiogram.contrib.middlewares.i18n import I18nMiddleware
 
 from data.config import load_config, LOCALES_DIR
-
 from utils.db_api import db_commands
 
 

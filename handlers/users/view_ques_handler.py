@@ -1,7 +1,7 @@
 import asyncio
 import random
-import typing
 import secrets
+import typing
 
 from aiogram import types
 from aiogram.dispatcher import FSMContext
@@ -9,9 +9,8 @@ from aiogram.types import CallbackQuery
 from loguru import logger
 
 from functions.dating.create_forms_funcs import create_questionnaire, create_questionnaire_reciprocity, rand_user_list
-from functions.main_app.get_data_func import get_data
 from functions.dating.get_next_user_func import get_next_user
-
+from functions.main_app.get_data_func import get_data
 from handlers.users.back_handler import delete_message
 from keyboards.inline.main_menu_inline import start_keyboard
 from keyboards.inline.questionnaires_inline import action_keyboard, action_reciprocity_keyboard
@@ -26,9 +25,9 @@ async def start_finding(call: CallbackQuery, state: FSMContext):
         user_list = await get_next_user(telegram_id, call)
         random_user = random.choice(user_list)
         await create_questionnaire(form_owner=random_user, chat_id=telegram_id)
-        await state.set_state('finding')
+        await state.set_state("finding")
     except IndexError:
-        await call.answer(_("На данный момент у нас нет подходящих анкет для вас"))
+        await call.answer(_("На данный момент у нас нет подходящих анкет для вас"), show_alert=True)
 
 
 @dp.callback_query_handler(action_keyboard.filter(action=["like", "dislike", "stopped"]),

@@ -1,6 +1,7 @@
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 
+from functions.main_app.get_data_func import get_data
 from keyboards.inline.main_menu_inline import start_keyboard
 from keyboards.inline.registration_inline import registration_keyboard
 from keyboards.inline.support_inline import support_keyboard, support_callback, check_support_available, \
@@ -8,7 +9,6 @@ from keyboards.inline.support_inline import support_keyboard, support_callback, 
     cancel_support, cancel_support_callback
 from loader import dp, bot, _
 from utils.db_api import db_commands
-from functions.main_app.get_data_func import get_data
 
 
 @dp.callback_query_handler(text="support")

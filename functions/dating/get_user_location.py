@@ -1,5 +1,6 @@
-from utils.db_api import db_commands
 import math
+
+from utils.db_api import db_commands
 
 
 async def user_location(telegram_id: int) -> tuple[float, float]:

@@ -7,9 +7,8 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQu
 from aiogram.utils.markdown import escape_md, quote_html
 from loguru import logger
 
-from filters.is_admin_filter import IsAdmin
+from filters.IsAdminFilter import IsAdmin
 from functions.dating.create_forms_funcs import monitoring_questionnaire
-
 from keyboards.default.admin_default import admin_keyboard
 from keyboards.inline.admin_inline import start_monitoring_keyboard, confirm_with_button_keyboard, \
     add_buttons_keyboard, tech_works_keyboard

@@ -1,4 +1,5 @@
 from aiogram.types import CallbackQuery
+
 from keyboards.inline.sponsor_inline import sponsor_keyboard
 from loader import dp, _
 

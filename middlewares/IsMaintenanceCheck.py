@@ -5,7 +5,6 @@ from aiogram.dispatcher.handler import CancelHandler
 from aiogram.dispatcher.middlewares import BaseMiddleware
 
 from data.config import load_config
-
 from utils.db_api import db_commands
 
 

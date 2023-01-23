@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
-from environs import Env
 from typing import List
+
+from environs import Env
 
 
 # Параметр frozen=True защищает экземпляры класса от случайного изменения

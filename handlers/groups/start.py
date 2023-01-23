@@ -1,7 +1,7 @@
 from aiogram.dispatcher.filters import Command
 from aiogram.types import Message
 
-from filters.filters_chat import IsGroup
+from filters.FiltersChat import IsGroup
 from loader import dp, _
 
 
