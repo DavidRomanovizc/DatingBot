@@ -1,3 +1,4 @@
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
 
@@ -39,6 +40,7 @@ class User(TimeBasedModel):
     phone_number = models.BigIntegerField(verbose_name="Номер телефона", null=True)
     status = models.BooleanField(verbose_name="Статус анкеты", default=False)
     instagram = models.CharField(max_length=200, verbose_name="Ник в инстаграме", null=True)
+    events = ArrayField(models.CharField(max_length=200), default=list)
 
     def __str__(self):
         return f"№{self.id} ({self.telegram_id}) - {self.name}"
@@ -55,13 +57,14 @@ class UserMeetings(TimeBasedModel):
     commentary = models.CharField(max_length=50, verbose_name="Комментарий", null=True)
     time_event = models.CharField(max_length=10, verbose_name="Время проведения", null=True)
     venue = models.CharField(max_length=50, verbose_name="Место проведения", null=True)
+    need_location = models.CharField(max_length=50, null=True)
     event_name = models.CharField(max_length=50, verbose_name="Название мероприятия", null=True)
     verification_status = models.BooleanField(verbose_name="Статус пользователя", default=False)
     moderation_process = models.BooleanField(verbose_name="Процесс модерации", default=True)
     is_premium = models.BooleanField(verbose_name="Премиум", default=False)
     photo_id = models.CharField(max_length=400, verbose_name="Photo_ID", null=True)
     is_admin = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return f"№{self.id} ({self.telegram_id} - {self.username})"

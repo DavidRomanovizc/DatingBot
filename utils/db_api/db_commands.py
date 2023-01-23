@@ -1,7 +1,8 @@
-from asgiref.sync import sync_to_async
-
-from django.db.models import Q
 import os
+
+from asgiref.sync import sync_to_async
+from django.db.models import F, Q
+from django.db.models.expressions import CombinedExpression, Value
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_project.telegrambot.telegrambot.settings')
 import django
@@ -81,12 +82,20 @@ def select_meetings_user(telegram_id: int):
     return user
 
 
+# https://stackoverflow.com/questions/29014966/django-1-8-arrayfield-append-extend
+@sync_to_async
+def update_user_events(telegram_id: int, events_id: int):
+    return User.objects.filter(telegram_id=telegram_id).update(
+        events=CombinedExpression(F('events'), '||', Value([f'{events_id}'])))
+
+
 @sync_to_async
 def select_user_username(username: str):
     user = User.objects.filter(username=username).values().first()
     return user
 
 
+# https://stackoverflow.com/questions/10040143/and-dont-work-with-filter-in-django
 @sync_to_async
 def search_users(need_partner_sex, need_age_min, need_age_max, user_need_city):
     return User.objects.filter(
@@ -99,7 +108,7 @@ def search_users(need_partner_sex, need_age_min, need_age_max, user_need_city):
 
 @sync_to_async
 def search_event_forms():
-    return UserMeetings.objects.filter(Q(is_active=True) & Q(verification_status=True))
+    return UserMeetings.objects.filter(Q(is_active=True) & Q(verification_status=True)).all().values()
 
 
 @sync_to_async
