@@ -1,19 +1,27 @@
 import asyncio
+import re
+
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery
-import re
 from loguru import logger
-from functions.main_app.auxiliary_tools import choice_gender, determining_location, show_filters
+
+from functions.main_app.auxiliary_tools import choice_gender, show_dating_filters
+from functions.main_app.determin_location import Location
 from keyboards.inline.change_data_profile_inline import gender_keyboard
+from keyboards.inline.filters_inline import filters_keyboard, event_filters_keyboard
 from loader import dp, _
 from utils.db_api import db_commands
 
 
-# TODO: Если город партнера == None, то писать 'город неопределён'
 @dp.callback_query_handler(text="filters")
 async def get_filters(call: CallbackQuery):
-    await show_filters(call, message=None)
+    await call.message.edit_text(_("Вы перешли в раздел с фильтрами"), reply_markup=await filters_keyboard())
+
+
+@dp.callback_query_handler(text="dating_filters")
+async def get_dating_filters(call: CallbackQuery):
+    await show_dating_filters(call, message=None)
 
 
 @dp.callback_query_handler(text="user_age_period")
@@ -47,7 +55,7 @@ async def desired_max_age_state(message: types.Message, state: FSMContext):
         int_messages = "".join(int_message)
         await db_commands.update_user_data(telegram_id=message.from_user.id, need_partner_age_max=int_messages)
         await state.finish()
-        await show_filters(call=None, message=message)
+        await show_dating_filters(call=None, message=message)
     except Exception as err:
         logger.error(err)
         await message.answer(_("Произошла неизвестная ошибка! Попробуйте еще раз"))
@@ -63,9 +71,9 @@ async def desired_max_range(call: CallbackQuery, state: FSMContext):
 @dp.callback_query_handler(state="gender")
 async def desired_gender(call: CallbackQuery, state: FSMContext):
     await choice_gender(call)
-    await call.message.edit_text("Данные сохранены")
+    await call.message.edit_text(_("Данные сохранены"))
     await asyncio.sleep(1)
-    await show_filters(call, message=None)
+    await show_dating_filters(call, message=None)
     await state.finish()
 
 
@@ -78,7 +86,8 @@ async def user_city_filter(call: CallbackQuery, state: FSMContext):
 @dp.message_handler(state="city")
 async def user_city_filter_state(message: types.Message):
     try:
-        await determining_location(message, flag=False)
+        loc = await Location(message=message)
+        await loc.det_loc_in_filters(message)
 
     except Exception as err:
         logger.info(err)
@@ -86,11 +95,39 @@ async def user_city_filter_state(message: types.Message):
         return
 
 
+@dp.callback_query_handler(text="yes_all_good", state="set_city_event")
 @dp.callback_query_handler(text="yes_all_good", state="city")
 async def get_hobbies(call: CallbackQuery, state: FSMContext):
     await asyncio.sleep(1)
     await call.message.edit_text(_("Данные сохранены"))
     await asyncio.sleep(2)
-    await show_filters(call, message=None)
+    if await state.get_state() == "city":
+        await show_dating_filters(call, message=None)
+    else:
+        await get_event_filters(call)
 
     await state.finish()
+
+
+@dp.callback_query_handler(text="event_filters")
+async def get_event_filters(call: CallbackQuery):
+    await call.message.edit_text(_("Вы перешли в меню настроек фильтров для мероприятий"),
+                                 reply_markup=await event_filters_keyboard())
+
+
+@dp.callback_query_handler(text="city_event")
+async def set_city_by_filter(call: CallbackQuery, state: FSMContext):
+    await call.message.edit_text(_("Напишите город, в котором бы хотели сходить куда-нибудь"))
+    await state.set_state("set_city_event")
+
+
+@dp.message_handler(state="set_city_event")
+async def user_city_filter_state(message: types.Message):
+    try:
+        loc = await Location(message=message)
+        await loc.det_loc_in_filters_event(message)
+
+    except Exception as err:
+        logger.info(err)
+        await message.answer(_("Произошла ошибка, попробуйте еще раз"))
+        return
