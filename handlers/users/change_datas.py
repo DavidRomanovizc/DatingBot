@@ -1,4 +1,5 @@
 import asyncio
+import os
 import re
 
 from aiogram import types
@@ -7,13 +8,16 @@ from aiogram.types import CallbackQuery, ContentType
 from aiogram.utils.markdown import quote_html
 from loguru import logger
 
-from functions.main_app.auxiliary_tools import determining_location
+from functions.main_app.auxiliary_tools import update_normal_photo, saving_censored_photo
+from functions.main_app.determin_location import Location
 from functions.main_app.get_data_func import get_data
 from handlers.users.back_handler import delete_message
+from keyboards.default.get_photo import get_photo_from_profile
 from keyboards.inline.change_data_profile_inline import change_info_keyboard, gender_keyboard
 from keyboards.inline.main_menu_inline import start_keyboard
 from loader import dp, _
 from states.new_data_state import NewData
+from utils.NudeNet.predictor import classification_image, generate_censored_image
 from utils.db_api import db_commands
 from utils.misc.profanityFilter import censored_message
 
@@ -84,7 +88,8 @@ async def change_city(call: CallbackQuery):
 @dp.message_handler(state=NewData.city)
 async def change_city(message: types.Message):
     try:
-        await determining_location(message, flag=True)
+        loc = await Location(message=message)
+        await loc.det_loc_in_reg(message)
     except Exception as err:
         logger.error(err)
         await message.answer(_("Произошла неизвестная ошибка. Попробуйте ещё раз"),
@@ -136,28 +141,46 @@ async def change_sex(call: CallbackQuery, state: FSMContext):
 
 @dp.callback_query_handler(text='photo')
 async def new_photo(call: CallbackQuery):
-    await call.message.edit_text(_("Отправьте мне новую фотографию"))
+    await delete_message(call.message)
+    await call.message.answer(_("Отправьте мне новую фотографию"), reply_markup=await get_photo_from_profile())
     await NewData.photo.set()
     await asyncio.sleep(3)
     await delete_message(call.message)
 
 
+@dp.message_handler(state=NewData.photo)
+async def get_photo_profile(message: types.Message, state: FSMContext):
+    telegram_id = message.from_user.id
+    markup = await change_info_keyboard()
+    profile_pictures = await dp.bot.get_user_profile_photos(telegram_id)
+    try:
+        file_id = dict((profile_pictures.photos[0][0])).get("file_id")
+        await update_normal_photo(message, telegram_id, file_id, state, markup)
+    except IndexError:
+        await message.answer(_("Произошла ошибка, проверьте настройки конфиденциальности"))
+
+
 @dp.message_handler(content_types=ContentType.PHOTO, state=NewData.photo)
 async def update_photo_complete(message: types.Message, state: FSMContext):
+    telegram_id = message.from_user.id
     markup = await change_info_keyboard()
+    file_name = f"{str(telegram_id)}.jpg"
     file_id = message.photo[-1].file_id
-    try:
-        await db_commands.update_user_data(photo_id=file_id, telegram_id=message.from_user.id)
-        await message.answer(_("Фото принято!"))
+    censored_file_name = f"{str(message.from_user.id)}_censored.jpg"
+    path, out_path = f"photos/{file_name}", f"photos/{censored_file_name}"
+    await message.photo[-1].download(path)
+    data = await classification_image(path)
+    safe, unsafe = data.get(path).get("safe"), data.get(path).get("unsafe")
+    if safe > 0.6 or unsafe < 0.2:
+        await update_normal_photo(message, telegram_id, file_id, state, markup)
+        os.remove(path)
+    else:
+        await generate_censored_image(image_path=path,
+                                      out_path=out_path)
+        await saving_censored_photo(message, telegram_id, state, out_path, markup=markup, flag="change_datas")
+        os.remove(path)
         await asyncio.sleep(3)
-        await delete_message(message)
-        await message.answer(_("Выберите, что вы хотите изменить: "), reply_markup=markup)
-        await state.reset_state()
-    except Exception as err:
-        logger.error(err)
-        await message.answer(_("Произошла ошибка! Попробуйте еще раз либо отправьте другую фотографию. \n"
-                               "Если ошибка осталась, напишите системному администратору."))
-        await state.reset_state()
+        os.remove(out_path)
 
 
 @dp.callback_query_handler(text='about_me')

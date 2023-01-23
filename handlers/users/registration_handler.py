@@ -1,4 +1,6 @@
 import asyncio
+import os
+
 import asyncpg
 from aiogram import types
 from aiogram.dispatcher import FSMContext
@@ -6,17 +8,17 @@ from aiogram.types import CallbackQuery, ContentType, InlineKeyboardButton, Inli
 from aiogram.utils.markdown import quote_html
 from loguru import logger
 
-from functions.main_app.auxiliary_tools import choice_gender, determining_location, saving_photo
+from functions.main_app.auxiliary_tools import choice_gender, saving_normal_photo, saving_censored_photo
+from functions.main_app.determin_location import Location
+from functions.main_app.get_data_func import get_data
 from keyboards.default.get_location_default import location_keyboard
 from keyboards.default.get_photo import get_photo_from_profile
 from keyboards.inline.change_data_profile_inline import gender_keyboard
 from keyboards.inline.registration_inline import second_registration_keyboard, about_yourself_keyboard
-
 from loader import dp, client, _
 from states.reg_state import RegData
-
+from utils.NudeNet.predictor import classification_image, generate_censored_image
 from utils.db_api import db_commands
-from functions.main_app.get_data_func import get_data
 from utils.misc.profanityFilter import censored_message
 
 
@@ -150,7 +152,8 @@ async def get_age(message: types.Message, state: FSMContext):
 @dp.message_handler(state=RegData.town)
 async def get_city(message: types.Message):
     try:
-        await determining_location(message, flag=True)
+        loc = await Location(message=message)
+        await loc.det_loc_in_reg(message)
     except Exception as err:
         await message.answer(_("Произошла неизвестная ошибка! Попробуйте еще раз.\n"
                                "Вероятнее всего вы ввели город неправильно"))
@@ -176,7 +179,7 @@ async def fill_form(message: types.Message):
         await db_commands.update_user_data(telegram_id=message.from_user.id, city=address)
         await db_commands.update_user_data(telegram_id=message.from_user.id, longitude=x)
         await db_commands.update_user_data(telegram_id=message.from_user.id, latitude=y)
-        await message.answer(_("Ваш город сохранен!"))
+        await db_commands.update_user_data(telegram_id=message.from_user.id, need_city=address)
     except Exception as err:
         logger.error(err)
     await asyncio.sleep(1)
@@ -189,12 +192,30 @@ async def fill_form(message: types.Message):
 async def get_photo_profile(message: types.Message, state: FSMContext):
     telegram_id = message.from_user.id
     profile_pictures = await dp.bot.get_user_profile_photos(telegram_id)
-    file_id = dict((profile_pictures.photos[0][0])).get("file_id")
-    await saving_photo(message, telegram_id, file_id, state)
+    try:
+        file_id = dict((profile_pictures.photos[0][0])).get("file_id")
+        await saving_normal_photo(message, telegram_id, file_id, state)
+    except IndexError:
+        await message.answer(_("Произошла ошибка, проверьте настройки конфиденциальности"))
 
 
 @dp.message_handler(content_types=ContentType.PHOTO, state=RegData.photo)
 async def get_photo(message: types.Message, state: FSMContext):
     telegram_id = message.from_user.id
+    file_name = f"{str(telegram_id)}.jpg"
     file_id = message.photo[-1].file_id
-    await saving_photo(message, telegram_id, file_id, state)
+    censored_file_name = f"{str(message.from_user.id)}_censored.jpg"
+    path = f"photos/{file_name}"
+    out_path = f"photos/{censored_file_name}"
+    await message.photo[-1].download(path)
+    data = await classification_image(path)
+    safe, unsafe = data.get(path).get("safe"), data.get(path).get("unsafe")
+    if safe > 0.8 and unsafe < 0.2:
+        await saving_normal_photo(message, telegram_id, file_id, state)
+        os.remove(path)
+    else:
+        await generate_censored_image(image_path=path,
+                                      out_path=out_path)
+        await saving_censored_photo(message, telegram_id, state, out_path)
+        os.remove(path)
+        os.remove(out_path)
