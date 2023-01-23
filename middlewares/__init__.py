@@ -1,8 +1,8 @@
 from loader import dp, scheduler
 from .SchedulerWare import SchedulerMiddleware
-from .agent_support import SupportMiddleware
-from .ban_check import BanMiddleware
-from .is_maintenance_check import IsMaintenance
+from .AgentSupport import SupportMiddleware
+from .BanCheck import BanMiddleware
+from .IsMaintenanceCheck import IsMaintenance
 from .throttling import ThrottlingMiddleware
 
 if __name__ == "middlewares":
