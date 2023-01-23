@@ -17,7 +17,7 @@ async def change_info_keyboard() -> InlineKeyboardMarkup:
     return markup
 
 
-# TODO: Можно установить у функции параметр text, чтобы текст кнопки менялся в зависимости от задачи
+# TODO: Можно установить у функции параметр text, чтобы окончания слов у кнопки менялись в зависимости от задачи
 async def gender_keyboard() -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup(row_width=1)
     male = InlineKeyboardButton(text=_("Парень"), callback_data="male")
