@@ -4,18 +4,15 @@ from aiogram.types import CallbackQuery
 from aiogram.utils.markdown import hcode
 from loguru import logger
 
-from loader import dp
+from loader import dp, _
 
 
 @dp.message_handler(state=None)
 async def bot_echo(message: types.Message):
-    text = [
-        "Эхо без состояния.",
-        "Сообщение: ",
-        hcode(message.text)
-    ]
+    text = _("Эхо без состояния.",
+             "Сообщение:\n {hcode(message.text)}").format(hcode(message.text))
 
-    await message.answer('\n'.join(text))
+    await message.answer(text)
 
 
 @dp.message_handler(state="*")

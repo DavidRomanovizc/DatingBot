@@ -21,13 +21,24 @@ from utils.db_api import db_commands
 @dp.message_handler(IsPrivate(), CommandStart())
 async def register_user(message: types.Message):
     try:
-
         await db_commands.add_user(name=message.from_user.full_name,
                                    telegram_id=message.from_user.id,
                                    username=message.from_user.username)
         await db_commands.add_meetings_user(telegram_id=message.from_user.id,
                                             username=message.from_user.username)
 
+        if message.from_user.username is not None:
+            await db_commands.add_user(name=message.from_user.full_name,
+                                       telegram_id=message.from_user.id,
+                                       username=message.from_user.username)
+            await db_commands.add_meetings_user(telegram_id=message.from_user.id,
+                                                username=message.from_user.username)
+        else:
+            await db_commands.add_user(name=message.from_user.full_name,
+                                       telegram_id=message.from_user.id,
+                                       username="None")
+            await db_commands.add_meetings_user(telegram_id=message.from_user.id,
+                                                username="None")
         if message.from_user.id in load_config().tg_bot.admin_ids:
             await db_commands.add_user_to_settings(telegram_id=message.from_user.id)
     except:
