@@ -39,21 +39,23 @@ async def like_questionnaire(call: CallbackQuery, state: FSMContext, callback_da
     varname = await get_data(call.from_user.id)
 
     if action == "like":
-        try:
+        if username is not None:
             text = _('Вами заинтересовался пользователь '
                      '<a href="https://t.me/{username}">{varname_0}</a>').format(username=username,
                                                                                  varname_0=varname[0])
-            target_id = callback_data["target_id"]
-            await create_questionnaire(form_owner=call.from_user.id, chat_id=target_id,
-                                       add_text=text)
 
-            await call.message.delete()
-            await create_questionnaire(form_owner=(await rand_user_list(call))[3], chat_id=call.from_user.id)
+        else:
+            text = _('Вами заинтересовался пользователь '
+                     '<a href="tg://openmessage?user_id={chat_id}">{varname_0}</a>').format(chat_id=call.from_user.id,
+                                                                                            varname_0=varname[0])
+        target_id = callback_data["target_id"]
+        await create_questionnaire(form_owner=call.from_user.id, chat_id=target_id,
+                                   add_text=text)
 
-            await state.reset_data()
-        except Exception as err:
-            logger.error(err)
-            await create_questionnaire(form_owner=(await rand_user_list(call))[0], chat_id=call.from_user.id)
+        await call.message.delete()
+        await create_questionnaire(form_owner=(await rand_user_list(call))[3], chat_id=call.from_user.id)
+
+        await state.reset_data()
     elif action == "dislike":
         try:
             await call.message.delete()

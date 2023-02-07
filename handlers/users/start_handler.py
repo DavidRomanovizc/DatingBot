@@ -21,6 +21,12 @@ from utils.db_api import db_commands
 @dp.message_handler(IsPrivate(), CommandStart())
 async def register_user(message: types.Message):
     try:
+        await db_commands.add_user(name=message.from_user.full_name,
+                                   telegram_id=message.from_user.id,
+                                   username=message.from_user.username)
+        await db_commands.add_meetings_user(telegram_id=message.from_user.id,
+                                            username=message.from_user.username)
+
         if message.from_user.username is not None:
             await db_commands.add_user(name=message.from_user.full_name,
                                        telegram_id=message.from_user.id,
@@ -37,21 +43,32 @@ async def register_user(message: types.Message):
             await db_commands.add_user_to_settings(telegram_id=message.from_user.id)
     except:
         pass
-    support = await db_commands.select_user(telegram_id=load_config().tg_bot.support_ids[0])
-    user_db = await db_commands.select_user(telegram_id=message.from_user.id)
-    markup = await start_keyboard(status=user_db["status"])
-    fullname = message.from_user.full_name
+    try:
+        support = await db_commands.select_user(telegram_id=load_config().tg_bot.support_ids[0])
+        user_db = await db_commands.select_user(telegram_id=message.from_user.id)
+        markup = await start_keyboard(status=user_db["status"])
+        fullname = message.from_user.full_name
 
-    heart = random.choice(['💙', '💚', '💛', '🧡', '💜', '🖤', '❤', '🤍', '💖', '💝'])
-    await message.answer(_("Приветствую вас, {fullname}!!\n\n"
-                           "{heart} <b> QueDateBot </b> - платформа для поиска новых знакомств.\n\n"
-                           "🪧 Новости о проекте вы можете прочитать в нашем канале - "
-                           "https://t.me/QueDateGroup \n\n"
-                           "<b>🤝 Сотрудничество: </b>\n"
-                           "Если у вас есть предложение о сотрудничестве, пишите агенту поддержки - "
-                           "@{supports}\n\n").format(fullname=fullname, heart=heart,
-                                                     supports=support['username']),
-                         reply_markup=markup)
+        heart = random.choice(['💙', '💚', '💛', '🧡', '💜', '🖤', '❤', '🤍', '💖', '💝'])
+        await message.answer(_("Приветствую вас, {fullname}!!\n\n"
+                               "{heart} <b> QueDateBot </b> - платформа для поиска новых знакомств.\n\n"
+                               "🪧 Новости о проекте вы можете прочитать в нашем канале - "
+                               "https://t.me/QueDateGroup \n\n"
+                               "<b>🤝 Сотрудничество: </b>\n"
+                               "Если у вас есть предложение о сотрудничестве, пишите агенту поддержки - "
+                               "@{supports}\n\n").format(fullname=fullname, heart=heart,
+                                                         supports=support['username']),
+                             reply_markup=markup)
+    except TypeError:
+        await message.answer(_(
+            "У вас не установлен username, пожалуйста,"
+            " зайдите в настройки аккаунта и создайте username.\n"
+            "<b>Без него вы не сможете пользоваться ботом</b>\n\n"
+            '<a href="{url1}">Инструкция №1</a>\n'
+            '<a href="{url2}">Инструкция №2</a>').format(
+            url1="https://www.youtube.com/watch?v=6fC_AUJemSo&ab_channel=TheTechnology",
+            url2="https://www.youtube.com/watch?v=xc9K2NjvfLo&ab_channel=AlexTrack"
+        ))
 
 
 @dp.callback_query_handler(text="start_menu")
@@ -84,15 +101,16 @@ async def choice_language(call: CallbackQuery):
 @dp.callback_query_handler(text="English")
 @dp.callback_query_handler(text="Indonesian")
 async def change_language(call: CallbackQuery):
+    telegram_id = call.from_user.id
     try:
         if call.data == "Russian":
-            await db_commands.update_user_data(telegram_id=call.from_user.id, language="ru")
+            await db_commands.update_user_data(telegram_id=telegram_id, language="ru")
         elif call.data == "Deutsch":
-            await db_commands.update_user_data(telegram_id=call.from_user.id, language="de")
+            await db_commands.update_user_data(telegram_id=telegram_id, language="de")
         elif call.data == "English":
-            await db_commands.update_user_data(telegram_id=call.from_user.id, language="en")
+            await db_commands.update_user_data(telegram_id=telegram_id, language="en")
         elif call.data == "Indonesian":
-            await db_commands.update_user_data(telegram_id=call.from_user.id, language="in")
+            await db_commands.update_user_data(telegram_id=telegram_id, language="in")
         await call.answer(_("Язык был успешно изменен. Введите команду /start"), show_alert=True)
         await asyncio.sleep(5)
         await call.message.delete()
