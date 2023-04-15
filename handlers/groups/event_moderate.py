@@ -3,7 +3,6 @@ import asyncio
 from aiogram.types import CallbackQuery
 
 from data.config import load_config
-from functions.main_app.get_data_func import get_data_meetings
 from keyboards.inline.main_menu_inline import start_keyboard
 from keyboards.inline.poster_inline import poster_keyboard
 from loader import dp, bot, _
@@ -13,9 +12,9 @@ from utils.db_api import db_commands
 @dp.callback_query_handler(lambda call: str(call.message.chat.id) == load_config().tg_bot.moderate_chat)
 async def order_answer(call: CallbackQuery):
     call_data = call.data.split("-")
-    user = await get_data_meetings(call.from_user.id)
-    is_admin = user[10]
-    is_verification = user[6]
+    user = await db_commands.select_user_meetings(telegram_id=call.from_user.id)
+    is_admin = user.get("is_admin")
+    is_verification = user.get("verification_status")
     user_db = await db_commands.select_user(telegram_id=call.from_user.id)
     markup = await start_keyboard(status=user_db["status"])
 

@@ -10,7 +10,6 @@ from data.config import load_config
 from functions.event.extra_features import check_event_date
 from functions.event.templates_messages import ME
 from functions.main_app.determin_location import Location
-from functions.main_app.get_data_func import get_data_meetings
 from keyboards.inline.calendar import calendar_callback, SimpleCalendar, search_cb
 from keyboards.inline.poster_inline import poster_keyboard, cancel_registration_keyboard
 from loader import dp, _, bot
@@ -23,9 +22,9 @@ async def view_meetings_handler(call: CallbackQuery):
         await check_event_date(call.from_user.id)
     except TypeError:
         pass
-    user = await get_data_meetings(call.from_user.id)
-    is_admin = user[10]
-    is_verification = user[6]
+    user = await db_commands.select_user_meetings(telegram_id=call.from_user.id)
+    is_admin = user.get("is_admin")
+    is_verification = user.get("verification_status")
     text = _("Вы перешли в меню афиш")
     try:
         await call.message.edit_text(text, reply_markup=await poster_keyboard(is_admin, is_verification))
@@ -35,10 +34,10 @@ async def view_meetings_handler(call: CallbackQuery):
 
 @dp.callback_query_handler(text="create_poster")
 async def registrate_poster_name(call: CallbackQuery, state: FSMContext):
-    user = await get_data_meetings(call.from_user.id)
-    is_admin = user[10]
-    is_verification = user[6]
-    moderation_process = user[8]
+    user = await db_commands.select_user_meetings(telegram_id=call.from_user.id)
+    is_admin = user.get("is_admin")
+    is_verification = user.get("verification_status")
+    moderation_process = user.get("moderation_process")
     try:
         # TODO: Проверить как это работает
         if moderation_process:
@@ -129,22 +128,21 @@ async def registrate_poster_commentary(message: Message, state: FSMContext):
 
 @dp.message_handler(content_types=ContentType.PHOTO, state="register_handler_poster")
 async def finish_registration(message: Message, state: FSMContext):
-    user = await get_data_meetings(message.from_user.id)
-    is_admin = user[10]
-    is_verification = user[6]
+    user = await db_commands.select_user_meetings(telegram_id=message.from_user.id)
+    is_admin = user.get("is_admin")
+    is_verification = user.get("verification_status")
     photo_id = message.photo[-1].file_id
 
     await db_commands.update_user_meetings_data(telegram_id=message.from_user.id, photo_id=photo_id)
     await message.answer(_("Фото принято"))
 
     await state.finish()
-    user = await get_data_meetings(telegram_id=message.from_user.id)
 
     document = {
-        "title": user[2],
-        "date": user[3],
-        "place": user[4],
-        "description": user[1],
+        "title": user.get("event_name"),
+        "date": user.get("time_event"),
+        "place": user.get("venue"),
+        "description": user.get("commentary"),
         "photo_id": photo_id,
         "telegram_id": message.from_user.id
     }
@@ -156,14 +154,14 @@ async def finish_registration(message: Message, state: FSMContext):
 
 @dp.callback_query_handler(text="my_event")
 async def view_own_event(call: CallbackQuery):
-    user = await get_data_meetings(telegram_id=call.from_user.id)
+    user = await db_commands.select_user_meetings(telegram_id=call.from_user.id)
 
     document = {
-        "title": user[2],
-        "date": user[3],
-        "place": user[4],
-        "description": user[1],
-        "photo_id": user[5],
+        "title": user.get("event_name"),
+        "date": user.get("time_event"),
+        "place": user.get("venue"),
+        "description": user.get("commentary"),
+        "photo_id": user.get("photo_id"),
     }
     await ME.send_event_message(text=document, bot=bot, chat_id=call.from_user.id, moderate=False,
                                 call=call)
