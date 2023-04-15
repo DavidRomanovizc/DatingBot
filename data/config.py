@@ -24,6 +24,7 @@ class TgBot:
     ip: str
     I18N_DOMAIN: str
     moderate_chat: str
+    use_redis: bool
 
 
 @dataclass(frozen=True)
@@ -56,6 +57,7 @@ def load_config() -> Config:
             timezone=env.str("TIMEZONE"),
             I18N_DOMAIN='dating',
             moderate_chat=env.str("MODERATE_CHAT"),
+            use_redis=env.bool("USE_REDIS")
         ),
         db=DataBaseConfig(
             user=env.str('DB_USER'),
