@@ -1,4 +1,4 @@
-from typing import NoReturn, Union
+from typing import NoReturn, Union, Optional
 
 from aiogram import Bot
 from aiogram.types import CallbackQuery
@@ -21,28 +21,41 @@ class TemplateEvent:
 
     async def send_event_message(
             self, text: dict[str, Union[str, str, int]], bot: Bot, chat_id: int,
-            moderate: Union[bool, None] = None, call: Union[CallbackQuery, None] = None,
-            view_event: Union[bool, None] = None
-    ) -> NoReturn:
-        msg = self.template_event().format(text["title"], text["date"], text["place"], text["description"])
+            moderate: bool = False, call: Optional[CallbackQuery] = None,
+            view_event: bool = False,
+    ) -> None:
+        msg = self.template_event().format(
+            text["title"], text["date"], text["place"], text["description"]
+        )
+        photo = text["photo_id"]
+        telegram_id = str(text["telegram_id"])
+        reply_markup = None
+
         if moderate:
-            await bot.send_photo(chat_id=chat_id, caption=msg, photo=text["photo_id"],
-                                 reply_markup=await create_moderate_ik(str(text["telegram_id"])))
-        if not moderate and view_event is None:
+            reply_markup = await create_moderate_ik(telegram_id)
+
+        if not moderate and not view_event:
             await bot.delete_message(chat_id=call.from_user.id, message_id=call.message.message_id)
-            await bot.send_photo(chat_id=chat_id, caption=msg, photo=text["photo_id"],
-                                 reply_markup=await event_settings_keyboard())
+            reply_markup = await event_settings_keyboard()
+
         if view_event:
             await bot.delete_message(chat_id=chat_id, message_id=call.message.message_id)
-            await bot.send_photo(chat_id=chat_id, caption=msg, photo=text["photo_id"],
-                                 reply_markup=await view_event_keyboard(str(text["telegram_id"])))
+            reply_markup = await view_event_keyboard(telegram_id)
 
-    async def send_event_list(self, text: dict[str, Union[str, str, int]], call: CallbackQuery, telegram_id: int,
-                              bot: Bot):
-        msg = self.template_event().format(text["title"], text["date"], text["place"], text["description"])
+        await bot.send_photo(chat_id=chat_id, caption=msg, photo=photo, reply_markup=reply_markup)
+
+    async def send_event_list(
+            self, text: dict[str, Union[str, str, int]], call: CallbackQuery,
+            telegram_id: int, bot: Bot,
+    ) -> None:
+        msg = self.template_event().format(
+            text["title"], text["date"], text["place"], text["description"]
+        )
+        photo = text["photo_id"]
+        reply_markup = await cancel_event_keyboard(str(text["telegram_id"]))
+
         await bot.delete_message(chat_id=telegram_id, message_id=call.message.message_id)
-        await call.message.answer_photo(photo=text["photo_id"], caption=msg,
-                                        reply_markup=await cancel_event_keyboard(str(text["telegram_id"])))
+        await call.message.answer_photo(photo=photo, caption=msg, reply_markup=reply_markup)
 
 
 ME = TemplateEvent()

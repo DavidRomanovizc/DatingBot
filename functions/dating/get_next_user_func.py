@@ -1,29 +1,25 @@
-from loader import _
 from typing import List
 
-from functions.dating.get_data_filters_func import get_data_filters
+from loader import _
 from utils.db_api import db_commands
 
 
-async def get_next_user(telegram_id: int, call, monitoring=False) -> List[int]:
-    user = await get_data_filters(telegram_id)
-    user_filter_2 = await db_commands.search_users_all()
-    if not monitoring:
-        user_filter = await db_commands.search_users(user[2], user[0], user[1], user[3])
-    else:
-        user_filter = await db_commands.search_users_all()
+async def get_next_user(telegram_id: int, call, monitoring: bool = False) -> List[int]:
+    user = await db_commands.select_user(telegram_id=telegram_id)
+    user_filter = await db_commands.search_users_all() if monitoring else await db_commands.search_users(
+        user.get("need_partner_sex"),
+        user.get("need_partner_age_min"),
+        user.get("need_partner_age_max"),
+        user.get("need_city")
+    )
 
-    user_list = []
-    for i in user_filter:
-        if int(i['telegram_id']) != int(telegram_id):
-            user_list.append(i['telegram_id'])
+    user_list = [i['telegram_id'] for i in user_filter if int(i['telegram_id']) != int(telegram_id)]
 
-    if len(user_list) == 0:
-        await call.answer(
-            _("Под ваши фильтры нет пользователей"))
+    if not user_list:
+        await call.answer(_("Под ваши фильтры нет пользователей"))
 
-        for k in user_filter_2:
-            if len(user_filter) == 0 and int(k['telegram_id']) != int(telegram_id):
-                user_list.append(k['telegram_id'])
+        user_filter_2 = await db_commands.search_users_all()
+        user_list = [k['telegram_id'] for k in user_filter_2 if
+                     k not in user_filter and int(k['telegram_id']) != int(telegram_id)]
 
     return user_list
