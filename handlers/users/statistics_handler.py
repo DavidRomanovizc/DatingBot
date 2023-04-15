@@ -1,6 +1,5 @@
 from aiogram.types import CallbackQuery
 
-from functions.main_app.get_data_func import get_data
 from keyboards.inline.sponsor_inline import sponsors_keyboard
 from loader import dp, _
 from utils.db_api import db_commands
@@ -8,8 +7,8 @@ from utils.db_api import db_commands
 
 @dp.callback_query_handler(text="statistics")
 async def get_inst(call: CallbackQuery):
-    user_data = await get_data(call.from_user.id)
-    user_city = user_data[3]
+    user = await db_commands.select_user(telegram_id=call.from_user.id)
+    user_city = user.get("city")
     users_gender_m = await db_commands.count_all_users_kwarg(sex="Мужской")
     users_gender_f = await db_commands.count_all_users_kwarg(sex="Женский")
     users_city = await db_commands.count_all_users_kwarg(city=user_city)

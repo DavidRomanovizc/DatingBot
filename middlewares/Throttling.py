@@ -1,18 +1,20 @@
+import asyncio
+
+from aiogram import types, Dispatcher
+from aiogram.dispatcher import DEFAULT_RATE_LIMIT
 from aiogram.dispatcher.handler import CancelHandler, current_handler
 from aiogram.dispatcher.middlewares import BaseMiddleware
-from aiogram.dispatcher import DEFAULT_RATE_LIMIT
 from aiogram.utils.exceptions import Throttled
-from aiogram import Dispatcher, types
-import asyncio
 
 
 class ThrottlingMiddleware(BaseMiddleware):
 
-    def __init__(self, limit=DEFAULT_RATE_LIMIT, key_prefix="antiflood_"):
+    def __init__(self, limit=DEFAULT_RATE_LIMIT, key_prefix='antiflood_'):
         self.rate_limit = limit
         self.prefix = key_prefix
         super(ThrottlingMiddleware, self).__init__()
 
+    # noinspection PyUnusedLocal
     async def on_process_message(self, message: types.Message, data: dict):
         handler = current_handler.get()
         dispatcher = Dispatcher.get_current()
@@ -37,12 +39,8 @@ class ThrottlingMiddleware(BaseMiddleware):
             key = f"{self.prefix}_message"
         delta = throttled.rate - throttled.delta
         if throttled.exceeded_count <= 2:
-            service_message = await message.reply('Too many requests! ')
-
-            await asyncio.sleep(5)
-            await service_message.delete()
-            await message.delete()
-        try:
-            await message.delete()
-        except Exception as err:
-            pass
+            await message.reply('Too many requests! ')
+        await asyncio.sleep(delta)
+        thr = await dispatcher.check_key(key)
+        if thr.exceeded_count == throttled.exceeded_count:
+            await message.reply('Unlocked.')

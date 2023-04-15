@@ -10,7 +10,6 @@ from loguru import logger
 
 from functions.main_app.auxiliary_tools import update_normal_photo, saving_censored_photo
 from functions.main_app.determin_location import Location
-from functions.main_app.get_data_func import get_data
 from handlers.users.back_handler import delete_message
 from keyboards.default.get_photo import get_photo_from_profile
 from keyboards.inline.change_data_profile_inline import change_info_keyboard, gender_keyboard
@@ -89,7 +88,7 @@ async def change_city(call: CallbackQuery):
 async def change_city(message: types.Message):
     try:
         loc = await Location(message=message)
-        await loc.det_loc_in_reg(message)
+        await loc.det_loc_in_registration(message)
     except Exception as err:
         logger.error(err)
         await message.answer(_("Произошла неизвестная ошибка. Попробуйте ещё раз"),
@@ -185,8 +184,9 @@ async def update_photo_complete(message: types.Message, state: FSMContext):
 
 @dp.callback_query_handler(text='about_me')
 async def new_comment(call: CallbackQuery):
-    user_data = await get_data(call.from_user.id)
-    if user_data[11] is None:
+    user = await db_commands.select_user(telegram_id=call.from_user.id)
+    voice_id = user.get("voice_id")
+    if voice_id is None:
         await call.message.edit_text(_("Отправьте мне новое описание анкеты:"))
     else:
         await call.message.edit_text(_("Отправьте голосовое сообщение"))
@@ -253,6 +253,7 @@ async def add_inst_state(message: types.Message, state: FSMContext):
             await state.update_data(inst=message.text)
             await db_commands.update_user_data(instagram=result[0], telegram_id=message.from_user.id)
             await message.answer(_("Ваш аккаунт успешно добавлен"))
+            await asyncio.sleep(1)
             await state.reset_state()
             await message.answer(_("Вы были возвращены в меню"), reply_markup=markup)
         else:

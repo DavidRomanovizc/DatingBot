@@ -58,7 +58,7 @@ async def view_event_keyboard(telegram_id) -> InlineKeyboardMarkup:
 
 async def cancel_event_keyboard(telegram_id) -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup()
-    backed_out = InlineKeyboardButton(_("Дальше ⏩"), callback_data="cancel-{}".format(telegram_id))
+    backed_out = InlineKeyboardButton(_("❌ Отменить запись"), callback_data="cancel-{}".format(telegram_id))
     stopped = InlineKeyboardButton(_("⏪️ Остановить"), callback_data="go_out")
     markup.add(backed_out)
     markup.add(stopped)

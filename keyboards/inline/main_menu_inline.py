@@ -3,7 +3,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from loader import _
 
 
-async def start_keyboard(status) -> InlineKeyboardMarkup:
+async def start_keyboard(status: bool) -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup(row_width=2)
     if not status:
         registration = InlineKeyboardButton(text=_("➕ Регистрация"), callback_data="registration")

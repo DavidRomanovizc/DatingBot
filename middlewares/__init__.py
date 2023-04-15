@@ -3,7 +3,7 @@ from .SchedulerWare import SchedulerMiddleware
 from .AgentSupport import SupportMiddleware
 from .BanCheck import BanMiddleware
 from .IsMaintenanceCheck import IsMaintenance
-from .throttling import ThrottlingMiddleware
+from .Throttling import ThrottlingMiddleware
 
 if __name__ == "middlewares":
     dp.middleware.setup(ThrottlingMiddleware())

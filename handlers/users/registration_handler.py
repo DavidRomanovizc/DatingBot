@@ -10,7 +10,6 @@ from loguru import logger
 
 from functions.main_app.auxiliary_tools import choice_gender, saving_normal_photo, saving_censored_photo
 from functions.main_app.determin_location import Location
-from functions.main_app.get_data_func import get_data
 from keyboards.default.get_location_default import location_keyboard
 from keyboards.default.get_photo import get_photo_from_profile
 from keyboards.inline.change_data_profile_inline import gender_keyboard
@@ -25,8 +24,8 @@ from utils.misc.profanityFilter import censored_message
 @dp.callback_query_handler(text='registration')
 async def registration(call: CallbackQuery):
     telegram_id = call.from_user.id
-    user_data = await get_data(telegram_id)
-    user_status = user_data[9]
+    user = await db_commands.select_user(telegram_id=telegram_id)
+    user_status = user.get("status")
     if not user_status:
         markup = await second_registration_keyboard()
         text = _("Пройдите опрос, чтобы зарегистрироваться")
@@ -153,7 +152,7 @@ async def get_age(message: types.Message, state: FSMContext):
 async def get_city(message: types.Message):
     try:
         loc = await Location(message=message)
-        await loc.det_loc_in_reg(message)
+        await loc.det_loc_in_registration(message)
     except Exception as err:
         await message.answer(_("Произошла неизвестная ошибка! Попробуйте еще раз.\n"
                                "Вероятнее всего вы ввели город неправильно"))

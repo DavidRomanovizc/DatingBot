@@ -10,7 +10,6 @@ from loguru import logger
 
 from functions.dating.create_forms_funcs import create_questionnaire, create_questionnaire_reciprocity, rand_user_list
 from functions.dating.get_next_user_func import get_next_user
-from functions.main_app.get_data_func import get_data
 from handlers.users.back_handler import delete_message
 from keyboards.inline.main_menu_inline import start_keyboard
 from keyboards.inline.questionnaires_inline import action_keyboard, action_reciprocity_keyboard
@@ -20,14 +19,11 @@ from utils.db_api import db_commands
 
 @dp.callback_query_handler(text='find_ques')
 async def start_finding(call: CallbackQuery, state: FSMContext):
-    try:
-        telegram_id = call.from_user.id
-        user_list = await get_next_user(telegram_id, call)
-        random_user = random.choice(user_list)
-        await create_questionnaire(form_owner=random_user, chat_id=telegram_id)
-        await state.set_state("finding")
-    except IndexError:
-        await call.answer(_("На данный момент у нас нет подходящих анкет для вас"), show_alert=True)
+    telegram_id = call.from_user.id
+    user_list = await get_next_user(telegram_id, call)
+    random_user = random.choice(user_list)
+    await create_questionnaire(form_owner=random_user, chat_id=telegram_id)
+    await state.set_state("finding")
 
 
 @dp.callback_query_handler(action_keyboard.filter(action=["like", "dislike", "stopped"]),
@@ -36,34 +32,29 @@ async def like_questionnaire(call: CallbackQuery, state: FSMContext, callback_da
     action = callback_data['action']
     user_db = await db_commands.select_user(telegram_id=call.from_user.id)
     username = call.from_user.username
-    varname = await get_data(call.from_user.id)
-
+    varname = user_db.get("varname")
     if action == "like":
-        if username is not None:
-            text = _('Вами заинтересовался пользователь '
-                     '<a href="https://t.me/{username}">{varname_0}</a>').format(username=username,
-                                                                                 varname_0=varname[0])
 
-        else:
-            text = _('Вами заинтересовался пользователь '
-                     '<a href="tg://openmessage?user_id={chat_id}">{varname_0}</a>').format(chat_id=call.from_user.id,
-                                                                                            varname_0=varname[0])
+        text = _('Вами заинтересовался пользователь '
+                 '<a href="https://t.me/{username}">{varname_0}</a>').format(username=username,
+                                                                             varname_0=varname)
+
         target_id = callback_data["target_id"]
         await create_questionnaire(form_owner=call.from_user.id, chat_id=target_id,
                                    add_text=text)
 
         await call.message.delete()
-        await create_questionnaire(form_owner=(await rand_user_list(call))[3], chat_id=call.from_user.id)
+        await create_questionnaire(form_owner=(await rand_user_list(call)), chat_id=call.from_user.id)
 
         await state.reset_data()
     elif action == "dislike":
         try:
             await call.message.delete()
-            await create_questionnaire(form_owner=(await rand_user_list(call))[3], chat_id=call.from_user.id)
+            await create_questionnaire(form_owner=(await rand_user_list(call)), chat_id=call.from_user.id)
             await state.reset_data()
         except Exception as err:
             logger.error(err)
-            await create_questionnaire(form_owner=(await rand_user_list(call))[2], chat_id=call.from_user.id)
+            await create_questionnaire(form_owner=(await rand_user_list(call)), chat_id=call.from_user.id)
     elif action == "stopped":
         markup = await start_keyboard(user_db["status"])
         await call.message.delete()
@@ -77,7 +68,8 @@ async def like_questionnaire(call: CallbackQuery, state: FSMContext, callback_da
 async def like_questionnaire_reciprocity(call: CallbackQuery, state: FSMContext, callback_data: typing.Dict[str, str]):
     action = callback_data['action']
     username = call.from_user.username
-    varname = await get_data(call.from_user.id)
+    user_db = await db_commands.select_user(telegram_id=call.from_user.id)
+    varname = user_db.get("varname")
     if action == "like_reciprocity":
         user_for_like = callback_data["user_for_like"]
         user_db = await db_commands.select_user(telegram_id=call.from_user.id)
@@ -92,8 +84,7 @@ async def like_questionnaire_reciprocity(call: CallbackQuery, state: FSMContext,
         await asyncio.sleep(5)
         await create_questionnaire_reciprocity(liker=call.from_user.id, chat_id=user_for_like,
                                                add_text=f'Вам ответили взаимностью, пользователь - '
-                                                        f'<a href="https://t.me/{username}">{varname[0]}</a>',
-                                               user_db=user_db)
+                                                        f'<a href="https://t.me/{username}">{varname}</a>')
         await state.reset_state()
     elif action == "dislike_reciprocity":
         await asyncio.sleep(1)
