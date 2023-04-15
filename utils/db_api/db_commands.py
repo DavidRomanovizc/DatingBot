@@ -90,6 +90,12 @@ def update_user_events(telegram_id: int, events_id: int):
 
 
 @sync_to_async
+def remove_events_from_user(telegram_id: int, events_id: int):
+    user = User.objects.get(telegram_id=telegram_id)
+    user.remove_events(f"{events_id}")
+
+
+@sync_to_async
 def select_user_username(username: str):
     user = User.objects.filter(username=username).values().first()
     return user
@@ -108,7 +114,7 @@ def search_users(need_partner_sex, need_age_min, need_age_max, user_need_city):
 
 @sync_to_async
 def search_event_forms():
-    return UserMeetings.objects.filter(Q(is_active=True) & Q(verification_status=True)).all().values()
+    return UserMeetings.objects.filter(Q(is_active=True)).all().values()
 
 
 @sync_to_async
@@ -139,3 +145,24 @@ def add_user_to_settings(telegram_id: int):
 @sync_to_async
 def select_setting_tech_work():
     return SettingModel.objects.filter(technical_works=True).values().first()
+
+
+@sync_to_async
+def check_returned_event_id(telegram_id: int, id_of_events_seen: int) -> bool:
+    """
+    Функция, проверяющая, был ли ранее возвращен данный event_id для данного telegram_id
+    """
+    returned_event = User.objects.filter(telegram_id=telegram_id).first()
+    event_list = returned_event.id_of_events_seen
+
+    return str(id_of_events_seen) in event_list
+
+
+@sync_to_async
+def add_returned_event_id(telegram_id: int, id_of_events_seen: int):
+    """
+    Функция, добавляющая возвращенный event_id для данного telegram_id в базу данных
+    """
+    returned_event, created = User.objects.get_or_create(telegram_id=telegram_id)
+    returned_event.id_of_events_seen.append(id_of_events_seen)
+    returned_event.save()

@@ -41,9 +41,15 @@ class User(TimeBasedModel):
     status = models.BooleanField(verbose_name="Статус анкеты", default=False)
     instagram = models.CharField(max_length=200, verbose_name="Ник в инстаграме", null=True)
     events = ArrayField(models.CharField(max_length=200), default=list)
+    id_of_events_seen = ArrayField(models.CharField(max_length=255), default=list)
 
     def __str__(self):
         return f"№{self.id} ({self.telegram_id}) - {self.name}"
+
+    def remove_events(self, event_to_remove):
+        if event_to_remove in self.events:
+            self.events.remove(event_to_remove)
+            self.save()
 
 
 class UserMeetings(TimeBasedModel):
