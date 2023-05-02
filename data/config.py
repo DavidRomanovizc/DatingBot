@@ -6,7 +6,7 @@ from typing import List
 from environs import Env
 
 
-# Параметр frozen=True защищает экземпляры класса от случайного изменения
+# The frozen=True arg protects instances of the class from accidental modification
 @dataclass(frozen=True)
 class DataBaseConfig:
     user: str
