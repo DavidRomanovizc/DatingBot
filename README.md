@@ -194,7 +194,7 @@ When running the first time, it will download the default checkpoint
 
 Downloading the checkpoint to:
 
-- <b>Windows</b> `C:\Users\sdkca\.NudeNet/default\detector_v2_default_checkpoint.onnx`
+- <b>Windows</b> `C:/Users/username/.NudeNet/default/detector_v2_default_checkpoint.onnx`
 - <b>MacOS</b>  `/Users/username/.NudeNet/detector_v2_default_checkpoint.onnx`
 - <b>Linux</b> `/root/.NudeNet/detector_v2_default_checkpoint.onnx`
 
