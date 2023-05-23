@@ -9,7 +9,7 @@ asgiref==3.6.0
 uuid~=1.30
 pip==23.1
 setuptools==67.6.1
-requests==2.28.2
+requests==2.31.0
 django-jazzmin
 better_profanity
 pytest==7.3.1
