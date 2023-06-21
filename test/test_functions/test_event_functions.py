@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from typing import NoReturn
 from unittest import mock
 from unittest.mock import AsyncMock
 from unittest.mock import Mock, patch
@@ -10,7 +11,7 @@ from utils.db_api import db_commands
 
 
 @pytest.mark.asyncio
-async def test_check_event_date_past_date():
+async def test_check_event_date_past_date() -> None:
     telegram_id = 1
     event_time = datetime.now() - timedelta(days=10)
     with patch.object(db_commands, 'select_user_meetings',
@@ -23,7 +24,7 @@ async def test_check_event_date_past_date():
 
 
 @pytest.mark.asyncio
-async def test_check_event_date_future_date():
+async def test_check_event_date_future_date() -> None:
     telegram_id = 1
     event_time = datetime.now() + timedelta(days=10)
     with patch.object(db_commands, 'select_user_meetings',
@@ -36,7 +37,7 @@ async def test_check_event_date_future_date():
 
 
 @pytest.mark.asyncio
-async def test_get_next_registration():
+async def test_get_next_registration() -> NoReturn:
     db_command = Mock()
     db_command.select_user.return_value = {'telegram_id': 1, 'events': []}
     result = await extra_features.get_next_registration(telegram_id=1)
@@ -44,7 +45,7 @@ async def test_get_next_registration():
 
 
 @pytest.mark.asyncio
-async def test_get_next_random_event_id():
+async def test_get_next_random_event_id() -> NoReturn:
     # Mock search_event_forms() для возврата тестовых данных
     mock_event_forms = [
         {'telegram_id': 1},

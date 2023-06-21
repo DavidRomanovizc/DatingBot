@@ -6,7 +6,7 @@ from handlers.users.echo_handler import bot_echo
 
 
 @pytest.mark.asyncio
-async def test_echo_handler():
+async def test_echo_handler() -> None:
     text_mock = [
         "Эхо без состояния.",
         "Сообщение: ",
