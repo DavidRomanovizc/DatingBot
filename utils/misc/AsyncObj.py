@@ -1,4 +1,5 @@
 import asyncio
+from typing import NoReturn
 
 
 class AsyncObj:
@@ -10,10 +11,10 @@ class AsyncObj:
         self.__stored_args = args, kwargs
         self.async_initialized = False
 
-    async def __ainit__(self, *args, **kwargs):
+    async def __ainit__(self, *args, **kwargs) -> None:
         """ Async constructor, you should implement this """
 
-    async def __initobj(self):
+    async def __initobj(self) -> 'AsyncObj':
         """ Crutch used for __await__ after spawning """
         assert not self.async_initialized
         self.async_initialized = True
@@ -25,12 +26,12 @@ class AsyncObj:
     def __await__(self):
         return self.__initobj().__await__()
 
-    def __init_subclass__(cls, **kwargs):
+    def __init_subclass__(cls, **kwargs) -> NoReturn:
         # __ainit__ must be async
         assert asyncio.iscoroutinefunction(cls.__ainit__)
 
     @property
-    def async_state(self):
+    def async_state(self) -> str:
         if not self.async_initialized:
             return "[initialization pending]"
         return "[initialization done and successful]"

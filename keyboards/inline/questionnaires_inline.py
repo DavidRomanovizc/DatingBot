@@ -57,7 +57,7 @@ async def back_viewing_ques_keyboard() -> InlineKeyboardMarkup:
     return markup
 
 
-async def viewing_ques_keyboard():
+async def viewing_ques_keyboard() -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup()
     view_ques = InlineKeyboardButton(text=_("🚀 Смотреть"), callback_data="find_ques")
     markup.row(view_ques)

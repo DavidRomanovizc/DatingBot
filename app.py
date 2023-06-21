@@ -11,7 +11,7 @@ from utils.notify_admins import AdminNotification
 from utils.set_bot_commands import set_default_commands
 
 
-async def on_startup(dispatcher):
+async def on_startup(dispatcher) -> None:
     # Устанавливаем дефолтные команды
     await set_default_commands(dispatcher)
     # Уведомляет о запуске

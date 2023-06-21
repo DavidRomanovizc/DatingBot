@@ -1,4 +1,5 @@
 import random
+from typing import Optional, Union
 
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.callback_data import CallbackData
@@ -10,7 +11,7 @@ support_callback = CallbackData("ask_support", "messages", "user_id", "as_user")
 cancel_support_callback = CallbackData("cancel_support", "user_id")
 
 
-async def check_support_available(support_id):
+async def check_support_available(support_id) -> Optional[int]:
     state = dp.current_state(chat=support_id, user=support_id)
     state_str = str(
         await state.get_state()
@@ -21,7 +22,7 @@ async def check_support_available(support_id):
         return support_id
 
 
-async def get_support_manager():
+async def get_support_manager() -> Optional[int]:
     random.shuffle(load_config().tg_bot.support_ids)
     for support_id in load_config().tg_bot.support_ids:
         support_id = await check_support_available(support_id)
@@ -31,7 +32,7 @@ async def get_support_manager():
         return
 
 
-async def support_keyboard(messages, user_id=None):
+async def support_keyboard(messages, user_id=None) -> Union[bool, InlineKeyboardMarkup]:
     if user_id:
         contact_id = int(user_id)
         as_user = "no"
@@ -69,7 +70,7 @@ async def support_keyboard(messages, user_id=None):
     return keyboard
 
 
-def cancel_support(user_id):
+def cancel_support(user_id) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [

@@ -6,7 +6,7 @@ from utils.db_api import db_commands
 
 
 @dp.callback_query_handler(text="statistics")
-async def get_inst(call: CallbackQuery):
+async def get_inst(call: CallbackQuery) -> None:
     user = await db_commands.select_user(telegram_id=call.from_user.id)
     user_city = user.get("city")
     users_gender_m = await db_commands.count_all_users_kwarg(sex="Мужской")

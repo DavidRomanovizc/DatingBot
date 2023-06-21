@@ -19,23 +19,23 @@ from utils.db_api import db_commands
 
 
 @dp.message_handler(IsAdmin(), Command("admin"))
-async def admin_start(message: types.Message):
+async def admin_start(message: types.Message) -> None:
     await message.reply(text=_("Вы вошли в админ панель!"), reply_markup=await admin_keyboard())
 
 
 @dp.message_handler(IsAdmin(), text="Мониторинг")
-async def admin_monitoring(message: types.Message):
+async def admin_monitoring(message: types.Message) -> None:
     await message.answer(text=_("Чтобы начать мониторинг нажмите на кнопку ниже"),
                          reply_markup=await start_monitoring_keyboard())
 
 
 @dp.callback_query_handler(text="confirm_send_monitoring")
-async def confirm_send_monitoring(call: types.CallbackQuery):
+async def confirm_send_monitoring(call: types.CallbackQuery) -> None:
     await monitoring_questionnaire(call)
 
 
 @dp.callback_query_handler(action_keyboard_monitoring.filter(action="ban"))
-async def ban_form_owner(call: types.CallbackQuery):
+async def ban_form_owner(call: types.CallbackQuery) -> None:
     target_id = call.data.split(":")[2]
     await db_commands.update_user_data(telegram_id=target_id, is_banned=True)
     await call.answer(_("Анкета пользователя была заблокирована"))
@@ -43,25 +43,25 @@ async def ban_form_owner(call: types.CallbackQuery):
 
 
 @dp.callback_query_handler(action_keyboard_monitoring.filter(action="next"))
-async def next_form_owner(call: types.CallbackQuery):
+async def next_form_owner(call: types.CallbackQuery) -> None:
     await monitoring_questionnaire(call)
 
 
 @dp.message_handler(IsAdmin(), text="Посчитать людей и чаты")
-async def counter_show(message: types.Message):
+async def counter_show(message: types.Message) -> None:
     users = await db_commands.count_users()
 
     await message.answer(text=_("Количество людей внутри бота: {users}\n").format(users=users))
 
 
 @dp.message_handler(IsAdmin(), text="Сообщение по id")
-async def message_by_id_init(message: types.Message, state: FSMContext):
+async def message_by_id_init(message: types.Message, state: FSMContext) -> None:
     await message.reply(text=_("Отправьте мне id получателя!"))
     await state.set_state("get_id_receiver")
 
 
 @dp.message_handler(state="get_id_receiver")
-async def get_id_receiver(message: types.Message, state: FSMContext):
+async def get_id_receiver(message: types.Message, state: FSMContext) -> None:
     chat_id = message.text
     await state.update_data(chat_id=chat_id)
     await message.reply(text=_("ID принят! Теперь введите текст!"))
@@ -69,7 +69,7 @@ async def get_id_receiver(message: types.Message, state: FSMContext):
 
 
 @dp.message_handler(state="get_text_for_send")
-async def get_text_for_send(message: types.Message, state: FSMContext):
+async def get_text_for_send(message: types.Message, state: FSMContext) -> None:
     text = message.md_text
     escape_md(text)
     async with state.proxy() as data:
@@ -86,7 +86,7 @@ async def get_text_for_send(message: types.Message, state: FSMContext):
 
 
 @dp.message_handler(IsAdmin(), text="Рассылка")
-async def broadcast_get_text(message: types.Message, state: FSMContext):
+async def broadcast_get_text(message: types.Message, state: FSMContext) -> None:
     await message.reply(text=_("Пришлите текст для рассылки либо фото с текстом для рассылки! Чтобы отредактировать, "
                                "используйте встроенный редактор телеграма!\n"),
                         reply_markup=await cancel_keyboard())
@@ -94,7 +94,7 @@ async def broadcast_get_text(message: types.Message, state: FSMContext):
 
 
 @dp.message_handler(IsAdmin(), content_types=["text"], state="broadcast_get_content")
-async def get_text_for_confirm(message: types.Message, state: FSMContext):
+async def get_text_for_confirm(message: types.Message, state: FSMContext) -> None:
     text = message.md_text
     escape_md(text)
     await bot.send_message(chat_id=message.from_user.id, text=text,
@@ -104,7 +104,7 @@ async def get_text_for_confirm(message: types.Message, state: FSMContext):
 
 
 @dp.callback_query_handler(state="broadcast_confirming")
-async def broadcast_confirming(call: CallbackQuery, state: FSMContext):
+async def broadcast_confirming(call: CallbackQuery, state: FSMContext) -> None:
     await call.message.edit_text(text=_("Начинаю рассылку!"))
     chats = await db_commands.select_all_users()
     count = 0
@@ -131,7 +131,7 @@ async def broadcast_confirming(call: CallbackQuery, state: FSMContext):
 
 
 @dp.message_handler(IsAdmin(), state="get_button_name")
-async def get_button_name(message: types.Message, state: FSMContext):
+async def get_button_name(message: types.Message, state: FSMContext) -> None:
     button_name = message.text
     await state.update_data(button_name=button_name)
     await message.reply(text=_("Название кнопки принято! Теперь отправьте мне ссылку для этой кнопки!"))
@@ -139,7 +139,7 @@ async def get_button_name(message: types.Message, state: FSMContext):
 
 
 @dp.message_handler(IsAdmin(), state="get_button_url")
-async def get_button_url(message: types.Message, state: FSMContext):
+async def get_button_url(message: types.Message, state: FSMContext) -> None:
     button_url = message.text
     await state.update_data(button_url=button_url)
     async with state.proxy() as data:
@@ -163,7 +163,7 @@ async def get_button_url(message: types.Message, state: FSMContext):
 
 
 @dp.callback_query_handler(state="confirm_with_button_no_photo")
-async def confirm_with_button_no_photo(call: CallbackQuery, state: FSMContext):
+async def confirm_with_button_no_photo(call: CallbackQuery, state: FSMContext) -> None:
     chats = await db_commands.select_all_users()
     count = 0
 
@@ -193,7 +193,7 @@ async def confirm_with_button_no_photo(call: CallbackQuery, state: FSMContext):
 
 
 @dp.message_handler(IsAdmin(), content_types=["photo"], state="broadcast_get_content")
-async def get_photo_for_confirm(message: types.Message, state: FSMContext):
+async def get_photo_for_confirm(message: types.Message, state: FSMContext) -> None:
     text = message.md_text
     escape_md(text)
     quote_html(text)
@@ -209,7 +209,7 @@ async def get_photo_for_confirm(message: types.Message, state: FSMContext):
 
 
 @dp.callback_query_handler(state="broadcast_confirming_photo")
-async def broadcast_confirming_photo(call: CallbackQuery, state: FSMContext):
+async def broadcast_confirming_photo(call: CallbackQuery, state: FSMContext) -> None:
     chats = await db_commands.select_all_users()
     count = 0
     async with state.proxy() as data:
@@ -238,7 +238,7 @@ async def broadcast_confirming_photo(call: CallbackQuery, state: FSMContext):
 
 
 @dp.message_handler(IsAdmin(), state="get_button_name_photo")
-async def get_button_name_photo(message: types.Message, state: FSMContext):
+async def get_button_name_photo(message: types.Message, state: FSMContext) -> None:
     button_name = message.text
     await state.update_data(button_name=button_name)
     await message.reply(text="Название кнопки принято! Теперь отправьте мне ссылку для этой кнопки!")
@@ -246,7 +246,7 @@ async def get_button_name_photo(message: types.Message, state: FSMContext):
 
 
 @dp.message_handler(IsAdmin(), state="get_button_url_photo")
-async def get_button_url(message: types.Message, state: FSMContext):
+async def get_button_url(message: types.Message, state: FSMContext) -> None:
     button_url = message.text
     await state.update_data(button_url=button_url)
     async with state.proxy() as data:
@@ -271,7 +271,7 @@ async def get_button_url(message: types.Message, state: FSMContext):
 
 
 @dp.callback_query_handler(state="confirm_with_button_photo")
-async def confirm_with_button_no_photo(call: CallbackQuery, state: FSMContext):
+async def confirm_with_button_no_photo(call: CallbackQuery, state: FSMContext) -> None:
     chats = await db_commands.select_all_users()
     count = 0
 
@@ -302,7 +302,7 @@ async def confirm_with_button_no_photo(call: CallbackQuery, state: FSMContext):
 
 
 @dp.message_handler(IsAdmin(), text="Тех.Работа")
-async def tech_works_menu(message: types.Message):
+async def tech_works_menu(message: types.Message) -> None:
     settings = await db_commands.select_setting(message.from_user.id)
     tech_works = settings.get("technical_works")
     await message.answer(text=_("Чтобы включить/выключить технические работы, нажмите на кнопку ниже"),
@@ -310,12 +310,12 @@ async def tech_works_menu(message: types.Message):
 
 
 @dp.callback_query_handler(text="set_up_tech_work")
-async def set_up_tech_works(call: CallbackQuery):
+async def set_up_tech_works(call: CallbackQuery) -> None:
     await db_commands.update_setting(telegram_id=call.from_user.id, technical_works=True)
     await call.message.edit_text(_("Технические работы включены"))
 
 
 @dp.callback_query_handler(text="disable_tech_work")
-async def set_up_tech_works(call: CallbackQuery):
+async def set_up_tech_works(call: CallbackQuery) -> None:
     await db_commands.update_setting(telegram_id=call.from_user.id, technical_works=False)
     await call.message.edit_text(_("Технические работы выключены"))

@@ -10,7 +10,7 @@ from utils.db_api import db_commands
 
 
 @dp.callback_query_handler(text="support")
-async def ask_support_call(call: types.CallbackQuery):
+async def ask_support_call(call: types.CallbackQuery) -> None:
     text = _("Хотите связаться с тех поддержкой? Нажмите на кнопку ниже!")
     keyboard = await support_keyboard(messages="many")
     if not keyboard:
@@ -20,7 +20,7 @@ async def ask_support_call(call: types.CallbackQuery):
 
 
 @dp.callback_query_handler(support_callback.filter(messages="many", as_user="yes"))
-async def send_to_support_call(call: types.CallbackQuery, state: FSMContext, callback_data: dict):
+async def send_to_support_call(call: types.CallbackQuery, state: FSMContext, callback_data: dict) -> None:
     await call.message.edit_text(_("Вы обратились в техническую поддержку. Ждем ответа от оператора!"))
 
     user_id = int(callback_data.get("user_id"))
@@ -47,7 +47,7 @@ async def send_to_support_call(call: types.CallbackQuery, state: FSMContext, cal
 
 
 @dp.callback_query_handler(support_callback.filter(messages="many", as_user="no"))
-async def answer_support_call(call: types.CallbackQuery, state: FSMContext, callback_data: dict):
+async def answer_support_call(call: types.CallbackQuery, state: FSMContext, callback_data: dict) -> None:
     second_id = int(callback_data.get("user_id"))
     user_state = dp.current_state(user=second_id, chat=second_id)
 
@@ -76,7 +76,7 @@ async def answer_support_call(call: types.CallbackQuery, state: FSMContext, call
 
 
 @dp.message_handler(state="wait_in_support", content_types=types.ContentTypes.ANY)
-async def not_supported(message: types.Message, state: FSMContext):
+async def not_supported(message: types.Message, state: FSMContext) -> None:
     data = await state.get_data()
     second_id = data.get("second_id")
 
@@ -85,7 +85,7 @@ async def not_supported(message: types.Message, state: FSMContext):
 
 
 @dp.callback_query_handler(cancel_support_callback.filter(), state=["in_support", "wait_in_support", None])
-async def exit_support(call: types.CallbackQuery, state: FSMContext, callback_data: dict):
+async def exit_support(call: types.CallbackQuery, state: FSMContext, callback_data: dict) -> None:
     user_db = await db_commands.select_user(telegram_id=call.from_user.id)
     markup = await start_keyboard(status=user_db["status"])
     user_id = int(callback_data.get("user_id"))

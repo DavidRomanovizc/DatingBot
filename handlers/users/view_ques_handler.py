@@ -18,7 +18,7 @@ from utils.db_api import db_commands
 
 
 @dp.callback_query_handler(text='find_ques')
-async def start_finding(call: CallbackQuery, state: FSMContext):
+async def start_finding(call: CallbackQuery, state: FSMContext) -> None:
     telegram_id = call.from_user.id
     user_list = await get_next_user(telegram_id, call)
     random_user = random.choice(user_list)
@@ -28,7 +28,7 @@ async def start_finding(call: CallbackQuery, state: FSMContext):
 
 @dp.callback_query_handler(action_keyboard.filter(action=["like", "dislike", "stopped"]),
                            state='finding')
-async def like_questionnaire(call: CallbackQuery, state: FSMContext, callback_data: typing.Dict[str, str]):
+async def like_questionnaire(call: CallbackQuery, state: FSMContext, callback_data: typing.Dict[str, str]) -> None:
     action = callback_data['action']
     user_db = await db_commands.select_user(telegram_id=call.from_user.id)
     username = call.from_user.username
@@ -65,7 +65,7 @@ async def like_questionnaire(call: CallbackQuery, state: FSMContext, callback_da
 
 
 @dp.callback_query_handler(action_reciprocity_keyboard.filter(action=["like_reciprocity", "dislike_reciprocity"]))
-async def like_questionnaire_reciprocity(call: CallbackQuery, state: FSMContext, callback_data: typing.Dict[str, str]):
+async def like_questionnaire_reciprocity(call: CallbackQuery, state: FSMContext, callback_data: typing.Dict[str, str]) -> None:
     action = callback_data['action']
     username = call.from_user.username
     user_db = await db_commands.select_user(telegram_id=call.from_user.id)
@@ -96,7 +96,7 @@ async def like_questionnaire_reciprocity(call: CallbackQuery, state: FSMContext,
 
 
 @dp.callback_query_handler(state="*", text="go_back_to_viewing_ques")
-async def like_questionnaire(call: CallbackQuery, state: FSMContext):
+async def like_questionnaire(call: CallbackQuery, state: FSMContext) -> None:
     await call.message.delete()
     user_list = await get_next_user(call.from_user.id, call)
     random_user = secrets.choice(user_list)
@@ -110,7 +110,7 @@ async def like_questionnaire(call: CallbackQuery, state: FSMContext):
 
 
 @dp.message_handler(state='finding')
-async def echo_message_finding(message: types.Message, state: FSMContext):
+async def echo_message_finding(message: types.Message, state: FSMContext) -> None:
     user_db = await db_commands.select_user(telegram_id=message.from_user.id)
     await message.answer(_("Меню: "), reply_markup=await start_keyboard(user_db["status"]))
     await state.reset_state()

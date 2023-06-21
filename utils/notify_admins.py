@@ -19,7 +19,7 @@ class AdminNotification(BaseNotification):
     def __init__(self, dp: Dispatcher):
         self.dp = dp
 
-    async def send(self):
+    async def send(self) -> None:
         logger.info("Оповещение администрации...")
         for admin in load_config().tg_bot.admin_ids:
             try:
@@ -34,7 +34,7 @@ class ErrorNotification(BaseNotification):
     def __init__(self, error_message: Exception):
         self.__error_message = error_message
 
-    async def send(self):
+    async def send(self) -> None:
         text = (
             f"❗ Error During Operation ❗\n"
             f"{self.__error_message}\n\n❗"

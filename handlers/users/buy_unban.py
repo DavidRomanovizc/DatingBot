@@ -16,7 +16,7 @@ async def create_payment(amount: Union[float, int] = 1) -> qiwi_types.Bill:
 
 
 @dp.callback_query_handler(text="unban")
-async def get_payment(call: CallbackQuery):
+async def get_payment(call: CallbackQuery) -> None:
     await call.answer(cache_time=60)
     await call.message.edit_text(_("<b>💳 Стоимость разбана - 600</b>\n"
                                    "├Чтобы проверить актуальность цен, нажмите на кнопку \n<b>├🔄 Проверить цены</b>\n"
@@ -26,12 +26,12 @@ async def get_payment(call: CallbackQuery):
 
 
 @dp.callback_query_handler(text="check_price")
-async def check_price(call: CallbackQuery):
+async def check_price(call: CallbackQuery) -> None:
     await bot.answer_callback_query(call.id, text=_("✔️ Цена актуальна"))
 
 
 @dp.callback_query_handler(text='pay_qiwi')
-async def payment(call: CallbackQuery, state: FSMContext):
+async def payment(call: CallbackQuery, state: FSMContext) -> None:
     await call.answer(cache_time=60)
     bill = await create_payment()
 
@@ -43,7 +43,7 @@ async def payment(call: CallbackQuery, state: FSMContext):
 
 
 @dp.callback_query_handler(state="payment", text="check_payment")
-async def successful_payment(call: CallbackQuery, state: FSMContext):
+async def successful_payment(call: CallbackQuery, state: FSMContext) -> None:
     await call.answer(cache_time=60)
     async with state.proxy() as data:
         bill: qiwi_types.Bill = data.get("bill")
@@ -59,7 +59,7 @@ async def successful_payment(call: CallbackQuery, state: FSMContext):
 
 
 @dp.callback_query_handler(state='payment', text='cancel_payment')
-async def cancel_payment(call: CallbackQuery, state: FSMContext):
+async def cancel_payment(call: CallbackQuery, state: FSMContext) -> None:
     await call.answer(cache_time=60)
     await call.message.edit_text(_("Вы забанены!"), reply_markup=await unban_user_keyboard())
     await state.reset_state()

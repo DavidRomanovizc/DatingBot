@@ -10,7 +10,7 @@ from utils.db_api import db_commands
 
 
 @dp.callback_query_handler(lambda call: str(call.message.chat.id) == load_config().tg_bot.moderate_chat)
-async def order_answer(call: CallbackQuery):
+async def order_answer(call: CallbackQuery) -> None:
     call_data = call.data.split("-")
     user = await db_commands.select_user_meetings(telegram_id=call.from_user.id)
     is_admin = user.get("is_admin")

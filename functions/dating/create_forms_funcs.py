@@ -15,13 +15,13 @@ from utils.db_api import db_commands
 
 
 async def create_questionnaire(form_owner: int, chat_id: str, add_text=None, monitoring=False,
-                               report_system=False) -> NoReturn:
+                               report_system=False) -> None:
     markup = await questionnaires_keyboard(target_id=form_owner, monitoring=monitoring)
     await send_questionnaire(chat_id=chat_id, markup=markup, add_text=add_text,
                              monitoring=monitoring, report_system=report_system, owner_id=form_owner)
 
 
-async def create_questionnaire_reciprocity(liker: int, chat_id: str, add_text=None):
+async def create_questionnaire_reciprocity(liker: int, chat_id: str, add_text=None) -> None:
     await send_questionnaire(chat_id=chat_id, add_text=add_text, owner_id=liker)
 
 
