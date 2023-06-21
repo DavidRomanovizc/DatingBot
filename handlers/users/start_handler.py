@@ -6,6 +6,8 @@ from aiogram import types
 from aiogram.dispatcher.filters.builtin import CommandStart
 from aiogram.types import CallbackQuery
 from aiogram.utils.exceptions import BadRequest
+from django.db import IntegrityError
+from loguru import logger
 
 from data.config import load_config
 from filters import IsPrivate
@@ -19,30 +21,29 @@ from utils.db_api import db_commands
 
 
 @dp.message_handler(IsPrivate(), CommandStart())
-async def register_user(message: types.Message):
+async def register_user(message: types.Message) -> None:
     try:
         await db_commands.add_user(name=message.from_user.full_name,
                                    telegram_id=message.from_user.id,
                                    username=message.from_user.username)
         await db_commands.add_meetings_user(telegram_id=message.from_user.id,
                                             username=message.from_user.username)
-
-        if message.from_user.username is not None:
-            await db_commands.add_user(name=message.from_user.full_name,
-                                       telegram_id=message.from_user.id,
-                                       username=message.from_user.username)
-            await db_commands.add_meetings_user(telegram_id=message.from_user.id,
-                                                username=message.from_user.username)
-        else:
-            await db_commands.add_user(name=message.from_user.full_name,
-                                       telegram_id=message.from_user.id,
-                                       username="None")
-            await db_commands.add_meetings_user(telegram_id=message.from_user.id,
-                                                username="None")
         if message.from_user.id in load_config().tg_bot.admin_ids:
             await db_commands.add_user_to_settings(telegram_id=message.from_user.id)
-    except:
-        pass
+    except IntegrityError as ex:
+        err = str(ex).split()
+        if err[0:2] == ['null', 'value']:
+            await message.answer(_(
+                "У вас не установлен username, пожалуйста,"
+                " зайдите в настройки аккаунта и создайте username.\n"
+                "<b>Без него вы не сможете пользоваться ботом</b>\n\n"
+                '<a href="{url1}">Инструкция №1</a>\n'
+                '<a href="{url2}">Инструкция №2</a>').format(
+                url1="https://www.youtube.com/watch?v=6fC_AUJemSo&ab_channel=TheTechnology",
+                url2="https://www.youtube.com/watch?v=xc9K2NjvfLo&ab_channel=AlexTrack"
+            ))
+        elif err[0:2] == ['duplicate', 'key']:
+            pass
     try:
         support = await db_commands.select_user(telegram_id=load_config().tg_bot.support_ids[0])
         user_db = await db_commands.select_user(telegram_id=message.from_user.id)
@@ -60,19 +61,11 @@ async def register_user(message: types.Message):
                                                          supports=support['username']),
                              reply_markup=markup)
     except TypeError:
-        await message.answer(_(
-            "У вас не установлен username, пожалуйста,"
-            " зайдите в настройки аккаунта и создайте username.\n"
-            "<b>Без него вы не сможете пользоваться ботом</b>\n\n"
-            '<a href="{url1}">Инструкция №1</a>\n'
-            '<a href="{url2}">Инструкция №2</a>').format(
-            url1="https://www.youtube.com/watch?v=6fC_AUJemSo&ab_channel=TheTechnology",
-            url2="https://www.youtube.com/watch?v=xc9K2NjvfLo&ab_channel=AlexTrack"
-        ))
+        pass
 
 
 @dp.callback_query_handler(text="start_menu")
-async def start_menu(call: CallbackQuery):
+async def start_menu(call: CallbackQuery) -> None:
     try:
         await registration_menu(call, scheduler, send_message_week, load_config, random)
     except TypeError:
@@ -81,7 +74,7 @@ async def start_menu(call: CallbackQuery):
 
 @dp.callback_query_handler(text="language")
 @dp.callback_query_handler(text="language_reg")
-async def choice_language(call: CallbackQuery):
+async def choice_language(call: CallbackQuery) -> None:
     if call.data == "language_reg":
         try:
             await call.message.edit_text(_("Выберите язык"), reply_markup=await language_keyboard("registration"))
@@ -100,7 +93,7 @@ async def choice_language(call: CallbackQuery):
 @dp.callback_query_handler(text="Deutsch")
 @dp.callback_query_handler(text="English")
 @dp.callback_query_handler(text="Indonesian")
-async def change_language(call: CallbackQuery):
+async def change_language(call: CallbackQuery) -> None:
     telegram_id = call.from_user.id
     try:
         if call.data == "Russian":
