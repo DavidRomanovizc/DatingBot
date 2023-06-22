@@ -15,23 +15,23 @@ from utils.db_api import db_commands
 
 
 @dp.callback_query_handler(text="filters")
-async def get_filters(call: CallbackQuery):
+async def get_filters(call: CallbackQuery) -> None:
     await call.message.edit_text(_("Вы перешли в раздел с фильтрами"), reply_markup=await filters_keyboard())
 
 
 @dp.callback_query_handler(text="dating_filters")
-async def get_dating_filters(call: CallbackQuery):
+async def get_dating_filters(call: CallbackQuery) -> None:
     await show_dating_filters(call, message=None)
 
 
 @dp.callback_query_handler(text="user_age_period")
-async def desired_age(call: CallbackQuery, state: FSMContext):
+async def desired_age(call: CallbackQuery, state: FSMContext) -> None:
     await call.message.edit_text(_("Напишите минимальный возраст"))
     await state.set_state("age_period")
 
 
 @dp.message_handler(state="age_period")
-async def desired_min_age_state(message: types.Message, state: FSMContext):
+async def desired_min_age_state(message: types.Message, state: FSMContext) -> None:
     try:
 
         messages = message.text
@@ -48,7 +48,7 @@ async def desired_min_age_state(message: types.Message, state: FSMContext):
 
 
 @dp.message_handler(state="max_age_period")
-async def desired_max_age_state(message: types.Message, state: FSMContext):
+async def desired_max_age_state(message: types.Message, state: FSMContext) -> None:
     try:
         messages = message.text
         int_message = re.findall('[0-9]+', messages)
@@ -62,14 +62,14 @@ async def desired_max_age_state(message: types.Message, state: FSMContext):
 
 
 @dp.callback_query_handler(text="user_need_gender")
-async def desired_max_range(call: CallbackQuery, state: FSMContext):
+async def desired_max_range(call: CallbackQuery, state: FSMContext) -> None:
     markup = await gender_keyboard()
     await call.message.edit_text(_("Выберите, кого вы хотите найти:"), reply_markup=markup)
     await state.set_state("gender")
 
 
 @dp.callback_query_handler(state="gender")
-async def desired_gender(call: CallbackQuery, state: FSMContext):
+async def desired_gender(call: CallbackQuery, state: FSMContext) -> None:
     await choice_gender(call)
     await call.message.edit_text(_("Данные сохранены"))
     await asyncio.sleep(1)
@@ -78,13 +78,13 @@ async def desired_gender(call: CallbackQuery, state: FSMContext):
 
 
 @dp.callback_query_handler(text="needs_city")
-async def user_city_filter(call: CallbackQuery, state: FSMContext):
+async def user_city_filter(call: CallbackQuery, state: FSMContext) -> None:
     await call.message.edit_text(_("Напишите город вашего будущего партнера"))
     await state.set_state("city")
 
 
 @dp.message_handler(state="city")
-async def user_city_filter_state(message: types.Message):
+async def user_city_filter_state(message: types.Message) -> None:
     try:
         loc = await Location(message=message)
         await loc.det_loc_in_filters(message)
@@ -97,7 +97,7 @@ async def user_city_filter_state(message: types.Message):
 
 @dp.callback_query_handler(text="yes_all_good", state="set_city_event")
 @dp.callback_query_handler(text="yes_all_good", state="city")
-async def get_hobbies(call: CallbackQuery, state: FSMContext):
+async def get_hobbies(call: CallbackQuery, state: FSMContext) -> None:
     await asyncio.sleep(1)
     await call.message.edit_text(_("Данные сохранены"))
     await asyncio.sleep(2)
@@ -110,19 +110,19 @@ async def get_hobbies(call: CallbackQuery, state: FSMContext):
 
 
 @dp.callback_query_handler(text="event_filters")
-async def get_event_filters(call: CallbackQuery):
+async def get_event_filters(call: CallbackQuery) -> None:
     await call.message.edit_text(_("Вы перешли в меню настроек фильтров для мероприятий"),
                                  reply_markup=await event_filters_keyboard())
 
 
 @dp.callback_query_handler(text="city_event")
-async def set_city_by_filter(call: CallbackQuery, state: FSMContext):
+async def set_city_by_filter(call: CallbackQuery, state: FSMContext) -> None:
     await call.message.edit_text(_("Напишите город, в котором бы хотели сходить куда-нибудь"))
     await state.set_state("set_city_event")
 
 
 @dp.message_handler(state="set_city_event")
-async def user_city_filter_state(message: types.Message):
+async def user_city_filter_state(message: types.Message) -> None:
     try:
         loc = await Location(message=message)
         await loc.det_loc_in_filters_event(message)

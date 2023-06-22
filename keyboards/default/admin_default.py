@@ -3,7 +3,7 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from loader import _
 
 
-async def admin_keyboard():
+async def admin_keyboard() -> ReplyKeyboardMarkup:
     markup = ReplyKeyboardMarkup(resize_keyboard=True)
     mailing = KeyboardButton(text=_("Рассылка"))
     message_by_id = KeyboardButton(text=_("Сообщение по id"))

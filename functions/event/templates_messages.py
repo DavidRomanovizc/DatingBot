@@ -10,7 +10,7 @@ from loader import _
 
 class TemplateEvent:
 
-    def __init__(self) -> NoReturn:
+    def __init__(self) -> None:
         self.message_for_event = _("<b>{}</b> \n" +
                                    "Когда: {} \n" +
                                    "Где: {} \n\n" +

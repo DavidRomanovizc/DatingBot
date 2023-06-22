@@ -1,13 +1,13 @@
-from typing import NoReturn
-
 from keyboards.inline.questionnaires_inline import questionnaires_keyboard, back_viewing_ques_keyboard, \
     reciprocity_keyboard
 from loader import bot, _
 from utils.db_api import db_commands
 
 
-async def send_questionnaire(chat_id, owner_id, markup=None, add_text=None,
-                             monitoring=False, report_system=False) -> NoReturn:
+async def send_questionnaire(
+        chat_id, owner_id,
+        markup=None, add_text=None,
+        monitoring=False, report_system=False) -> None:
     user = await db_commands.select_user(owner_id)
     text_template = "{}, {} лет, {} {verification}\n\n"
     user_verification = "✅" if user["verification"] else "❌"

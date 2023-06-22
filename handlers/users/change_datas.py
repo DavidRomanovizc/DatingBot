@@ -22,20 +22,20 @@ from utils.misc.profanityFilter import censored_message
 
 
 @dp.callback_query_handler(text='change_profile')
-async def start_change_data(call: CallbackQuery):
+async def start_change_data(call: CallbackQuery) -> None:
     markup = await change_info_keyboard()
     await delete_message(call.message)
     await call.message.answer(_("Выберите, что вы хотите изменить: "), reply_markup=markup)
 
 
 @dp.callback_query_handler(text='name')
-async def change_name(call: CallbackQuery):
+async def change_name(call: CallbackQuery) -> None:
     await call.message.edit_text(_("Введите новое имя"))
     await NewData.name.set()
 
 
 @dp.message_handler(state=NewData.name)
-async def change_name(message: types.Message, state: FSMContext):
+async def change_name(message: types.Message, state: FSMContext) -> None:
     markup = await change_info_keyboard()
     try:
         censored = censored_message(message.text)
@@ -52,13 +52,13 @@ async def change_name(message: types.Message, state: FSMContext):
 
 
 @dp.callback_query_handler(text='age')
-async def change_age(call: CallbackQuery):
+async def change_age(call: CallbackQuery) -> None:
     await call.message.edit_text(_("Введите новый возраст"))
     await NewData.age.set()
 
 
 @dp.message_handler(state=NewData.age)
-async def change_age(message: types.Message, state: FSMContext):
+async def change_age(message: types.Message, state: FSMContext) -> None:
     markup = await change_info_keyboard()
     try:
         if int(message.text) and 0 < int(message.text) < 110:
@@ -79,13 +79,13 @@ async def change_age(message: types.Message, state: FSMContext):
 
 
 @dp.callback_query_handler(text='city')
-async def change_city(call: CallbackQuery):
+async def change_city(call: CallbackQuery) -> None:
     await call.message.edit_text(_("Введите новый город"))
     await NewData.city.set()
 
 
 @dp.message_handler(state=NewData.city)
-async def change_city(message: types.Message):
+async def change_city(message: types.Message) -> None:
     try:
         loc = await Location(message=message)
         await loc.det_loc_in_registration(message)
@@ -96,21 +96,21 @@ async def change_city(message: types.Message):
 
 
 @dp.callback_query_handler(text="yes_all_good", state=NewData.city)
-async def get_hobbies(call: CallbackQuery, state: FSMContext):
+async def get_hobbies(call: CallbackQuery, state: FSMContext) -> None:
     await call.message.edit_text(_("Данные успешно изменены.\nВыберите, что вы хотите изменить: "),
                                  reply_markup=await change_info_keyboard())
     await state.reset_state()
 
 
 @dp.callback_query_handler(text='gender')
-async def change_sex(call: CallbackQuery):
+async def change_sex(call: CallbackQuery) -> None:
     markup = await gender_keyboard()
     await call.message.edit_text(_("Выберите новый пол: "), reply_markup=markup)
     await NewData.sex.set()
 
 
 @dp.callback_query_handler(state=NewData.sex)
-async def change_sex(call: CallbackQuery, state: FSMContext):
+async def change_sex(call: CallbackQuery, state: FSMContext) -> None:
     markup = await change_info_keyboard()
     if call.data == 'male':
         try:
@@ -139,7 +139,7 @@ async def change_sex(call: CallbackQuery, state: FSMContext):
 
 
 @dp.callback_query_handler(text='photo')
-async def new_photo(call: CallbackQuery):
+async def new_photo(call: CallbackQuery) -> None:
     await delete_message(call.message)
     await call.message.answer(_("Отправьте мне новую фотографию"), reply_markup=await get_photo_from_profile())
     await NewData.photo.set()
@@ -148,7 +148,7 @@ async def new_photo(call: CallbackQuery):
 
 
 @dp.message_handler(state=NewData.photo)
-async def get_photo_profile(message: types.Message, state: FSMContext):
+async def get_photo_profile(message: types.Message, state: FSMContext) -> None:
     telegram_id = message.from_user.id
     markup = await change_info_keyboard()
     profile_pictures = await dp.bot.get_user_profile_photos(telegram_id)
@@ -160,7 +160,7 @@ async def get_photo_profile(message: types.Message, state: FSMContext):
 
 
 @dp.message_handler(content_types=ContentType.PHOTO, state=NewData.photo)
-async def update_photo_complete(message: types.Message, state: FSMContext):
+async def update_photo_complete(message: types.Message, state: FSMContext) -> None:
     telegram_id = message.from_user.id
     markup = await change_info_keyboard()
     file_name = f"{str(telegram_id)}.jpg"
@@ -183,7 +183,7 @@ async def update_photo_complete(message: types.Message, state: FSMContext):
 
 
 @dp.callback_query_handler(text='about_me')
-async def new_comment(call: CallbackQuery):
+async def new_comment(call: CallbackQuery)-> None:
     user = await db_commands.select_user(telegram_id=call.from_user.id)
     voice_id = user.get("voice_id")
     if voice_id is None:
@@ -194,7 +194,7 @@ async def new_comment(call: CallbackQuery):
 
 
 @dp.message_handler(content_types=[ContentType.VOICE], state=NewData.commentary)
-async def voice_reg(message: types.Message, state: FSMContext):
+async def voice_reg(message: types.Message, state: FSMContext) -> None:
     markup = await change_info_keyboard()
     voice_message_id = message.voice.file_id
     try:
@@ -213,7 +213,7 @@ async def voice_reg(message: types.Message, state: FSMContext):
 
 
 @dp.message_handler(state=NewData.commentary)
-async def update_comment_complete(message: types.Message, state: FSMContext):
+async def update_comment_complete(message: types.Message, state: FSMContext) -> None:
     markup = await change_info_keyboard()
     try:
         censored = censored_message(message.text)
@@ -232,7 +232,7 @@ async def update_comment_complete(message: types.Message, state: FSMContext):
 
 
 @dp.callback_query_handler(text="add_inst")
-async def add_inst(call: CallbackQuery, state: FSMContext):
+async def add_inst(call: CallbackQuery, state: FSMContext) -> None:
     await delete_message(call.message)
     await call.message.answer(_("Напишите имя своего аккаунта\n\n"
                                 "Примеры:\n"
@@ -242,7 +242,7 @@ async def add_inst(call: CallbackQuery, state: FSMContext):
 
 
 @dp.message_handler(state="inst")
-async def add_inst_state(message: types.Message, state: FSMContext):
+async def add_inst_state(message: types.Message, state: FSMContext) -> None:
     try:
         user_db = await db_commands.select_user(telegram_id=message.from_user.id)
         markup = await start_keyboard(user_db["status"])

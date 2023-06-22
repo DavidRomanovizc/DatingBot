@@ -13,6 +13,7 @@ class DataBaseConfig:
     password: str
     host: str
     database: str
+    port: str
 
 
 @dataclass(frozen=True)
@@ -64,6 +65,7 @@ def load_config() -> Config:
             password=env.str('DB_PASS'),
             host=env.str('DB_HOST'),
             database=env.str('DB_NAME'),
+            port=env.str('PORT')
         ),
         misc=Miscellaneous(
             secret_key=env.str("SECRET_KEY"),

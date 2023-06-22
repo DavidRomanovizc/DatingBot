@@ -20,13 +20,13 @@ from loader import dp, _, scheduler
 from utils.db_api import db_commands
 
 
-async def delete_message(message: types.Message):
+async def delete_message(message: types.Message) -> None:
     with suppress(MessageCantBeDeleted, MessageToDeleteNotFound):
         await message.delete()
 
 
 @dp.callback_query_handler(text="back_with_delete")
-async def open_menu(call: CallbackQuery):
+async def open_menu(call: CallbackQuery) -> None:
     user_db = await db_commands.select_user(telegram_id=call.from_user.id)
     heart = random.choice(['💙', '💚', '💛', '🧡', '💜', '🖤', '❤', '🤍', '💖', '💝'])
     markup = await start_keyboard(status=user_db['status'])
@@ -53,7 +53,7 @@ async def open_menu(call: CallbackQuery):
 
 @dp.callback_query_handler(text="back_to_reg_menu")
 @dp.callback_query_handler(text="back_to_profile_menu")
-async def event_back_handler(call: CallbackQuery):
+async def event_back_handler(call: CallbackQuery) -> None:
     if call.data == "back_to_reg_menu":
         await registration_menu(call, scheduler, send_message_week, load_config, random)
     elif call.data == "back_to_profile_menu":
@@ -65,28 +65,28 @@ async def event_back_handler(call: CallbackQuery):
 
 
 @dp.callback_query_handler(text="unban_menu")
-async def unban_back_handler(call: CallbackQuery):
+async def unban_back_handler(call: CallbackQuery) -> None:
     await call.message.edit_text(_("Вы забанены!"), reply_markup=await unban_user_keyboard())
 
 
 @dp.callback_query_handler(search_cb.filter(action="cancel"))
-async def cancel_action(call: CallbackQuery):
+async def cancel_action(call: CallbackQuery) -> None:
     await open_menu(call)
 
 
 @dp.callback_query_handler(text="back_to_filter_menu")
-async def back_to_filters_menu(call: CallbackQuery):
+async def back_to_filters_menu(call: CallbackQuery) -> None:
     await call.message.edit_text(_("Вы вернулись в меню фильтров"), reply_markup=await filters_keyboard())
 
 
 @dp.callback_query_handler(text="go_out", state="cancel_record")
 @dp.callback_query_handler(text="event_menu")
-async def event_profile_back(call: CallbackQuery, state: FSMContext):
+async def event_profile_back(call: CallbackQuery, state: FSMContext) -> None:
     await state.finish()
     await delete_message(call.message)
     await view_meetings_handler(call)
 
 
 @dp.callback_query_handler(text="back_to_event_profile")
-async def back_to_filters_menu(call: CallbackQuery):
+async def back_to_filters_menu(call: CallbackQuery) -> None:
     await view_own_event(call)

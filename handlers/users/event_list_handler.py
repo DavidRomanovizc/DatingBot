@@ -9,7 +9,7 @@ from utils.db_api import db_commands
 
 
 @dp.callback_query_handler(text="my_appointment")
-async def get_event_list(call: CallbackQuery, state: FSMContext):
+async def get_event_list(call: CallbackQuery, state: FSMContext) -> None:
     try:
         telegram_id = call.from_user.id
         event_list = await get_next_registration(call.from_user.id)
@@ -21,7 +21,7 @@ async def get_event_list(call: CallbackQuery, state: FSMContext):
 
 
 @dp.callback_query_handler(lambda call: call.data.split('-')[0] == "cancel", state="cancel_record")
-async def list_poster_reaction(call: CallbackQuery, state: FSMContext):
+async def list_poster_reaction(call: CallbackQuery, state: FSMContext) -> None:
     call_data = call.data.split("-")
 
     if call_data[0] == 'cancel':

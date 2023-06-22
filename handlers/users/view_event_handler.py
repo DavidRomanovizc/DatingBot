@@ -8,7 +8,7 @@ from utils.db_api import db_commands
 
 
 @dp.callback_query_handler(text="view_poster")
-async def view_poster_handler(call: CallbackQuery, state: FSMContext):
+async def view_poster_handler(call: CallbackQuery, state: FSMContext) -> None:
     telegram_id = call.from_user.id
     user = await db_commands.select_user_meetings(telegram_id=telegram_id)
     is_admin = user.get("is_admin")
@@ -30,7 +30,7 @@ async def view_poster_handler(call: CallbackQuery, state: FSMContext):
 
 
 @dp.callback_query_handler(lambda call: call.data.split('_')[0] == 'answer', state="finding_event")
-async def list_poster_reaction(call: CallbackQuery, state: FSMContext):
+async def list_poster_reaction(call: CallbackQuery, state: FSMContext) -> None:
     user = await db_commands.select_user_meetings(telegram_id=call.from_user.id)
     is_admin = user.get("is_admin")
     is_verification = user.get("verification_status")

@@ -14,7 +14,7 @@ from loader import _, bot
 from utils.db_api import db_commands
 
 
-async def choice_gender(call: CallbackQuery) -> NoReturn:
+async def choice_gender(call: CallbackQuery) -> None:
     """
     Функция, сохраняющая в базу пол, который выбрал пользователь
     """
@@ -30,7 +30,7 @@ async def choice_gender(call: CallbackQuery) -> NoReturn:
             logger.error(err)
 
 
-async def display_profile(call: CallbackQuery, markup) -> NoReturn:
+async def display_profile(call: CallbackQuery, markup) -> None:
     """
     Функция для отображения профиля пользователя
     """
@@ -57,7 +57,10 @@ async def display_profile(call: CallbackQuery, markup) -> NoReturn:
     await call.message.answer_photo(caption=caption, photo=user["photo_id"], reply_markup=markup)
 
 
-async def show_dating_filters(call: Optional[CallbackQuery] = None, message: Optional[types.Message] = None):
+async def show_dating_filters(
+        call: Optional[CallbackQuery] = None,
+        message: Optional[types.Message] = None
+) -> None:
     user_id = call.from_user.id if call else message.from_user.id
     user = await db_commands.select_user(telegram_id=user_id)
     markup = await dating_filters_keyboard()
@@ -77,7 +80,8 @@ async def show_dating_filters(call: Optional[CallbackQuery] = None, message: Opt
         await message.answer(text, reply_markup=markup)
 
 
-async def registration_menu(call, scheduler, send_message_week, load_config, random):
+# TODO: Add type hint
+async def registration_menu(call, scheduler, send_message_week, load_config, random) -> None:
     user_db = await db_commands.select_user(telegram_id=call.from_user.id)
     support = await db_commands.select_user(telegram_id=load_config().tg_bot.support_ids[0])
     markup = await start_keyboard(user_db["status"])
@@ -94,7 +98,7 @@ async def registration_menu(call, scheduler, send_message_week, load_config, ran
     scheduler.add_job(send_message_week, trigger="interval", weeks=3, jitter=120, args={call.message})
 
 
-async def finished_registration(state: FSMContext, telegram_id: int, message: types.Message):
+async def finished_registration(state: FSMContext, telegram_id: int, message: types.Message) -> None:
     await state.finish()
     await db_commands.update_user_data(telegram_id=telegram_id, status=True)
 
@@ -115,7 +119,7 @@ async def finished_registration(state: FSMContext, telegram_id: int, message: ty
     await message.answer("Меню: ", reply_markup=markup)
 
 
-async def saving_normal_photo(message: types.Message, telegram_id: int, file_id: int, state: FSMContext):
+async def saving_normal_photo(message: types.Message, telegram_id: int, file_id: int, state: FSMContext) -> None:
     """
     Функция, сохраняющая фотографию пользователя без цензуры
     """
@@ -132,7 +136,7 @@ async def saving_normal_photo(message: types.Message, telegram_id: int, file_id:
 
 async def saving_censored_photo(message: types.Message, telegram_id: int, state: FSMContext,
                                 out_path: Union[str, pathlib.Path], flag: Union[str, None] = "registration",
-                                markup: Union[InlineKeyboardMarkup, None] = None):
+                                markup: Union[InlineKeyboardMarkup, None] = None) -> None:
     """
     Функция, сохраняющая фотографию пользователя с цензурой
     """
@@ -159,8 +163,12 @@ async def saving_censored_photo(message: types.Message, telegram_id: int, state:
         await finished_registration(state, telegram_id, message)
 
 
-async def update_normal_photo(message: types.Message, telegram_id: int, file_id: int, state: FSMContext,
-                              markup):
+async def update_normal_photo(
+        message: types.Message,
+        telegram_id: int,
+        file_id: int,
+        state: FSMContext,
+        markup) -> None:
     """
     Функция, которая обновляет фотографию пользователя
     """

@@ -63,7 +63,7 @@ DATABASES = {
         'USER': load_config().db.user,
         'PASSWORD': load_config().db.password,
         'HOST': load_config().db.host,
-        'PORT': "5432"
+        "PORT": load_config().db.port
     }
 }
 

@@ -8,7 +8,7 @@ from utils.db_api import db_commands
 
 
 @dp.callback_query_handler(text="my_profile")
-async def my_profile_menu(call: CallbackQuery):
+async def my_profile_menu(call: CallbackQuery) -> None:
     telegram_id = call.from_user.id
     await delete_message(call.message)
     user_db = await db_commands.select_user(telegram_id=telegram_id)
@@ -17,7 +17,7 @@ async def my_profile_menu(call: CallbackQuery):
 
 
 @dp.callback_query_handler(text="disable")
-async def disable_profile(call: CallbackQuery):
+async def disable_profile(call: CallbackQuery) -> None:
     await db_commands.delete_user(telegram_id=call.from_user.id)
     await delete_message(call.message)
     await call.message.answer(_("Ваша анкета удалена!\nЯ надеюсь вы кого-нибудь нашли"))

@@ -17,7 +17,7 @@ from utils.db_api import db_commands
 
 
 @dp.callback_query_handler(text="meetings")
-async def view_meetings_handler(call: CallbackQuery):
+async def view_meetings_handler(call: CallbackQuery) -> None:
     try:
         await check_event_date(call.from_user.id)
     except TypeError:
@@ -33,7 +33,7 @@ async def view_meetings_handler(call: CallbackQuery):
 
 
 @dp.callback_query_handler(text="create_poster")
-async def registrate_poster_name(call: CallbackQuery, state: FSMContext):
+async def registrate_poster_name(call: CallbackQuery, state: FSMContext) -> None:
     user = await db_commands.select_user_meetings(telegram_id=call.from_user.id)
     is_admin = user.get("is_admin")
     is_verification = user.get("verification_status")
@@ -65,14 +65,14 @@ async def registrate_poster_name(call: CallbackQuery, state: FSMContext):
 
 
 @dp.message_handler(state="register_handler_name")
-async def simple_calendar(message: Message):
+async def simple_calendar(message: Message) -> None:
     await message.answer(_("Пожалуйста, выберите дату: "),
                          reply_markup=await SimpleCalendar().start_calendar())
     await db_commands.update_user_meetings_data(telegram_id=message.from_user.id, event_name=message.text)
 
 
 @dp.callback_query_handler(calendar_callback.filter(), state="register_handler_name")
-async def process_simple_calendar(call: CallbackQuery, callback_data, state: FSMContext):
+async def process_simple_calendar(call: CallbackQuery, callback_data, state: FSMContext) -> None:
     try:
         selected, date = await SimpleCalendar().process_selection(call, callback_data)
         now = datetime.datetime.now()
@@ -95,7 +95,7 @@ async def process_simple_calendar(call: CallbackQuery, callback_data, state: FSM
 
 
 @dp.message_handler(state="register_handler_place")
-async def send_city(message: types.Message):
+async def send_city(message: types.Message) -> None:
     try:
         loc = await Location(message=message)
         await loc.det_loc_in_event(message)
@@ -106,7 +106,7 @@ async def send_city(message: types.Message):
 
 
 @dp.callback_query_handler(text="yes_all_good", state="register_handler_place")
-async def registrate_poster_commentary(call: CallbackQuery, state: FSMContext):
+async def registrate_poster_commentary(call: CallbackQuery, state: FSMContext) -> None:
     try:
         await call.message.edit_text(_("Хорошо, теперь напишите короткое или длинное описание вашего мероприятия"),
                                      reply_markup=await cancel_registration_keyboard())
@@ -116,7 +116,7 @@ async def registrate_poster_commentary(call: CallbackQuery, state: FSMContext):
 
 
 @dp.message_handler(state="register_handler_commentary")
-async def registrate_poster_commentary(message: Message, state: FSMContext):
+async def registrate_poster_commentary(message: Message, state: FSMContext) -> None:
     try:
         await message.answer(_("И напоследок, пришлите постер вашего мероприятия"),
                              reply_markup=await cancel_registration_keyboard())
@@ -127,7 +127,7 @@ async def registrate_poster_commentary(message: Message, state: FSMContext):
 
 
 @dp.message_handler(content_types=ContentType.PHOTO, state="register_handler_poster")
-async def finish_registration(message: Message, state: FSMContext):
+async def finish_registration(message: Message, state: FSMContext) -> None:
     user = await db_commands.select_user_meetings(telegram_id=message.from_user.id)
     is_admin = user.get("is_admin")
     is_verification = user.get("verification_status")
@@ -153,7 +153,7 @@ async def finish_registration(message: Message, state: FSMContext):
 
 
 @dp.callback_query_handler(text="my_event")
-async def view_own_event(call: CallbackQuery):
+async def view_own_event(call: CallbackQuery) -> None:
     user = await db_commands.select_user_meetings(telegram_id=call.from_user.id)
 
     document = {
@@ -172,6 +172,6 @@ async def view_own_event(call: CallbackQuery):
 @dp.callback_query_handler(text="cancel_registration", state="register_handler_poster")
 @dp.callback_query_handler(text="cancel_registration", state="register_handler_place")
 @dp.callback_query_handler(text="cancel_registration", state="register_handler_commentary")
-async def cancel_register_poster_name(call: CallbackQuery, state: FSMContext):
+async def cancel_register_poster_name(call: CallbackQuery, state: FSMContext) -> None:
     await state.reset_state()
     await view_meetings_handler(call)

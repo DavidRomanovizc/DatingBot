@@ -1,3 +1,4 @@
+import asyncio
 from typing import Union
 
 import asyncpg
@@ -13,12 +14,13 @@ class Database:
     def __init__(self):
         self.pool: Union[Pool, None] = None
 
-    async def create(self):
+    async def create(self) -> None:
         self.pool = await asyncpg.create_pool(
             user=load_config().db.user,
             password=load_config().db.password,
             host=config.load_config().db.host,
-            database=config.load_config().db.database
+            database=config.load_config().db.database,
+            port=config.load_config().db.port
         )
 
     async def execute(self, command, *args,
@@ -26,7 +28,7 @@ class Database:
                       fetchval: bool = False,
                       fetchrow: bool = False,
                       execute: bool = False
-                      ):
+                      ) -> asyncio.Future:
         async with self.pool.acquire() as connection:
             connection: Connection
             async with connection.transaction():

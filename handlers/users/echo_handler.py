@@ -8,7 +8,7 @@ from loader import dp, _
 
 
 @dp.message_handler(state=None)
-async def bot_echo(message: types.Message):
+async def bot_echo(message: types.Message) -> None:
     text = _("Эхо без состояния.",
              "Сообщение:\n {hcode(message.text)}").format(hcode(message.text))
 
@@ -16,7 +16,7 @@ async def bot_echo(message: types.Message):
 
 
 @dp.message_handler(state="*")
-async def bot_echo_all(message: types.Message, state: FSMContext):
+async def bot_echo_all(message: types.Message, state: FSMContext) -> None:
     state_name = await state.get_state()
     text = [
         f'Эхо в состоянии {hcode(state_name)}',
@@ -27,5 +27,5 @@ async def bot_echo_all(message: types.Message, state: FSMContext):
 
 
 @dp.callback_query_handler()
-async def cq_echo(call: CallbackQuery):
+async def cq_echo(call: CallbackQuery) -> None:
     logger.debug(call.data)

@@ -11,14 +11,14 @@ from utils.db_api import db_commands
 
 
 @dp.callback_query_handler(text="verification")
-async def get_verification_status(call: CallbackQuery):
+async def get_verification_status(call: CallbackQuery) -> None:
     await delete_message(call.message)
     await call.message.answer(_("Чтобы пройти верификацию вам нужно отправить свой контакт"),
                               reply_markup=await contact_keyboard())
 
 
 @dp.message_handler(content_types=types.ContentType.CONTACT)
-async def get_contact(message: types.Message):
+async def get_contact(message: types.Message) -> None:
     contact = message.contact
     telegram_id = message.from_user.id
     user_db = await db_commands.select_user(telegram_id=telegram_id)

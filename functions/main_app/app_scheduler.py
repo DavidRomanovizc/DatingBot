@@ -5,7 +5,7 @@ from loader import bot, _
 from utils.db_api import db_commands
 
 
-async def send_message_week(message: Message):
+async def send_message_week(message: Message) -> None:
     user = await db_commands.select_user(telegram_id=message.from_user.id)
 
     if user.get("need_partner_sex") == "Мужской":
