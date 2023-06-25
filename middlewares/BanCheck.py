@@ -30,7 +30,7 @@ class BanMiddleware(BaseMiddleware):
                  call.data != "pay_qiwi" and
                  call.data != "check_payment" and
                  call.data != "cancel_payment"):
-            await self.check_ban_user(call)
+            await self.check_ban_user(call=call)
 
     async def check_ban_user(
             self,
@@ -40,16 +40,25 @@ class BanMiddleware(BaseMiddleware):
         if call:
             user = await db_commands.select_user(telegram_id=call.from_user.id)
             is_banned = user.get("is_banned")
-            if is_banned:
-                await call.message.answer(_("Вы забанены!"), reply_markup=await unban_user_keyboard())
+            try:
+                if is_banned:
+                    await call.message.answer(_("Вы забанены!"), reply_markup=await unban_user_keyboard())
+            except TypeError as err:
+                logger.info(err)
                 raise CancelHandler()
+            raise CancelHandler()
+
         if message:
             user = await db_commands.select_user(telegram_id=message.from_user.id)
             try:
                 is_banned = user.get("is_banned")
 
                 if is_banned:
-                    await message.answer(_("Вы забанены!"), reply_markup=await unban_user_keyboard())
+                    try:
+                        await message.answer(_("Вы забанены!"), reply_markup=await unban_user_keyboard())
+                    except TypeError as err:
+                        logger.info(err)
+                        raise CancelHandler()
                     raise CancelHandler()
             except AttributeError as err:
                 logger.info(err)
