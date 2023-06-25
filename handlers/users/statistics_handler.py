@@ -1,5 +1,7 @@
 from aiogram.types import CallbackQuery
+from aiogram.utils.exceptions import BadRequest
 
+from handlers.users.back_handler import delete_message
 from keyboards.inline.sponsor_inline import sponsors_keyboard
 from loader import dp, _
 from utils.db_api import db_commands
@@ -33,4 +35,8 @@ async def get_inst(call: CallbackQuery) -> None:
                                                                users_verified=users_verified,
                                                                users_status=users_status)
 
-    await call.message.edit_text(text, reply_markup=await sponsors_keyboard())
+    try:
+        await delete_message(message=call.message)
+        await call.message.edit_text(text, reply_markup=await sponsors_keyboard())
+    except BadRequest:
+        await call.message.answer(text, reply_markup=await sponsors_keyboard())

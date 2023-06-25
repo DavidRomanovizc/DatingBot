@@ -1,6 +1,8 @@
 from aiogram import types
 from aiogram.dispatcher import FSMContext
+from aiogram.utils.exceptions import BadRequest
 
+from handlers.users.back_handler import delete_message
 from keyboards.inline.main_menu_inline import start_keyboard
 from keyboards.inline.support_inline import support_keyboard, support_callback, check_support_available, \
     get_support_manager, \
@@ -13,10 +15,14 @@ from utils.db_api import db_commands
 async def ask_support_call(call: types.CallbackQuery) -> None:
     text = _("Хотите связаться с тех поддержкой? Нажмите на кнопку ниже!")
     keyboard = await support_keyboard(messages="many")
-    if not keyboard:
-        await call.message.edit_text(_("К сожалению, сейчас нет свободных операторов. Попробуйте позже."))
-        return
-    await call.message.edit_text(text, reply_markup=keyboard)
+    try:
+        if not keyboard:
+            await call.message.edit_text(_("К сожалению, сейчас нет свободных операторов. Попробуйте позже."))
+            return
+        await call.message.edit_text(text, reply_markup=keyboard)
+    except BadRequest:
+        await delete_message(message=call.message)
+        await call.message.answer(text, reply_markup=keyboard)
 
 
 @dp.callback_query_handler(support_callback.filter(messages="many", as_user="yes"))

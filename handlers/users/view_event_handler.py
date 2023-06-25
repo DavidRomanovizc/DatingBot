@@ -42,9 +42,10 @@ async def list_poster_reaction(call: CallbackQuery, state: FSMContext) -> None:
         await add_events_to_user(call, event_id=int(call_data[1]))
         await view_poster_handler(call, state)
     elif call_data[0] == "answer_stopped_view":
-        markup = await poster_keyboard(is_admin, is_verification)
-        await call.message.delete()
+        await bot.edit_message_reply_markup(chat_id=call.from_user.id,
+                                            message_id=call.message.message_id,
+                                            reply_markup=await poster_keyboard(is_admin, is_verification))
         text = _("Рад был помочь, {fullname}!\n"
                  "Надеюсь, ты нашел кого-то благодаря мне").format(fullname=call.from_user.full_name)
-        await call.message.answer(text, reply_markup=markup)
+        await call.answer(text)
         await state.reset_state(with_data=False)

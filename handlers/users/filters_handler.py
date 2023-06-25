@@ -4,10 +4,12 @@ import re
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery
+from aiogram.utils.exceptions import BadRequest
 from loguru import logger
 
 from functions.main_app.auxiliary_tools import choice_gender, show_dating_filters
 from functions.main_app.determin_location import Location
+from handlers.users.back_handler import delete_message
 from keyboards.inline.change_data_profile_inline import gender_keyboard
 from keyboards.inline.filters_inline import filters_keyboard, event_filters_keyboard
 from loader import dp, _
@@ -16,7 +18,11 @@ from utils.db_api import db_commands
 
 @dp.callback_query_handler(text="filters")
 async def get_filters(call: CallbackQuery) -> None:
-    await call.message.edit_text(_("Вы перешли в раздел с фильтрами"), reply_markup=await filters_keyboard())
+    try:
+        await call.message.edit_text(_("Вы перешли в раздел с фильтрами"), reply_markup=await filters_keyboard())
+    except BadRequest:
+        await delete_message(message=call.message)
+        await call.message.answer(_("Вы перешли в раздел с фильтрами"), reply_markup=await filters_keyboard())
 
 
 @dp.callback_query_handler(text="dating_filters")

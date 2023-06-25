@@ -3,7 +3,7 @@ import datetime
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery, Message, ContentType
-from aiogram.utils.exceptions import MessageNotModified, MessageToEditNotFound
+from aiogram.utils.exceptions import MessageNotModified, MessageToEditNotFound, BadRequest
 from loguru import logger
 
 from data.config import load_config
@@ -30,7 +30,8 @@ async def view_meetings_handler(call: CallbackQuery) -> None:
         await call.message.edit_text(text, reply_markup=await poster_keyboard(is_admin, is_verification))
     except MessageToEditNotFound:
         await call.message.answer(text, reply_markup=await poster_keyboard(is_admin, is_verification))
-
+    except BadRequest:
+        await call.message.answer(text, reply_markup=await poster_keyboard(is_admin, is_verification))
 
 @dp.callback_query_handler(text="create_poster")
 async def registrate_poster_name(call: CallbackQuery, state: FSMContext) -> None:
