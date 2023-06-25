@@ -16,6 +16,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'jazzmin',
     'django_project.telegrambot.usersmanage',
+    'django_project.telegrambot.common',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
