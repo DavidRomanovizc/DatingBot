@@ -67,11 +67,13 @@ After that, you need to fill it with data.
 | DB_PASS       | str  | True       |
 | DB_HOST       | str  | True       |
 | DB_NAME       | str  | True       |
+| PORT          | str  | True       |
 | SECRET_KEY    | str  | True       |
 | API_KEY       | str  | True       |
 | QIWI_KEY      | str  | True       |
 | PHONE_NUMBER  | str  | True       |
 | SECRET_P2     | str  | True       |
+| USE_REDIS     | bool | False      |
 
 `BOT_TOKEN` - Bot token\
 `ADMINS` - list of admins id\
@@ -83,7 +85,8 @@ After that, you need to fill it with data.
 `DB_USER` - username of the database owner\
 `DB_PASS` - password from the database\
 `DB_HOST` - IP address of the database\
-`DB_NAME` - database name
+`DB_NAME` - database name\
+`PORT` - the database port. Usually the db running on port `5432`
 
 `SECRET_KEY` - secret key for django
 
@@ -92,6 +95,9 @@ After that, you need to fill it with data.
 `QIWI_KEY` - qiwi api key for receiving payments\
 `PHONE_NUMBER` - your phone number (need for qiwi)\
 `SECRET_2` - public p2 key which allows you to issue an invoice and open a transfer form
+
+`USE_REDIS` - Optional parameter
+
 
 #### :green_book: Django
 
