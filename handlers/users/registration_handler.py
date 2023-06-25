@@ -13,7 +13,7 @@ from functions.main_app.determin_location import Location
 from keyboards.default.get_location_default import location_keyboard
 from keyboards.default.get_photo import get_photo_from_profile
 from keyboards.inline.change_data_profile_inline import gender_keyboard
-from keyboards.inline.registration_inline import second_registration_keyboard, about_yourself_keyboard
+from keyboards.inline.registration_inline import second_registration_keyboard
 from loader import dp, client, _
 from states.reg_state import RegData
 from utils.NudeNet.predictor import classification_image, generate_censored_image
@@ -59,40 +59,10 @@ async def sex_reg(call: CallbackQuery) -> None:
         except asyncpg.exceptions.UniqueViolationError as err:
             logger.error(err)
 
-    await call.message.edit_text(_("Теперь выберите, как вы хотите рассказать о себе:\n"),
-                                 reply_markup=await about_yourself_keyboard())
+    await call.message.edit_text(_("Теперь расскажите о себе:\n"))
     await RegData.commentary.set()
 
-
-@dp.callback_query_handler(state=RegData.commentary, text="send_voice")
-async def commentary_voice_reg(call: CallbackQuery, state: FSMContext) -> None:
-    await call.message.edit_text(_("Запишите голосовое сообщение"))
-    await state.set_state("sending voice")
-
-
-@dp.message_handler(content_types=[ContentType.VOICE], state="sending voice")
-async def voice_reg(message: types.Message, state: FSMContext) -> None:
-    markup = await gender_keyboard()
-    voice_message_id = message.voice.file_id
-    try:
-        await db_commands.update_user_data(voice_id=voice_message_id, telegram_id=message.from_user.id)
-        await message.answer(_("Комментарий принят! Выберите, кого вы хотите найти: "), reply_markup=markup)
-        await state.reset_state()
-    except Exception as err:
-        logger.error(err)
-        await message.answer(_("Произошла неизвестная ошибка! Попробуйте изменить комментарий позже в разделе "
-                               "\"Меню\"\n\n"
-                               "Выберите, кого вы хотите найти: "), reply_markup=markup)
-    await RegData.need_partner_sex.set()
-
-
-@dp.callback_query_handler(state=RegData.commentary, text="send_text")
-async def commentary_voice_reg(call: CallbackQuery, state: FSMContext) -> None:
-    await call.message.edit_text(_("Отправьте сообщение о себе"))
-    await state.set_state("sending_text")
-
-
-@dp.message_handler(content_types=[ContentType.TEXT], state="sending_text")
+@dp.message_handler(content_types=[ContentType.TEXT], state=RegData.commentary)
 async def commentary_reg(message: types.Message) -> None:
     markup = await gender_keyboard()
     try:
