@@ -1,5 +1,6 @@
 from aiogram import types
 from aiogram.types import CallbackQuery, InputMediaPhoto
+from aiogram.utils.exceptions import MessageCantBeDeleted
 
 from keyboards.inline.guide_inline import first_str_keyboard, second_str_keyboard, third_str_keyboard, \
     fourth_str_keyboard
@@ -10,10 +11,12 @@ from loader import dp, bot, _
 async def get_information(call: CallbackQuery) -> None:
     markup = await first_str_keyboard()
     photo = r"brandbook/first_page.png"
-    await bot.delete_message(chat_id=call.from_user.id, message_id=call.message.message_id)
-
-    await bot.send_photo(chat_id=call.from_user.id, photo=types.InputFile(photo),
-                         reply_markup=markup, caption=_("Руководство по боту: \n<b>Страница №1</b>"))
+    try:
+        await bot.delete_message(chat_id=call.from_user.id, message_id=call.message.message_id)
+        await bot.send_photo(chat_id=call.from_user.id, photo=types.InputFile(photo),
+                             reply_markup=markup, caption=_("Руководство по боту: \n<b>Страница №1</b>"))
+    except MessageCantBeDeleted:
+        pass
 
 
 @dp.callback_query_handler(text="forward_f")
