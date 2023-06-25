@@ -183,7 +183,7 @@ async def update_photo_complete(message: types.Message, state: FSMContext) -> No
 
 
 @dp.callback_query_handler(text='about_me')
-async def new_comment(call: CallbackQuery)-> None:
+async def new_comment(call: CallbackQuery) -> None:
     user = await db_commands.select_user(telegram_id=call.from_user.id)
     voice_id = user.get("voice_id")
     if voice_id is None:

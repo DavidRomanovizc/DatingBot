@@ -1,4 +1,4 @@
-from typing import NoReturn, Union, Optional
+from typing import Union, Optional
 
 from aiogram import Bot
 from aiogram.types import CallbackQuery

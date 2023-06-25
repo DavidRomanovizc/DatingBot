@@ -1,6 +1,6 @@
 import asyncio
 import pathlib
-from typing import NoReturn, Union, Optional
+from typing import Union, Optional, Any, Callable
 
 import asyncpg
 from aiogram import types
@@ -30,7 +30,7 @@ async def choice_gender(call: CallbackQuery) -> None:
             logger.error(err)
 
 
-async def display_profile(call: CallbackQuery, markup) -> None:
+async def display_profile(call: CallbackQuery, markup: InlineKeyboardMarkup) -> None:
     """
     Функция для отображения профиля пользователя
     """
@@ -42,18 +42,11 @@ async def display_profile(call: CallbackQuery, markup) -> None:
     text_2 = user_info_template.format(user["varname"], user["age"], user["city"], user_verification,
                                        user["commentary"]) + "\n\n<b>Инстаграм</b> - <code>{}</code>\n".format(
         user["instagram"])
-    text_3 = user_info_template.format(user["varname"], user["age"], user["city"], user_verification, "")
 
-    if user["voice_id"] is None and user["instagram"] is None:
+    if user["instagram"] is None:
         caption = text
-    elif user["voice_id"] is None:
-        caption = text_2
-    elif user["voice_id"] and user["instagram"] is None:
-        caption = text_3
-        await call.message.answer_voice(user["voice_id"], caption=_("Описание вашей анкеты"))
     else:
         caption = text_2
-        await call.message.answer_voice(user["voice_id"], caption=_("Описание вашей анкеты"))
     await call.message.answer_photo(caption=caption, photo=user["photo_id"], reply_markup=markup)
 
 
@@ -80,8 +73,13 @@ async def show_dating_filters(
         await message.answer(text, reply_markup=markup)
 
 
-# TODO: Add type hint
-async def registration_menu(call, scheduler, send_message_week, load_config, random) -> None:
+async def registration_menu(
+        call: CallbackQuery,
+        scheduler: Any,
+        send_message_week: Callable[..., None],
+        load_config: Callable[..., Any],
+        random: Any
+) -> None:
     user_db = await db_commands.select_user(telegram_id=call.from_user.id)
     support = await db_commands.select_user(telegram_id=load_config().tg_bot.support_ids[0])
     markup = await start_keyboard(user_db["status"])
@@ -98,7 +96,11 @@ async def registration_menu(call, scheduler, send_message_week, load_config, ran
     scheduler.add_job(send_message_week, trigger="interval", weeks=3, jitter=120, args={call.message})
 
 
-async def finished_registration(state: FSMContext, telegram_id: int, message: types.Message) -> None:
+async def finished_registration(
+        state: FSMContext,
+        telegram_id: int,
+        message: types.Message
+) -> None:
     await state.finish()
     await db_commands.update_user_data(telegram_id=telegram_id, status=True)
 
@@ -106,7 +108,7 @@ async def finished_registration(state: FSMContext, telegram_id: int, message: ty
 
     markup = await start_keyboard(status=user.get("status"))
 
-    text = _(f"Регистрация успешно завершена! \n\n "
+    text = _("Регистрация успешно завершена! \n\n "
              "{}, "
              "{} лет, "
              "{}\n\n"
@@ -119,7 +121,12 @@ async def finished_registration(state: FSMContext, telegram_id: int, message: ty
     await message.answer("Меню: ", reply_markup=markup)
 
 
-async def saving_normal_photo(message: types.Message, telegram_id: int, file_id: int, state: FSMContext) -> None:
+async def saving_normal_photo(
+        message: types.Message,
+        telegram_id: int,
+        file_id: int,
+        state: FSMContext
+) -> None:
     """
     Функция, сохраняющая фотографию пользователя без цензуры
     """
@@ -134,9 +141,14 @@ async def saving_normal_photo(message: types.Message, telegram_id: int, file_id:
     await finished_registration(state, telegram_id, message)
 
 
-async def saving_censored_photo(message: types.Message, telegram_id: int, state: FSMContext,
-                                out_path: Union[str, pathlib.Path], flag: Union[str, None] = "registration",
-                                markup: Union[InlineKeyboardMarkup, None] = None) -> None:
+async def saving_censored_photo(
+        message: types.Message,
+        telegram_id: int,
+        state: FSMContext,
+        out_path: Union[str, pathlib.Path],
+        flag: Optional[str] = "registration",
+        markup: Union[InlineKeyboardMarkup, None] = None
+) -> None:
     """
     Функция, сохраняющая фотографию пользователя с цензурой
     """
@@ -168,7 +180,8 @@ async def update_normal_photo(
         telegram_id: int,
         file_id: int,
         state: FSMContext,
-        markup) -> None:
+        markup
+) -> None:
     """
     Функция, которая обновляет фотографию пользователя
     """

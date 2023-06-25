@@ -20,7 +20,7 @@ async def change_info_keyboard() -> InlineKeyboardMarkup:
 # TODO: Можно установить у функции параметр text, чтобы окончания слов у кнопки менялись в зависимости от задачи
 async def gender_keyboard() -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup(row_width=1)
-    male = InlineKeyboardButton(text=_("Парень"), callback_data="male")
-    female = InlineKeyboardButton(text=_("Девушка"), callback_data="female")
+    male = InlineKeyboardButton(text=_("👱🏻‍♂️ Парень"), callback_data="male")
+    female = InlineKeyboardButton(text=_("👱🏻‍♀️ Девушка"), callback_data="female")
     markup.row(male, female)
     return markup

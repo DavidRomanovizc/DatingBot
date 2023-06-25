@@ -7,7 +7,6 @@ from aiogram.dispatcher.filters.builtin import CommandStart
 from aiogram.types import CallbackQuery
 from aiogram.utils.exceptions import BadRequest
 from django.db import IntegrityError
-from loguru import logger
 
 from data.config import load_config
 from filters import IsPrivate

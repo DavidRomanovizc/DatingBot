@@ -35,8 +35,8 @@ async def payment(call: CallbackQuery, state: FSMContext) -> None:
     await call.answer(cache_time=60)
     bill = await create_payment()
 
-    await call.message.edit_text(_(f"После оплаты нажмите <b>Проверить оплату</b>\n"
-                                   f"Если не получается оплатить по странице ниже"),
+    await call.message.edit_text(_("После оплаты нажмите <b>Проверить оплату</b>\n"
+                                   "Если не получается оплатить по странице ниже"),
                                  reply_markup=await making_payment(bill))
     await state.set_state("payment")
     await state.update_data(bill=bill)
