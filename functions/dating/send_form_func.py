@@ -84,5 +84,5 @@ async def send_questionnaire(
                                  reply_markup=await reciprocity_keyboard(user_for_like=owner_id))
     except BadRequest as err:
         logger.info(err)
-        await bot.send_message(_("Произошла ошибка! Попробуйте еще раз\n"
+        await bot.send_message(chat_id=chat_id, text=_("Произошла ошибка! Попробуйте еще раз\n"
                                  "Если ошибка осталась, напишите агенту поддержки."))
