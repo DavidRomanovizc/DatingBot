@@ -134,10 +134,14 @@ INSTALLED_APPS = [
 ]
 ```
 
+To create required database tables and an admin user, use the following commands
+
 ```sh
 $ python django_app.py makemigrations
 $ python django_app.py migrate
 $ python django_app.py createsuperuser
+$ python django_app.py makemigrations usersmanage 
+$ python django_app.py migrate usersmanage
 $ python django_app.py runserver
 ```
 
