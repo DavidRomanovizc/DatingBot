@@ -11,9 +11,6 @@
 - [NudeNet](#see_no_evil-nudenet)
     - [Possible Errors](#goal_net-possible-errors)
 - [Contributing](#busts_in_silhouette-contributing)
-    - [Handlers](#1-handlers)
-    - [Keyboards](#2-keyboards)
-    - [Language](#3-language)
 
 ## 🖍 Used technology
 
@@ -38,10 +35,30 @@ If you get an answer like this, it means that `Python` is installed.
 $ Python 3.9.5
 ```
 
-#### Then fork the DatingBot
+#### Then clone the DatingBot
 
 ```sh
-$ https://github.com/DavidRomanovizc/DatingBot.git
+$ git clone https://github.com/DavidRomanovizc/DatingBot.git
+```
+
+and create a Virtual Environment
+
+```sh
+$ python -m venv venv
+```
+
+Activate the virtual environment:
+
+<u>On Windows:</u>
+
+```sh
+$ venv\Scripts\activate
+```
+
+<u>On macOS and Linux:</u>
+
+```sh
+$ source venv/bin/activate
 ```
 
 and install requirements
@@ -101,12 +118,6 @@ After that, you need to fill it with data.
 
 #### :green_book: Django
 
-Install Django
-
-```sh
-$ pip install Django
-```
-
 To create a `SECRET_KEY` you can use the site to [generate secret keys](https://djecrety.ir/)
 
 And then paste it into the `.env` file
@@ -119,19 +130,6 @@ Install the jazzmin
 
 ```sh
 $ pip install -U django-jazzmin
-```
-
-Add jazzmin to your `INSTALLED_APPS` before django.contrib.admin.
-
-Path to settings: `DatingBot/django_project/telegrambot/telegrambot/settings.py`
-
-```py
-INSTALLED_APPS = [
-    'jazzmin',
-
-    'django.contrib.admin',
-    [...]
-]
 ```
 
 To create required database tables and an admin user, use the following commands
@@ -220,21 +218,54 @@ After you have downloaded the checkpoint you need, drag it to the NudeNet folder
 We try to stick
 to [PEP 8](https://peps.python.org/pep-0008/#:~:text=Use%20the%20function%20naming%20rules,invoke%20Python's%20name%20mangling%20rules)
 
-### 1. Handlers
 
-1. There must be no buttons in handlers (only in extreme cases, but it is better to put it in a separate file)
-2. If we make a handler for buttons, then we use the "text='action'" in the decorator parameters
-3. If we are fetching data or updating data, then the function call should be like this: `await db_commands.func(...)`
+Thank you for your interest in contributing to our Python project! Below are the steps to help you become a part of our developer community.
 
-### 2. Keyboards
+#### 1. Fork the Project
+Go to the repository page on GitHub and click the "Fork" button in the upper right corner. This will create a copy of the project in your account.
 
-1. If you use the "default button", you need to put them in the "keyboard/default" directories.
-2. If you are creating a new file, then you should add the prefix "_default" to the filename
-3. If you use the "inline button", you need to put them in the "keyboard/inline" directories.
-4. If you are creating a new file, then you should add the prefix "_inline" to the filename
-5. If you are creating a new keyboard, then you should add the prefix "_keyboard" in the name function
+#### 2. Clone the Repository
+```sh
+$ git clone https://github.com/DavidRomanovizc/DatingBot.git
+```
 
-### 3. Language
+#### 3. Project Setup
+For instructions on deploying the project on a local computer, see above
+
+#### 4. Create a Branch
+Create a new branch for your changes:
+```sh
+$ git checkout -b branch-name
+```
+
+#### 5. Make Changes
+Make the necessary changes to the project code. Follow the project's structure, coding style, and development guidelines.
+
+And run the flake8
+
+```sh
+$ flake8 --config=.flake8
+```
+
+#### 6. Commit and Push
+```sh
+$ git commit -m "Description of your changes"
+$ git push origin your-branch-name
+```
+
+#### 7. Create a Pull Request
+Go to your repository on GitHub and click the "New Pull Request" button. Specify the base branch of the project (usually `main` or `master`) and the branch with your changes.
+
+#### 8. Discussion and Review
+Discuss your Pull Request with the community members. Make necessary changes based on the feedback.
+
+#### 9. Merge the Pull Request
+After approval, your code will be merged into the main branch of the project.
+
+#### 10. Celebration 🎉
+Congratulations! You have successfully contributed to the Python project. Thank you for your help!
+
+
 
 For multi languages we use i18n. All the instructions we can find here - [Language guide](lang_instruction.md)
 
