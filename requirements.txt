@@ -19,3 +19,5 @@ pytest-asyncio==0.21.0
 glqiwiapi~=1.1.4 # Don't update the version of this library
 APScheduler==3.10.1
 NudeNet~=2.0.9
+yarl~=1.8.2
+aiofiles~=23.1.0
