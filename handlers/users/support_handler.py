@@ -2,13 +2,17 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.utils.exceptions import BadRequest
 
-from handlers.users.back_handler import delete_message
+from handlers.users.back import delete_message
 from keyboards.inline.main_menu_inline import start_keyboard
-from keyboards.inline.support_inline import support_keyboard, support_callback, check_support_available, \
-    get_support_manager, \
-    cancel_support, cancel_support_callback
+from keyboards.inline.support_inline import (
+    support_keyboard,
+    support_callback,
+    check_support_available,
+    get_support_manager,
+    cancel_support,
+    cancel_support_callback
+)
 from loader import dp, bot, _
-from utils.db_api import db_commands
 
 
 @dp.callback_query_handler(text="support")
@@ -92,17 +96,12 @@ async def not_supported(message: types.Message, state: FSMContext) -> None:
 
 @dp.callback_query_handler(cancel_support_callback.filter(), state=["in_support", "wait_in_support", None])
 async def exit_support(call: types.CallbackQuery, state: FSMContext, callback_data: dict) -> None:
-    user_db = await db_commands.select_user(telegram_id=call.from_user.id)
-    markup = await start_keyboard(status=user_db["status"])
+    markup = await start_keyboard(obj=call)
     user_id = int(callback_data.get("user_id"))
     second_state = dp.current_state(user=user_id, chat=user_id)
-
     if await second_state.get_state() is not None:
-        data = await state.get_data()
-        second_id = data.get("second_id")
-        if int(second_id) == call.from_user.id:
-            await second_state.reset_state()
-            await bot.send_message(user_id, _("Пользователь завершил сеанс техподдержки"))
+        await second_state.reset_state()
+        await bot.send_message(user_id, _("Пользователь завершил сеанс техподдержки"))
 
     await call.message.edit_text(_("Вы завершили сеанс и были возвращены в главное меню"), reply_markup=markup)
     await state.reset_state()

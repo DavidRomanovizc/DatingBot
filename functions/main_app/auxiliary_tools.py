@@ -1,13 +1,16 @@
 import asyncio
 import pathlib
+import random
+import shutil
 from typing import Union, Optional, Any, Callable
 
-import asyncpg
+import aiofiles
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery, ReplyKeyboardRemove, InputFile, InlineKeyboardMarkup
-from loguru import logger
+from asyncpg import UniqueViolationError
 
+from data.config import load_config
 from keyboards.inline.filters_inline import dating_filters_keyboard
 from keyboards.inline.main_menu_inline import start_keyboard
 from loader import _, bot
@@ -18,16 +21,21 @@ async def choice_gender(call: CallbackQuery) -> None:
     """
     Функция, сохраняющая в базу пол, который выбрал пользователь
     """
-    if call.data == 'male':
+    sex_mapping = {
+        'male': 'Мужской',
+        'female': 'Женский'
+    }
+
+    selected_sex = sex_mapping.get(call.data)
+
+    if selected_sex:
         try:
-            await db_commands.update_user_data(telegram_id=call.from_user.id, need_partner_sex='Мужской')
-        except asyncpg.exceptions.UniqueViolationError as err:
-            logger.error(err)
-    elif call.data == 'female':
-        try:
-            await db_commands.update_user_data(telegram_id=call.from_user.id, need_partner_sex='Женский')
-        except asyncpg.exceptions.UniqueViolationError as err:
-            logger.error(err)
+            await db_commands.update_user_data(
+                telegram_id=call.from_user.id,
+                need_partner_sex=selected_sex
+            )
+        except UniqueViolationError:
+            pass
 
 
 async def display_profile(call: CallbackQuery, markup: InlineKeyboardMarkup) -> None:
@@ -35,19 +43,23 @@ async def display_profile(call: CallbackQuery, markup: InlineKeyboardMarkup) -> 
     Функция для отображения профиля пользователя
     """
     user = await db_commands.select_user(telegram_id=call.from_user.id)
+    count_referrals = await db_commands.count_all_users_kwarg(referrer_id=call.from_user.id)
     user_verification = "✅" if user["verification"] else "❌"
-    user_info_template = "{}, {} лет, {} {}\n\n{}"
-    text = user_info_template.format(user["varname"], user["age"], user["city"], user_verification,
-                                     user["commentary"])
-    text_2 = user_info_template.format(user["varname"], user["age"], user["city"], user_verification,
-                                       user["commentary"]) + "\n\n<b>Инстаграм</b> - <code>{}</code>\n".format(
-        user["instagram"])
 
-    if user["instagram"] is None:
-        caption = text
-    else:
-        caption = text_2
-    await call.message.answer_photo(caption=caption, photo=user["photo_id"], reply_markup=markup)
+    user_info_template = (
+        "{}, {} лет, {} {}\n\n{}\n\n<u>Партнерка:</u>\nКоличество приглашенных друзей: {}\nРеферальная ссылка: {}"
+    )
+
+    user_info = user_info_template.format(
+        user["varname"], user["age"], user["city"], user_verification,
+        user["commentary"], count_referrals,
+        f"https://t.me/{load_config().tg_bot.bot_username}?start={call.from_user.id}"
+    )
+
+    if user["instagram"]:
+        user_info += "\n\n<b>Инстаграм</b> - <code>{}</code>\n".format(user["instagram"])
+
+    await call.message.answer_photo(caption=user_info, photo=user["photo_id"], reply_markup=markup)
 
 
 async def show_dating_filters(
@@ -58,31 +70,26 @@ async def show_dating_filters(
     user = await db_commands.select_user(telegram_id=user_id)
     markup = await dating_filters_keyboard()
 
-    text = _("Фильтр по подбору партнеров:\n\n"
-             "🚻 Необходимы пол партнера: {}\n"
-             "🔞 Возрастной диапазон: {}-{} лет\n\n"
-             "🏙️ Город партнера: {}").format(
+    text = _(
+        "Фильтр по подбору партнеров:\n\n"
+        "🚻 Необходимы пол партнера: {}\n"
+        "🔞 Возрастной диапазон: {}-{} лет\n\n"
+        "🏙️ Город партнера: {}").format(
         user.get("need_partner_sex"),
         user.get("need_partner_age_min"),
         user.get("need_partner_age_max"),
         user.get("need_city"),
     )
-    if call:
-        await call.message.edit_text(text, reply_markup=markup)
-    else:
-        await message.answer(text, reply_markup=markup)
+    await (call.message.edit_text(text, reply_markup=markup) if call else message.answer(text, reply_markup=markup))
 
 
 async def registration_menu(
         call: CallbackQuery,
         scheduler: Any,
-        send_message_week: Callable[..., None],
-        load_config: Callable[..., Any],
-        random: Any
+        send_message_week: Callable,
 ) -> None:
-    user_db = await db_commands.select_user(telegram_id=call.from_user.id)
     support = await db_commands.select_user(telegram_id=load_config().tg_bot.support_ids[0])
-    markup = await start_keyboard(user_db["status"])
+    markup = await start_keyboard(call)
     heart = random.choice(['💙', '💚', '💛', '🧡', '💜', '🖤', '❤', '🤍', '💖', '💝'])
     await call.message.edit_text(_("Приветствую вас, {fullname}!!\n\n"
                                    "{heart} <b> QueDateBot </b> - платформа для поиска новых знакомств.\n\n"
@@ -106,7 +113,7 @@ async def finished_registration(
 
     user = await db_commands.select_user(telegram_id=telegram_id)
 
-    markup = await start_keyboard(status=user.get("status"))
+    markup = await start_keyboard(obj=message)
 
     text = _("Регистрация успешно завершена! \n\n "
              "{}, "
@@ -134,8 +141,7 @@ async def saving_normal_photo(
         await db_commands.update_user_data(telegram_id=telegram_id, photo_id=file_id)
 
         await message.answer(_("Фото принято!"))
-    except Exception as err:
-        logger.error(err)
+    except:
         await message.answer(_("Произошла ошибка! Попробуйте еще раз либо отправьте другую фотографию. \n"
                                "Если ошибка осталась, напишите агенту поддержки."))
     await finished_registration(state, telegram_id, message)
@@ -153,17 +159,20 @@ async def saving_censored_photo(
     Функция, сохраняющая фотографию пользователя с цензурой
     """
     photo = InputFile(out_path)
-    id_photo = await bot.send_photo(chat_id=telegram_id,
-                                    photo=photo,
-                                    caption=_("Во время проверки вашего фото мы обнаружили подозрительный контент!\n"
-                                              "Поэтому мы чуть-чуть подкорректировали вашу фотографию"))
+    id_photo = await bot.send_photo(
+        chat_id=telegram_id,
+        photo=photo,
+        caption=_(
+            "Во время проверки вашего фото мы обнаружили подозрительный контент!\n"
+            "Поэтому мы чуть-чуть подкорректировали вашу фотографию"
+        )
+    )
     file_id = id_photo['photo'][0]['file_id']
     await asyncio.sleep(1)
     try:
         await db_commands.update_user_data(telegram_id=telegram_id, photo_id=file_id)
 
     except Exception as err:
-        logger.error(err)
         await message.answer(_("Произошла ошибка! Попробуйте еще раз либо отправьте другую фотографию. \n"
                                "Если ошибка осталась, напишите агенту поддержки."))
     if flag == "change_datas":
@@ -191,7 +200,23 @@ async def update_normal_photo(
         await asyncio.sleep(3)
         await message.answer(_("Выберите, что вы хотите изменить: "), reply_markup=markup)
         await state.reset_state()
-    except Exception as err:
-        logger.error(err)
+    except:
         await message.answer(_("Произошла ошибка! Попробуйте еще раз либо отправьте другую фотографию. \n"
                                "Если ошибка осталась, напишите агенту поддержки."))
+
+
+async def dump_users_to_file():
+    async with aiofiles.open("users.txt", "w", encoding='utf-8') as file:
+        _text = ""
+        _users = await db_commands.select_all_users()
+        for user in _users:
+            _text += str(user) + "\n"
+
+        await file.write(_text)
+
+    return "users.txt"
+
+
+async def backup_configs():
+    shutil.make_archive("backup_data", 'zip', "./logs/")
+    return "./backup_data.zip"

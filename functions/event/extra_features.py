@@ -52,7 +52,12 @@ async def check_event_date(telegram_id: int) -> None:
     )
 
 
-async def create_form(form_owner: int, chat_id: int, call: CallbackQuery, view: Union[bool, None] = True) -> None:
+async def create_form(
+        form_owner: int,
+        chat_id: int,
+        call: CallbackQuery,
+        view: Union[bool, None] = True
+) -> None:
     """
     Функция, которая заполняет анкету текстом
     """
@@ -67,9 +72,20 @@ async def create_form(form_owner: int, chat_id: int, call: CallbackQuery, view: 
             "telegram_id": form_owner
         }
         if view:
-            await ME.send_event_message(text=document, bot=bot, chat_id=chat_id, view_event=True, call=call)
+            await ME.send_event_message(
+                text=document,
+                bot=bot,
+                chat_id=chat_id,
+                view_event=True,
+                call=call
+            )
         else:
-            await ME.send_event_list(text=document, call=call, bot=bot, telegram_id=call.from_user.id)
+            await ME.send_event_list(
+                text=document,
+                call=call,
+                bot=bot,
+                telegram_id=call.from_user.id
+            )
     except BadRequest:
         await call.answer(_("На данный момент у нас нет подходящих мероприятий для вас"), show_alert=True)
 

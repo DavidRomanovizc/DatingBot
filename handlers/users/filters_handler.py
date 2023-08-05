@@ -5,11 +5,10 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery
 from aiogram.utils.exceptions import BadRequest
-from loguru import logger
 
 from functions.main_app.auxiliary_tools import choice_gender, show_dating_filters
 from functions.main_app.determin_location import Location
-from handlers.users.back_handler import delete_message
+from handlers.users.back import delete_message
 from keyboards.inline.change_data_profile_inline import gender_keyboard
 from keyboards.inline.filters_inline import filters_keyboard, event_filters_keyboard
 from loader import dp, _
@@ -49,7 +48,6 @@ async def desired_min_age_state(message: types.Message, state: FSMContext) -> No
         await state.set_state("max_age_period")
 
     except Exception as err:
-        logger.error(err)
         await message.answer(_("Произошла неизвестная ошибка! Попробуйте еще раз"))
 
 
@@ -63,7 +61,6 @@ async def desired_max_age_state(message: types.Message, state: FSMContext) -> No
         await state.finish()
         await show_dating_filters(call=None, message=message)
     except Exception as err:
-        logger.error(err)
         await message.answer(_("Произошла неизвестная ошибка! Попробуйте еще раз"))
 
 
@@ -96,7 +93,6 @@ async def user_city_filter_state(message: types.Message) -> None:
         await loc.det_loc_in_filters(message)
 
     except Exception as err:
-        logger.info(err)
         await message.answer(_("Произошла ошибка, попробуйте еще раз"))
         return
 
@@ -134,6 +130,5 @@ async def user_city_filter_state(message: types.Message) -> None:
         await loc.det_loc_in_filters_event(message)
 
     except Exception as err:
-        logger.info(err)
         await message.answer(_("Произошла ошибка, попробуйте еще раз"))
         return

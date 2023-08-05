@@ -1,12 +1,11 @@
 import asyncio
 import os
 
-import asyncpg
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery, ContentType, InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.markdown import quote_html
-from loguru import logger
+from asyncpg import UniqueViolationError
 
 from functions.main_app.auxiliary_tools import choice_gender, saving_normal_photo, saving_censored_photo
 from functions.main_app.determin_location import Location
@@ -51,16 +50,17 @@ async def sex_reg(call: CallbackQuery) -> None:
     if call.data == "male":
         try:
             await db_commands.update_user_data(telegram_id=call.from_user.id, sex="Мужской")
-        except asyncpg.exceptions.UniqueViolationError as err:
-            logger.error(err)
+        except UniqueViolationError:
+            pass
     elif call.data == "female":
         try:
             await db_commands.update_user_data(telegram_id=call.from_user.id, sex="Женский")
-        except asyncpg.exceptions.UniqueViolationError as err:
-            logger.error(err)
+        except UniqueViolationError:
+            pass
 
     await call.message.edit_text(_("Теперь расскажите о себе:\n"))
     await RegData.commentary.set()
+
 
 @dp.message_handler(content_types=[ContentType.TEXT], state=RegData.commentary)
 async def commentary_reg(message: types.Message) -> None:
@@ -71,7 +71,6 @@ async def commentary_reg(message: types.Message) -> None:
         await message.answer(_('Комментарий принят! Выберите, кого вы хотите найти: '), reply_markup=markup)
 
     except Exception as err:
-        logger.error(err)
         await message.answer(_("Произошла неизвестная ошибка! Попробуйте изменить комментарий позже в разделе "
                                "\"Меню\"\n\n"
                                "Выберите, кого вы хотите найти: "), reply_markup=markup)
@@ -92,12 +91,13 @@ async def get_name(message: types.Message, state: FSMContext) -> None:
         censored = censored_message(message.text)
         await db_commands.update_user_data(telegram_id=message.from_user.id, varname=quote_html(censored))
 
-    except asyncpg.exceptions.UniqueViolationError as err:
-        logger.error(err)
+    except UniqueViolationError:
+        pass
     await message.answer(_("Введите сколько вам лет:"))
     await RegData.age.set()
 
 
+# TODO: Убрать возможность у пользователя использовать ввод для определения города
 @dp.message_handler(state=RegData.age)
 async def get_age(message: types.Message, state: FSMContext) -> None:
     markup = await location_keyboard()
@@ -109,7 +109,6 @@ async def get_age(message: types.Message, state: FSMContext) -> None:
             await message.answer(_("Вы ввели недопустимое число, попробуйте еще раз"))
             return
     except Exception as err:
-        logger.error(err)
         await message.answer(_("Вы ввели не число"))
         return
     await message.answer(text=_("Введите город в котором проживаете.\n"
@@ -126,7 +125,6 @@ async def get_city(message: types.Message) -> None:
     except Exception as err:
         await message.answer(_("Произошла неизвестная ошибка! Попробуйте еще раз.\n"
                                "Вероятнее всего вы ввели город неправильно"))
-        logger.error(err)
 
 
 @dp.callback_query_handler(text="yes_all_good", state=RegData.town)
@@ -150,7 +148,7 @@ async def fill_form(message: types.Message) -> None:
         await db_commands.update_user_data(telegram_id=message.from_user.id, latitude=y)
         await db_commands.update_user_data(telegram_id=message.from_user.id, need_city=address)
     except Exception as err:
-        logger.error(err)
+        pass
     await asyncio.sleep(1)
 
     await message.answer(_("И напоследок, Пришлите мне вашу фотографию"), reply_markup=await get_photo_from_profile())

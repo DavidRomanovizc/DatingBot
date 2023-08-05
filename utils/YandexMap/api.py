@@ -37,14 +37,19 @@ class Client:
         return longitude, latitude
 
     async def address(self, longitude, latitude) -> Any:
-        got = await self._request(f"{longitude},{latitude}")
-        data = got["GeoObjectCollection"]["featureMember"]
+        response = await self._request(f"{longitude},{latitude}")
+        data = response.get("GeoObjectCollection", {}).get("featureMember", [])
 
         if not data:
             raise NothingFound(f'Nothing found for "{longitude} {latitude}"')
+
         try:
-            return data[0]["GeoObject"]["metaDataProperty"]["GeocoderMetaData"]["AddressDetails"]["Country"][
-                "AdministrativeArea"]['Locality']['LocalityName']
+            address_details = data[0]["GeoObject"]["metaDataProperty"]["GeocoderMetaData"]["AddressDetails"]["Country"]
+            try:
+                locality = address_details["AdministrativeArea"]["Locality"]["LocalityName"]
+            except KeyError:
+                locality = address_details["AdministrativeArea"]["SubAdministrativeArea"]["Locality"]["LocalityName"]
+
+            return locality
         except KeyError:
-            return data[0]["GeoObject"]["metaDataProperty"]["GeocoderMetaData"]["AddressDetails"]["Country"][
-                "AdministrativeArea"]['SubAdministrativeArea']['Locality']['LocalityName']
+            return None

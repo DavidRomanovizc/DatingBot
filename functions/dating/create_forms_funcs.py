@@ -1,15 +1,13 @@
 import random
 import secrets
-from typing import NoReturn, Optional
+from typing import Optional
 
 import numpy as np
 from aiogram.types import CallbackQuery
 from aiogram.utils.exceptions import BadRequest
-from loguru import logger
 
 from functions.dating.get_next_user_func import get_next_user
 from functions.dating.send_form_func import send_questionnaire
-from handlers.users.back_handler import delete_message
 from keyboards.inline.questionnaires_inline import questionnaires_keyboard
 from loader import _, bot
 
@@ -31,29 +29,32 @@ async def create_questionnaire(
             report_system=report_system,
             owner_id=form_owner
         )
-    except BadRequest as err:
-        logger.info(err)
-        await bot.send_message(_("Произошла ошибка! Попробуйте еще раз\n"
-                                 "Если ошибка осталась, напишите агенту поддержки."))
+    except BadRequest:
+        await bot.send_message(
+            text=_("Произошла ошибка! Попробуйте еще раз\n"
+                   "Если ошибка осталась, напишите агенту поддержки.")
+        )
 
 
 async def create_questionnaire_reciprocity(liker: int, chat_id: str, add_text=None) -> None:
-    await send_questionnaire(chat_id=chat_id, add_text=add_text, owner_id=liker)
+    await send_questionnaire(
+        chat_id=chat_id,
+        add_text=add_text,
+        owner_id=liker
+    )
 
 
 async def monitoring_questionnaire(call: CallbackQuery) -> None:
+    telegram_id = call.from_user.id
+    user_list = await get_next_user(telegram_id, call, monitoring=True)
+    random_user = random.choice(user_list)
+    await bot.edit_message_reply_markup(
+        chat_id=call.from_user.id, message_id=call.message.message_id
+    )
     try:
-        telegram_id = call.from_user.id
-        user_list = await get_next_user(telegram_id, call, monitoring=True)
-        random_user = random.choice(user_list)
-        await delete_message(call.message)
-        try:
-            await create_questionnaire(form_owner=random_user, chat_id=telegram_id, monitoring=True)
-        except BadRequest as err:
-            await create_questionnaire(form_owner=random_user, chat_id=telegram_id, monitoring=True)
-            logger.info(err)
-    except IndexError:
-        await call.answer(_("На данный момент у нас нет подходящих анкет для вас"))
+        await create_questionnaire(form_owner=random_user, chat_id=telegram_id, monitoring=True)
+    except BadRequest:
+        await create_questionnaire(form_owner=random_user, chat_id=telegram_id, monitoring=True)
 
 
 async def rand_user_list(call: CallbackQuery) -> int:

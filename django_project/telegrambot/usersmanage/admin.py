@@ -12,6 +12,7 @@ class UserAdmin(admin.ModelAdmin):
 class UserMeetingsAdmin(admin.ModelAdmin):
     list_display = ("id", "telegram_id", "username", "created_at")
 
+
 @admin.register(SettingModel)
 class UserSettingsAdmin(admin.ModelAdmin):
     list_display = ("telegram_id", "technical_works")

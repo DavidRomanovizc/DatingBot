@@ -6,11 +6,10 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery, ContentType
 from aiogram.utils.markdown import quote_html
-from loguru import logger
 
 from functions.main_app.auxiliary_tools import update_normal_photo, saving_censored_photo
 from functions.main_app.determin_location import Location
-from handlers.users.back_handler import delete_message
+from handlers.users.back import delete_message
 from keyboards.default.get_photo import get_photo_from_profile
 from keyboards.inline.change_data_profile_inline import change_info_keyboard, gender_keyboard
 from keyboards.inline.main_menu_inline import start_keyboard
@@ -39,13 +38,24 @@ async def change_name(message: types.Message, state: FSMContext) -> None:
     markup = await change_info_keyboard()
     try:
         censored = censored_message(message.text)
-        await db_commands.update_user_data(varname=quote_html(censored), telegram_id=message.from_user.id)
-        await message.answer(_("Ваше новое имя: <b>{censored}</b>").format(censored=censored))
-        await message.answer(_("Выберите, что вы хотите изменить: "), reply_markup=markup)
+        await db_commands.update_user_data(
+            varname=quote_html(censored),
+            telegram_id=message.from_user.id
+        )
+        await message.answer(
+            text=_("Ваше новое имя: <b>{censored}</b>").format(
+                censored=censored)
+        )
+        await message.answer(
+            text=_("Выберите, что вы хотите изменить: "),
+            reply_markup=markup
+        )
         await state.reset_state()
     except Exception as err:
-        logger.error(err)
-        await message.answer(_("Произошла неизвестная ошибка. Попробуйте ещё раз"), reply_markup=markup)
+        await message.answer(
+            text=_("Произошла неизвестная ошибка. Попробуйте ещё раз"),
+            reply_markup=markup
+        )
         await state.reset_state()
 
     await state.reset_state()
@@ -62,13 +72,23 @@ async def change_age(message: types.Message, state: FSMContext) -> None:
     markup = await change_info_keyboard()
     try:
         if int(message.text) and 0 < int(message.text) < 110:
-            await db_commands.update_user_data(age=int(message.text), telegram_id=message.from_user.id)
-            await message.answer(_("Ваш новый возраст: <b>{messages}</b>").format(messages=message.text))
+            await db_commands.update_user_data(
+                age=int(message.text), telegram_id=message.from_user.id
+            )
+            await message.answer(
+                text=_("Ваш новый возраст: <b>{messages}</b>").format(
+                    messages=message.text)
+            )
             await asyncio.sleep(3)
-            await message.answer(_("Выберите, что вы хотите изменить: "), reply_markup=markup)
+            await message.answer(
+                text=_("Выберите, что вы хотите изменить: "),
+                reply_markup=markup
+            )
             await state.reset_state()
         else:
-            await message.answer(_("Вы ввели недопустимое число, попробуйте еще раз"))
+            await message.answer(
+                text=_("Вы ввели недопустимое число, попробуйте еще раз")
+            )
             return
 
     except ValueError:
@@ -90,7 +110,6 @@ async def change_city(message: types.Message) -> None:
         loc = await Location(message=message)
         await loc.det_loc_in_registration(message)
     except Exception as err:
-        logger.error(err)
         await message.answer(_("Произошла неизвестная ошибка. Попробуйте ещё раз"),
                              reply_markup=await change_info_keyboard())
 
@@ -120,7 +139,6 @@ async def change_sex(call: CallbackQuery, state: FSMContext) -> None:
             await call.message.edit_text(_("Выберите, что вы хотите изменить: "), reply_markup=markup)
             await state.reset_state()
         except Exception as err:
-            logger.error(err)
             await call.message.edit_text(_("Произошла неизвестная ошибка. Попробуйте ещё раз"), reply_markup=markup)
             await state.reset_state()
     if call.data == 'female':
@@ -131,7 +149,6 @@ async def change_sex(call: CallbackQuery, state: FSMContext) -> None:
             await call.message.edit_text(_("Выберите, что вы хотите изменить: "), reply_markup=markup)
             await state.reset_state()
         except Exception as err:
-            logger.error(err)
             await call.message.edit_text(_("Произошла неизвестная ошибка. Попробуйте ещё раз"), reply_markup=markup)
             await state.reset_state()
 
@@ -205,7 +222,6 @@ async def voice_reg(message: types.Message, state: FSMContext) -> None:
         await message.answer(_("Выберите, что вы хотите изменить: "), reply_markup=markup)
         await state.reset_state()
     except Exception as err:
-        logger.error(err)
         await message.answer(_("Произошла неизвестная ошибка! Попробуйте изменить комментарий позже в разделе "
                                "\"Меню\"\n\n"
                                "Выберите, кого вы хотите найти: "), reply_markup=markup)
@@ -224,7 +240,6 @@ async def update_comment_complete(message: types.Message, state: FSMContext) -> 
         await message.answer(_("Выберите, что вы хотите изменить: "), reply_markup=markup)
         await state.reset_state()
     except Exception as err:
-        logger.error(err)
         await message.answer(_("Произошла ошибка! Попробуйте еще раз изменить описание. "
                                "Возможно, Ваше сообщение слишком большое\n"
                                "Если ошибка осталась, напишите системному администратору."))
@@ -244,8 +259,7 @@ async def add_inst(call: CallbackQuery, state: FSMContext) -> None:
 @dp.message_handler(state="inst")
 async def add_inst_state(message: types.Message, state: FSMContext) -> None:
     try:
-        user_db = await db_commands.select_user(telegram_id=message.from_user.id)
-        markup = await start_keyboard(user_db["status"])
+        markup = await start_keyboard(obj=message)
         inst_regex = r"([A-Za-z0-9._](?:(?:[A-Za-z0-9._]|(?:\.(?!\.))){2,28}(?:[A-Za-z0-9._]))?)$"
         regex = re.search(inst_regex, message.text)
         result = regex
@@ -261,5 +275,4 @@ async def add_inst_state(message: types.Message, state: FSMContext) -> None:
                                    "<code>@unknown</code>\n<code>https://www.instagram.com/unknown</code>"))
 
     except Exception as err:
-        logger.error(err)
         await message.answer(_("Возникла ошибка. Попробуйте еще раз"))

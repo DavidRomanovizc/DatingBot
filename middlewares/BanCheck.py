@@ -16,7 +16,6 @@ class BanMiddleware(BaseMiddleware):
         super(BanMiddleware, self).__init__()
 
     async def on_process_message(self, message: types.Message, data: dict) -> None:
-        user = await db_commands.select_user(telegram_id=message.from_user.id)
         await self.check_ban_user(message)
 
     async def on_process_callback_query(self, call: types.CallbackQuery, data: dict) -> None:
@@ -49,8 +48,8 @@ class BanMiddleware(BaseMiddleware):
             raise CancelHandler()
 
         if message:
-            user = await db_commands.select_user(telegram_id=message.from_user.id)
             try:
+                user = await db_commands.select_user(telegram_id=message.from_user.id)
                 is_banned = user.get("is_banned")
 
                 if is_banned:

@@ -4,7 +4,6 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery, Message, ContentType
 from aiogram.utils.exceptions import MessageNotModified, MessageToEditNotFound, BadRequest
-from loguru import logger
 
 from data.config import load_config
 from functions.event.extra_features import check_event_date
@@ -33,15 +32,17 @@ async def view_meetings_handler(call: CallbackQuery) -> None:
     except BadRequest:
         await call.message.answer(text, reply_markup=await poster_keyboard(is_admin, is_verification))
 
+
 @dp.callback_query_handler(text="create_poster")
 async def registrate_poster_name(call: CallbackQuery, state: FSMContext) -> None:
     user = await db_commands.select_user_meetings(telegram_id=call.from_user.id)
     is_admin = user.get("is_admin")
     is_verification = user.get("verification_status")
     moderation_process = user.get("moderation_process")
+    print(moderation_process)
     try:
         # TODO: Проверить как это работает
-        if moderation_process:
+        if not moderation_process:
             await call.message.edit_text(_("Введите название мероприятие"),
                                          reply_markup=await cancel_registration_keyboard())
             await state.set_state("register_handler_name")
@@ -91,7 +92,6 @@ async def process_simple_calendar(call: CallbackQuery, callback_data, state: FSM
             return
         await state.set_state("register_handler_place")
     except Exception as err:
-        logger.info(err)
         pass
 
 
@@ -103,7 +103,6 @@ async def send_city(message: types.Message) -> None:
     except Exception as err:
         await message.answer(_("Произошла неизвестная ошибка! Попробуйте еще раз.\n"
                                "Вероятнее всего вы ввели город неправильно"))
-        logger.error(err)
 
 
 @dp.callback_query_handler(text="yes_all_good", state="register_handler_place")
@@ -112,7 +111,7 @@ async def registrate_poster_commentary(call: CallbackQuery, state: FSMContext) -
         await call.message.edit_text(_("Хорошо, теперь напишите короткое или длинное описание вашего мероприятия"),
                                      reply_markup=await cancel_registration_keyboard())
     except Exception as err:
-        logger.info(err)
+        pass
     await state.set_state("register_handler_commentary")
 
 
@@ -123,7 +122,7 @@ async def registrate_poster_commentary(message: Message, state: FSMContext) -> N
                              reply_markup=await cancel_registration_keyboard())
         await db_commands.update_user_meetings_data(telegram_id=message.from_user.id, commentary=message.text)
     except Exception as err:
-        logger.info(err)
+        pass
     await state.set_state("register_handler_poster")
 
 
@@ -147,7 +146,7 @@ async def finish_registration(message: Message, state: FSMContext) -> None:
         "photo_id": photo_id,
         "telegram_id": message.from_user.id
     }
-    await db_commands.update_user_meetings_data(telegram_id=message.from_user.id, moderation_process=False)
+    await db_commands.update_user_meetings_data(telegram_id=message.from_user.id, moderation_process=True)
     await ME.send_event_message(text=document, bot=bot, chat_id=load_config().tg_bot.moderate_chat, moderate=True)
     await message.answer(_("Ваше мероприятие отправлено на модерацию"),
                          reply_markup=await poster_keyboard(is_admin, is_verification))

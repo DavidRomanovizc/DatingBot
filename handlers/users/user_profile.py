@@ -1,7 +1,7 @@
 from aiogram.types import CallbackQuery
 
 from functions.main_app.auxiliary_tools import display_profile
-from handlers.users.back_handler import delete_message
+from handlers.users.back import delete_message
 from keyboards.inline.menu_profile_inline import get_profile_keyboard
 from loader import dp, _
 from utils.db_api import db_commands

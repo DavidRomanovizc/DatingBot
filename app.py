@@ -1,25 +1,24 @@
+# noinspection PyUnresolvedReferences
 import logging
 import os
+
 import django
-from django_project.telegrambot.telegrambot import settings
 from aiogram import executor
 
-from loader import dp, db, scheduler
+# noinspection PyUnresolvedReferences
 import filters
+# noinspection PyUnresolvedReferences
+from django_project.telegrambot.telegrambot import settings
+# noinspection PyUnresolvedReferences
+from loader import dp, db, scheduler
 from utils.notify_admins import AdminNotification
-
 from utils.set_bot_commands import set_default_commands
 
 
 async def on_startup(dispatcher) -> None:
-    # Устанавливаем дефолтные команды
     await set_default_commands(dispatcher)
-    # Уведомляет о запуске
+
     await AdminNotification.send(dispatcher)
-    logging.info(f'Создаем подключение...')
-    await db.create()
-    logging.info(f'Подключение успешно!')
-    logging.info(f'База загружена успешно!')
 
 
 def setup_django():
@@ -33,7 +32,9 @@ def setup_django():
 
 if __name__ == '__main__':
     setup_django()
+    # noinspection PyUnresolvedReferences
     import middlewares
+    # noinspection PyUnresolvedReferences
     import handlers
 
     scheduler.start()

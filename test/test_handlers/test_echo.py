@@ -2,7 +2,7 @@ from unittest.mock import AsyncMock
 import pytest
 from aiogram.utils.markdown import hcode
 
-from handlers.users.echo_handler import bot_echo
+from handlers.echo_handler import bot_echo
 
 
 @pytest.mark.asyncio
