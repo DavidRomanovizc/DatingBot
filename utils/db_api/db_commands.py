@@ -18,8 +18,20 @@ def select_user(telegram_id: int):
 
 
 @sync_to_async
-def add_user(telegram_id, name, username):
-    return User(telegram_id=int(telegram_id), name=name, username=username).save()
+def add_user(telegram_id, name, username, referrer_id=None):
+    if referrer_id:
+        return User(
+            telegram_id=int(telegram_id),
+            name=name,
+            username=username,
+            referrer_id=referrer_id
+        ).save()
+    else:
+        return User(
+            telegram_id=int(telegram_id),
+            name=name,
+            username=username
+        ).save()
 
 
 @sync_to_async

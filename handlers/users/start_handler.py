@@ -1,4 +1,3 @@
-import asyncio
 import random
 
 import aiogram
@@ -12,19 +11,33 @@ from data.config import load_config
 from filters import IsPrivate
 from functions.main_app.app_scheduler import send_message_week
 from functions.main_app.auxiliary_tools import registration_menu
-from handlers.users.back_handler import delete_message
+from handlers.users.back import delete_message
 from keyboards.inline.language_inline import language_keyboard
 from keyboards.inline.main_menu_inline import start_keyboard
-from loader import dp, scheduler, _
+from loader import dp, scheduler, _, bot
 from utils.db_api import db_commands
 
 
 @dp.message_handler(IsPrivate(), CommandStart())
 async def register_user(message: types.Message) -> None:
     try:
-        await db_commands.add_user(name=message.from_user.full_name,
-                                   telegram_id=message.from_user.id,
-                                   username=message.from_user.username)
+        referrer_id = message.text[7:]
+        if referrer_id != "" and referrer_id != message.from_user.id:
+            await db_commands.add_user(
+                name=message.from_user.full_name,
+                telegram_id=message.from_user.id,
+                username=message.from_user.username,
+                referrer_id=referrer_id
+            )
+            await bot.send_message(chat_id=referrer_id,
+                                   text="По вашей ссылке зарегистрировался пользователь {}!".format(
+                                       message.from_user.username))
+        else:
+            await db_commands.add_user(
+                name=message.from_user.full_name,
+                telegram_id=message.from_user.id,
+                username=message.from_user.username
+            )
         await db_commands.add_meetings_user(telegram_id=message.from_user.id,
                                             username=message.from_user.username)
         if message.from_user.id in load_config().tg_bot.admin_ids:
@@ -45,8 +58,7 @@ async def register_user(message: types.Message) -> None:
             pass
     try:
         support = await db_commands.select_user(telegram_id=load_config().tg_bot.support_ids[0])
-        user_db = await db_commands.select_user(telegram_id=message.from_user.id)
-        markup = await start_keyboard(status=user_db["status"])
+        markup = await start_keyboard(message)
         fullname = message.from_user.full_name
 
         heart = random.choice(['💙', '💚', '💛', '🧡', '💜', '🖤', '❤', '🤍', '💖', '💝'])
@@ -66,45 +78,46 @@ async def register_user(message: types.Message) -> None:
 @dp.callback_query_handler(text="start_menu")
 async def start_menu(call: CallbackQuery) -> None:
     try:
-        await registration_menu(call, scheduler, send_message_week, load_config, random)
+        await registration_menu(call, scheduler, send_message_week)
     except TypeError:
         await call.message.answer(_("Вас нет в базе данной"))
 
 
-@dp.callback_query_handler(text="language")
-@dp.callback_query_handler(text="language_reg")
-async def choice_language(call: CallbackQuery) -> None:
-    if call.data == "language_reg":
-        try:
-            await call.message.edit_text(_("Выберите язык"), reply_markup=await language_keyboard("registration"))
-        except BadRequest:
-            await delete_message(call.message)
-            await call.message.answer(_("Выберите язык"), reply_markup=await language_keyboard("registration"))
-    elif call.data == "language":
-        try:
-            await call.message.edit_text(_("Выберите язык"), reply_markup=await language_keyboard("profile"))
-        except BadRequest:
-            await delete_message(call.message)
-            await call.message.answer(_("Выберите язык"), reply_markup=await language_keyboard("profile"))
+async def choice_language(call: CallbackQuery, menu: str) -> None:
+    try:
+        await call.message.edit_text(_("Выберите язык"), reply_markup=await language_keyboard(menu))
+    except BadRequest:
+        await delete_message(call.message)
+        await call.message.answer(_("Выберите язык"), reply_markup=await language_keyboard(menu))
 
 
-@dp.callback_query_handler(text="Russian")
-@dp.callback_query_handler(text="Deutsch")
-@dp.callback_query_handler(text="English")
-@dp.callback_query_handler(text="Indonesian")
-async def change_language(call: CallbackQuery) -> None:
+async def change_language(call: CallbackQuery, language: str) -> None:
     telegram_id = call.from_user.id
     try:
-        if call.data == "Russian":
-            await db_commands.update_user_data(telegram_id=telegram_id, language="ru")
-        elif call.data == "Deutsch":
-            await db_commands.update_user_data(telegram_id=telegram_id, language="de")
-        elif call.data == "English":
-            await db_commands.update_user_data(telegram_id=telegram_id, language="en")
-        elif call.data == "Indonesian":
-            await db_commands.update_user_data(telegram_id=telegram_id, language="in")
-        await call.answer(_("Язык был успешно изменен. Введите команду /start"), show_alert=True)
-        await asyncio.sleep(5)
-        await call.message.delete()
+        await db_commands.update_user_data(telegram_id=telegram_id, language=language)
+        await call.message.edit_text(_("Язык был успешно изменен. Введите команду /start", locale=language))
     except aiogram.utils.exceptions.MessageToDeleteNotFound:
-        await call.message.answer(_("Произошла какая-то ошибка. Введите команду /start и попробуйте еще раз"))
+        await call.message.edit_text(_("Произошла какая-то ошибка. Введите команду /start и попробуйте еще раз"))
+
+
+language_codes = {
+    "Russian": "ru",
+    "Deutsch": "de",
+    "English": "en",
+    "Indonesian": "id",
+}
+
+language_menus = {
+    "language_reg": "registration",
+    "language": "profile",
+    "language_info": "information",
+}
+
+
+def register_callbacks(callback_dict, callback_function):
+    for callback_text, value in callback_dict.items():
+        dp.callback_query_handler(text=callback_text)(lambda call, value=value: callback_function(call, value))
+
+
+register_callbacks(language_codes, change_language)
+register_callbacks(language_menus, choice_language)
