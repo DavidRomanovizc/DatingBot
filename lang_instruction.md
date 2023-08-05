@@ -4,7 +4,7 @@
 
 1. We pull the texts out of the files (he finds it himself)
    ```sh
-   $ pybabel extract . -o locales/dating.pot
+   $ pybabel extract -F babel.cfg -o locales/dating.pot .
    ```
 2. Creating a folder for translation into English
    ```sh
@@ -23,7 +23,7 @@
 
 1. We pull the texts out of the files, Add the text to the translated versions
    ```sh
-   $ pybabel extract . -o locales/dating.pot
+   $ pybabel extract -F babel.cfg -o locales/dating.pot .
    $ pybabel update -d locales -D dating -i locales/dating.pot
    ```
 2. Manually make transfers, and then collect
