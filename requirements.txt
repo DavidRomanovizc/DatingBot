@@ -14,7 +14,7 @@ django-jazzmin
 better_profanity
 pytest==7.3.1
 numpy==1.24.2
-aiohttp==3.8.4
+aiohttp==3.8.5
 pytest-asyncio==0.21.0
 glqiwiapi~=1.1.4 # Don't update the version of this library
 APScheduler==3.10.1
