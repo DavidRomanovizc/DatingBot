@@ -1,15 +1,11 @@
-from aiogram.types import CallbackQuery
-from aiogram.utils.exceptions import BadRequest
+from aiogram.types import Message
 
-from handlers.users.back_handler import delete_message
-from keyboards.inline.sponsor_inline import sponsors_keyboard
-from loader import dp, _
+from loader import _
 from utils.db_api import db_commands
 
 
-@dp.callback_query_handler(text="statistics")
-async def get_inst(call: CallbackQuery) -> None:
-    user = await db_commands.select_user(telegram_id=call.from_user.id)
+async def get_statistics(message: Message):
+    user = await db_commands.select_user(telegram_id=message.from_user.id)
     user_city = user.get("city")
     users_gender_m = await db_commands.count_all_users_kwarg(sex="Мужской")
     users_gender_f = await db_commands.count_all_users_kwarg(sex="Женский")
@@ -34,9 +30,4 @@ async def get_inst(call: CallbackQuery) -> None:
                                                                cs_uy=count_users - users_city,
                                                                users_verified=users_verified,
                                                                users_status=users_status)
-
-    try:
-        await delete_message(message=call.message)
-        await call.message.edit_text(text, reply_markup=await sponsors_keyboard())
-    except BadRequest:
-        await call.message.answer(text, reply_markup=await sponsors_keyboard())
+    return text

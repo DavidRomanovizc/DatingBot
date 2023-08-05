@@ -1,9 +1,13 @@
+import inspect
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
 from typing import List
 
 from environs import Env
+
+env = Env()
+env.read_env()
 
 
 # The frozen=True arg protects instances of the class from accidental modification
@@ -26,6 +30,7 @@ class TgBot:
     I18N_DOMAIN: str
     moderate_chat: str
     use_redis: bool
+    bot_username: str
 
 
 @dataclass(frozen=True)
@@ -35,6 +40,7 @@ class Miscellaneous:
     qiwi_key: str
     phone_number: str
     secret_p2p_key: str
+    bot_stat_api_key: str
 
 
 @dataclass(frozen=True)
@@ -44,11 +50,31 @@ class Config:
     misc: Miscellaneous
 
 
+def search_env() -> Path:
+    current_frame = inspect.currentframe()
+    frame = current_frame.f_back
+    caller_dir = Path(frame.f_code.co_filename).parent.resolve()
+    start = caller_dir / ".env"
+    return start
+
+
+def change_env(section: str, value: str):
+    dumped_env = env.dump()
+    text = ""
+    start = search_env()
+
+    with open(start, "w", encoding="utf-8") as file:
+        for v in dumped_env:
+            if v:
+                e = dumped_env[v]
+                if v == section:
+                    e = value
+                text += f"{v}={e}\n"
+        file.write(text)
+
+
 @lru_cache
 def load_config() -> Config:
-    env = Env()
-    env.read_env()
-
     return Config(
         tg_bot=TgBot(
             token=env.str("BOT_TOKEN"),
@@ -58,7 +84,8 @@ def load_config() -> Config:
             timezone=env.str("TIMEZONE"),
             I18N_DOMAIN='dating',
             moderate_chat=env.str("MODERATE_CHAT"),
-            use_redis=env.bool("USE_REDIS")
+            use_redis=env.bool("USE_REDIS"),
+            bot_username=env.str("BOT_USERNAME")
         ),
         db=DataBaseConfig(
             user=env.str('DB_USER'),
@@ -73,6 +100,7 @@ def load_config() -> Config:
             qiwi_key=env.str("QIWI_KEY"),
             phone_number=env.str("PHONE_NUMBER"),
             secret_p2p_key=env.str("SECRET_P2"),
+            bot_stat_api_key=env.str("BOT_STAT"),
         )
     )
 
