@@ -21,3 +21,4 @@ APScheduler==3.10.1
 NudeNet~=2.0.9
 yarl~=1.8.2
 aiofiles~=23.1.0
+pre-commit
