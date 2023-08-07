@@ -12,9 +12,8 @@ async def settings_keyboard() -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup(row_width=1)
     admins = InlineKeyboardButton("👮‍♂️ Админ Состав", callback_data="admin:admins")
     req_in_channels = InlineKeyboardButton("🗄 Заявки в каналах", callback_data="admin:groups_requests")
-    buttons = InlineKeyboardButton("↪️ Кнопки", callback_data="admin:buttons")
     change_contact = InlineKeyboardButton("📞 Сменить контакты", callback_data="admin:change_contacts")
-    markup.add(admins, change_contact, buttons, req_in_channels)
+    markup.add(admins, change_contact, req_in_channels)
 
     return markup
 
