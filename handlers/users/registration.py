@@ -39,7 +39,7 @@ async def registration(call: CallbackQuery) -> None:
 
 @dp.callback_query_handler(text_contains="survey")
 async def survey(call: CallbackQuery) -> None:
-    markup = await gender_keyboard()
+    markup = await gender_keyboard(m_gender=_("👱🏻‍♂️ Мужской"), f_gender=_("👱🏻‍♀️ Женский"))
 
     await call.message.edit_text(_("Выберите пол"), reply_markup=markup)
     await RegData.sex.set()
@@ -64,7 +64,7 @@ async def sex_reg(call: CallbackQuery) -> None:
 
 @dp.message_handler(content_types=[ContentType.TEXT], state=RegData.commentary)
 async def commentary_reg(message: types.Message) -> None:
-    markup = await gender_keyboard()
+    markup = await gender_keyboard(m_gender=_("👱🏻‍♂️ Парня"), f_gender=_("👱🏻‍♀️ Девушку"))
     try:
         censored = censored_message(message.text)
         await db_commands.update_user_data(commentary=quote_html(censored), telegram_id=message.from_user.id)
@@ -143,10 +143,13 @@ async def fill_form(message: types.Message) -> None:
         address = await client.address(f"{x}", f"{y}")
         address = address.split(",")[0:2]
         address = ",".join(address)
-        await db_commands.update_user_data(telegram_id=message.from_user.id, city=address)
-        await db_commands.update_user_data(telegram_id=message.from_user.id, longitude=x)
-        await db_commands.update_user_data(telegram_id=message.from_user.id, latitude=y)
-        await db_commands.update_user_data(telegram_id=message.from_user.id, need_city=address)
+        await db_commands.update_user_data(
+            telegram_id=message.from_user.id,
+            city=address,
+            longitude=x,
+            latitude=y,
+            need_city=address
+        )
     except Exception as err:
         pass
     await asyncio.sleep(1)
@@ -161,7 +164,12 @@ async def get_photo_profile(message: types.Message, state: FSMContext) -> None:
     profile_pictures = await dp.bot.get_user_profile_photos(telegram_id)
     try:
         file_id = dict((profile_pictures.photos[0][0])).get("file_id")
-        await saving_normal_photo(message, telegram_id, file_id, state)
+        await saving_normal_photo(
+            message=message,
+            telegram_id=telegram_id,
+            file_id=file_id,
+            state=state
+        )
     except IndexError:
         await message.answer(_("Произошла ошибка, проверьте настройки конфиденциальности"))
 
@@ -178,11 +186,23 @@ async def get_photo(message: types.Message, state: FSMContext) -> None:
     data = await classification_image(path)
     safe, unsafe = data.get(path).get("safe"), data.get(path).get("unsafe")
     if safe > 0.8 and unsafe < 0.2:
-        await saving_normal_photo(message, telegram_id, file_id, state)
+        await saving_normal_photo(
+            message=message,
+            telegram_id=telegram_id,
+            file_id=file_id,
+            state=state
+        )
         os.remove(path)
     else:
-        await generate_censored_image(image_path=path,
-                                      out_path=out_path)
-        await saving_censored_photo(message, telegram_id, state, out_path)
+        await generate_censored_image(
+            image_path=path,
+            out_path=out_path
+        )
+        await saving_censored_photo(
+            message=message,
+            telegram_id=telegram_id,
+            state=state,
+            out_path=out_path
+        )
         os.remove(path)
         os.remove(out_path)

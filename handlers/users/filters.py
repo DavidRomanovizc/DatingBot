@@ -66,7 +66,7 @@ async def desired_max_age_state(message: types.Message, state: FSMContext) -> No
 
 @dp.callback_query_handler(text="user_need_gender")
 async def desired_max_range(call: CallbackQuery, state: FSMContext) -> None:
-    markup = await gender_keyboard()
+    markup = await gender_keyboard(m_gender=_("👱🏻‍♂️ Парня"), f_gender=_("👱🏻‍♀️ Девушку"))
     await call.message.edit_text(_("Выберите, кого вы хотите найти:"), reply_markup=markup)
     await state.set_state("gender")
 
