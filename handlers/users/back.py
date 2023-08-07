@@ -12,7 +12,6 @@ from aiogram.utils.exceptions import (
 )
 
 from data.config import load_config
-from functions.main_app.app_scheduler import send_message_week
 from functions.main_app.auxiliary_tools import registration_menu, display_profile
 from handlers.users.event_handler import view_own_event, view_meetings_handler
 from keyboards.inline.admin_inline import unban_user_keyboard
@@ -20,7 +19,7 @@ from keyboards.inline.filters_inline import filters_keyboard
 from keyboards.inline.main_menu_inline import start_keyboard
 from keyboards.inline.menu_profile_inline import get_profile_keyboard
 from keyboards.inline.settings_menu import information_keyboard
-from loader import _, scheduler, dp
+from loader import _, dp
 from utils.db_api import db_commands
 
 
@@ -62,7 +61,7 @@ class OpenMenuCommand(Command):
 
 class BackToRegistrationMenuCommand(Command):
     async def execute(self, call: CallbackQuery, **kwargs) -> None:
-        await registration_menu(call, scheduler, send_message_week)
+        await registration_menu(call)
 
 
 class BackToProfileMenuCommand(Command):
@@ -93,10 +92,10 @@ class BackToGuideMenuCommand(Command):
         now_date = datetime.datetime.now()
         delta = now_date - start_date
         count_users = await db_commands.count_users()
-        txt = (f"Вы попали в раздел <b>настроек</b> бота, здесь вы можете посмотреть: статистику,"
-               f"изменить язык, отключить уведомления, а также узнать информацию.\n\n"
-               f"🌐 Дней работаем: <b>{delta.days}</b>\n"
-               f"👤 Всего пользователей: <b>{count_users}</b>\n")
+        txt = _("Вы попали в раздел <b>настроек</b> бота, здесь вы можете посмотреть: статистику,"
+                "изменить язык, отключить уведомления, а также узнать информацию.\n\n"
+                "🌐 Дней работаем: <b>{}</b>\n"
+                "👤 Всего пользователей: <b>{}</b>\n").format(delta.days, count_users)
 
         try:
             await call.message.edit_text(
@@ -142,7 +141,10 @@ menu_commands = {
 
 
 @dp.callback_query_handler(lambda call: call.data in menu_commands.keys(), state="*")
-async def handle_menu_action(call: CallbackQuery) -> None:
+async def handle_menu_action(call: CallbackQuery, state: FSMContext) -> None:
     menu_action = call.data
     command = menu_commands[menu_action]
-    await command.execute(call, )
+    try:
+        await command.execute(call, )
+    except TypeError:
+        await command.execute(call, state)
