@@ -38,7 +38,11 @@ class TemplateEvent:
             text["title"], text["date"], text["place"], text["description"]
         )
         photo = text["photo_id"]
-        telegram_id = str(text["telegram_id"])
+        # TODO: Почему-то в text не передаётся telegram_id, хотя мы его передаём
+        try:
+            telegram_id = str(text["telegram_id"])
+        except KeyError:
+            telegram_id = chat_id
         reply_markup = None
 
         if moderate:
