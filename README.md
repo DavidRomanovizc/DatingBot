@@ -11,9 +11,6 @@
 - [NudeNet](#see_no_evil-nudenet)
     - [Possible Errors](#goal_net-possible-errors)
 - [Contributing](#busts_in_silhouette-contributing)
-    - [Handlers](#1-handlers)
-    - [Keyboards](#2-keyboards)
-    - [Language](#3-language)
 
 ## 🖍 Used technology
 
@@ -55,57 +52,27 @@ $ pip install -r requirements.txt
 First you need to rename the file `.env.dist` to `.env`.\
 After that, you need to fill it with data.
 
-| Variable      | Type | Importance |
-|---------------|------|------------|
-| BOT_TOKEN     | str  | True       |
-| ADMINS        | list | True       |
-| SUPPORTS      | list | True       |
-| IP            | str  | True       |
-| TIMEZONE      | str  | True       |
-| MODERATE_CHAT | str  | True       |
-| DB_USER       | str  | True       |
-| DB_PASS       | str  | True       |
-| DB_HOST       | str  | True       |
-| DB_NAME       | str  | True       |
-| PORT          | str  | True       |
-| SECRET_KEY    | str  | True       |
-| API_KEY       | str  | True       |
-| QIWI_KEY      | str  | True       |
-| PHONE_NUMBER  | str  | True       |
-| SECRET_P2     | str  | True       |
-| USE_REDIS     | bool | False      |
-
-`BOT_TOKEN` - Bot token\
-`ADMINS` - list of admins id\
-`SUPPORTS` - list of admins id\
-`IP` - ip for other services\
-`TIMEZONE` - your time zone for working with the scheduler\
-`MODERATE_CHAT` - telegram chat where the event will be moderated
-
-`DB_USER` - username of the database owner\
-`DB_PASS` - password from the database\
-`DB_HOST` - IP address of the database\
-`DB_NAME` - database name\
-`PORT` - the database port. Usually the db running on port `5432`
-
-`SECRET_KEY` - secret key for django
-
-`API_KEY` - yandex api key for yandex map
-
-`QIWI_KEY` - qiwi api key for receiving payments\
-`PHONE_NUMBER` - your phone number (need for qiwi)\
-`SECRET_2` - public p2 key which allows you to issue an invoice and open a transfer form
-
-`USE_REDIS` - Optional parameter
-
+| Variable      | Type | Importance | Description                                                                 |
+|---------------|------|------------|-----------------------------------------------------------------------------|
+| BOT_TOKEN     | str  | True       | Bot token                                                                   |
+| ADMINS        | list | True       | list of admins id                                                           |
+| SUPPORTS      | list | True       | list of supports id                                                         |
+| IP            | str  | True       | ip for other services                                                       |
+| TIMEZONE      | str  | True       | your time zone for working with the scheduler                               |
+| MODERATE_CHAT | str  | True       | telegram chat where the event will be moderated                             |
+| DB_USER       | str  | True       | username of the database owner                                              |
+| DB_PASS       | str  | True       | password from the database                                                  |
+| DB_HOST       | str  | True       | IP address of the database                                                  |
+| DB_NAME       | str  | True       | database name                                                               |
+| PORT          | str  | True       | the database port. Usually the db running on port `5432`                    |
+| SECRET_KEY    | str  | True       | secret key for django                                                       |
+| API_KEY       | str  | True       | yandex api key for yandex map                                               |
+| QIWI_KEY      | str  | True       | qiwi api key for receiving payments                                         |
+| PHONE_NUMBER  | str  | True       | your phone number (need for qiwi)                                           |
+| SECRET_P2     | str  | True       | public p2 key which allows you to issue an invoice and open a transfer form |
+| USE_REDIS     | bool | False      | Optional parameter                                                          |
 
 #### :green_book: Django
-
-Install Django
-
-```sh
-$ pip install Django
-```
 
 To create a `SECRET_KEY` you can use the site to [generate secret keys](https://djecrety.ir/)
 
@@ -121,23 +88,14 @@ Install the jazzmin
 $ pip install -U django-jazzmin
 ```
 
-Add jazzmin to your `INSTALLED_APPS` before django.contrib.admin.
-
-Path to settings: `DatingBot/django_project/telegrambot/telegrambot/settings.py`
-
-```py
-INSTALLED_APPS = [
-    'jazzmin',
-
-    'django.contrib.admin',
-    [...]
-]
-```
+To create required database tables and an admin user, use the following commands
 
 ```sh
 $ python django_app.py makemigrations
 $ python django_app.py migrate
 $ python django_app.py createsuperuser
+$ python django_app.py makemigrations usersmanage 
+$ python django_app.py migrate usersmanage
 $ python django_app.py runserver
 ```
 
@@ -216,21 +174,66 @@ After you have downloaded the checkpoint you need, drag it to the NudeNet folder
 We try to stick
 to [PEP 8](https://peps.python.org/pep-0008/#:~:text=Use%20the%20function%20naming%20rules,invoke%20Python's%20name%20mangling%20rules)
 
-### 1. Handlers
+Thank you for your interest in contributing to our Python project! Below are the steps to help you become a part of our
+developer community.
 
-1. There must be no buttons in handlers (only in extreme cases, but it is better to put it in a separate file)
-2. If we make a handler for buttons, then we use the "text='action'" in the decorator parameters
-3. If we are fetching data or updating data, then the function call should be like this: `await db_commands.func(...)`
+#### 1. Fork the Project
 
-### 2. Keyboards
+Go to the repository page on GitHub and click the "Fork" button in the upper right corner. This will create a copy of
+the project in your account.
 
-1. If you use the "default button", you need to put them in the "keyboard/default" directories.
-2. If you are creating a new file, then you should add the prefix "_default" to the filename
-3. If you use the "inline button", you need to put them in the "keyboard/inline" directories.
-4. If you are creating a new file, then you should add the prefix "_inline" to the filename
-5. If you are creating a new keyboard, then you should add the prefix "_keyboard" in the name function
+#### 2. Clone the Repository
 
-### 3. Language
+```sh
+$ git clone https://github.com/DavidRomanovizc/DatingBot.git
+```
+
+#### 3. Project Setup
+
+For instructions on deploying the project on a local computer, see above
+
+#### 4. Create a Branch
+
+Create a new branch for your changes:
+
+```sh
+$ git checkout -b branch-name
+```
+
+#### 5. Make Changes
+
+Make the necessary changes to the project code. Follow the project's structure, coding style, and development
+guidelines.
+
+And run the flake8
+
+```sh
+$ flake8 --config=.flake8
+```
+
+#### 6. Commit and Push
+
+```sh
+$ git commit -m "Description of your changes"
+$ git push origin your-branch-name
+```
+
+#### 7. Create a Pull Request
+
+Go to your repository on GitHub and click the "New Pull Request" button. Specify the base branch of the project (
+usually `main` or `master`) and the branch with your changes.
+
+#### 8. Discussion and Review
+
+Discuss your Pull Request with the community members. Make necessary changes based on the feedback.
+
+#### 9. Merge the Pull Request
+
+After approval, your code will be merged into the main branch of the project.
+
+#### 10. Celebration 🎉
+
+Congratulations! You have successfully contributed to the Python project. Thank you for your help!
 
 For multi languages we use i18n. All the instructions we can find here - [Language guide](lang_instruction.md)
 
@@ -239,4 +242,3 @@ For multi languages we use i18n. All the instructions we can find here - [Langua
 <h3 align="center">Works on Open Source</h3>
 
 ![image](https://user-images.githubusercontent.com/72649244/173241368-c40bd408-8df8-450f-9ac7-530de1692e1c.png)
-
