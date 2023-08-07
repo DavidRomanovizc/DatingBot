@@ -18,6 +18,16 @@ def select_user(telegram_id: int):
 
 
 @sync_to_async
+def check_user_exists(telegram_id: int):
+    user_exists = User.objects.filter(telegram_id=telegram_id).exists()
+    return user_exists
+
+@sync_to_async
+def check_user_meetings_exists(telegram_id: int):
+    user_exists = UserMeetings.objects.filter(telegram_id=telegram_id).exists()
+    return user_exists
+
+@sync_to_async
 def add_user(telegram_id, name, username, referrer_id=None):
     if referrer_id:
         return User(
