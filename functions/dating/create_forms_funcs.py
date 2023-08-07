@@ -14,7 +14,7 @@ from loader import _, bot
 
 async def create_questionnaire(
         form_owner: int,
-        chat_id: str,
+        chat_id: int,
         add_text: Optional[str] = None,
         monitoring: bool = False,
         report_system: bool = False
@@ -36,7 +36,7 @@ async def create_questionnaire(
         )
 
 
-async def create_questionnaire_reciprocity(liker: int, chat_id: str, add_text=None) -> None:
+async def create_questionnaire_reciprocity(liker: int, chat_id: int, add_text=None) -> None:
     await send_questionnaire(
         chat_id=chat_id,
         add_text=add_text,

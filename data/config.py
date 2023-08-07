@@ -40,7 +40,6 @@ class Miscellaneous:
     qiwi_key: str
     phone_number: str
     secret_p2p_key: str
-    bot_stat_api_key: str
 
 
 @dataclass(frozen=True)
@@ -99,8 +98,7 @@ def load_config() -> Config:
             yandex_api_key=env.str('API_KEY'),
             qiwi_key=env.str("QIWI_KEY"),
             phone_number=env.str("PHONE_NUMBER"),
-            secret_p2p_key=env.str("SECRET_P2"),
-            bot_stat_api_key=env.str("BOT_STAT"),
+            secret_p2p_key=env.str("SECRET_P2")
         )
     )
 

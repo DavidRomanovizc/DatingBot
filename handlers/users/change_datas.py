@@ -123,7 +123,7 @@ async def get_hobbies(call: CallbackQuery, state: FSMContext) -> None:
 
 @dp.callback_query_handler(text='gender')
 async def change_sex(call: CallbackQuery) -> None:
-    markup = await gender_keyboard()
+    markup = await gender_keyboard(m_gender=_("👱🏻‍♂️ Мужской"), f_gender=_("👱🏻‍♀️ Женский"))
     await call.message.edit_text(_("Выберите новый пол: "), reply_markup=markup)
     await NewData.sex.set()
 

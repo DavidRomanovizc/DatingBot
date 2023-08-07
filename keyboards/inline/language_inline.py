@@ -6,7 +6,6 @@ from loader import _
 async def language_keyboard(menu: str) -> InlineKeyboardMarkup:
     menu_back_buttons = {
         "registration": "back_to_reg_menu",
-        "profile": "back_to_profile_menu",
         "information": "back_to_info_menu",
     }
 

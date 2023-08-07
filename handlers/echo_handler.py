@@ -4,6 +4,7 @@ from aiogram.types import CallbackQuery
 from aiogram.utils.markdown import hcode
 from loguru import logger
 
+from keyboards.inline.main_menu_inline import start_keyboard
 from loader import dp, _
 
 
@@ -29,3 +30,9 @@ async def bot_echo_all(message: types.Message, state: FSMContext) -> None:
 @dp.callback_query_handler()
 async def cq_echo(call: CallbackQuery) -> None:
     logger.debug(call.data)
+
+
+@dp.message_handler(state='finding')
+async def echo_message_finding(message: types.Message, state: FSMContext) -> None:
+    await message.answer(_("Меню: "), reply_markup=await start_keyboard(message))
+    await state.reset_state()
