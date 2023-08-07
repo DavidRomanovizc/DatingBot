@@ -1,19 +1,22 @@
 import asyncio
+import os
 import pathlib
 import random
 import shutil
-from typing import Union, Optional, Any, Callable
+from typing import Union, Optional
 
 import aiofiles
 from aiogram import types
 from aiogram.dispatcher import FSMContext
-from aiogram.types import CallbackQuery, ReplyKeyboardRemove, InputFile, InlineKeyboardMarkup
+from aiogram.types import CallbackQuery, ReplyKeyboardRemove, InputFile, InlineKeyboardMarkup, Message
 from asyncpg import UniqueViolationError
 
 from data.config import load_config
+from functions.main_app.app_scheduler import send_message_week
 from keyboards.inline.filters_inline import dating_filters_keyboard
+from keyboards.inline.guide_inline import create_pagination_keyboard
 from keyboards.inline.main_menu_inline import start_keyboard
-from loader import _, bot
+from loader import _, bot, scheduler
 from utils.db_api import db_commands
 
 
@@ -44,20 +47,22 @@ async def display_profile(call: CallbackQuery, markup: InlineKeyboardMarkup) -> 
     """
     user = await db_commands.select_user(telegram_id=call.from_user.id)
     count_referrals = await db_commands.count_all_users_kwarg(referrer_id=call.from_user.id)
-    user_verification = "✅" if user["verification"] else "❌"
-
-    user_info_template = (
-        "{}, {} лет, {} {}\n\n{}\n\n<u>Партнерка:</u>\nКоличество приглашенных друзей: {}\nРеферальная ссылка: {}"
+    user_verification = "✅" if user["verification"] else ""
+    gender = "Мужчина" if user.get("sex") == "Мужской" else "Женщина"
+    user_info_template = _(
+        "{}, {} лет, {}, {} {}\n\n{}\n\n<u>Партнерка:</u>\nКоличество приглашенных друзей: {}\nРеферальная ссылка: {}"
     )
 
     user_info = user_info_template.format(
-        user["varname"], user["age"], user["city"], user_verification,
-        user["commentary"], count_referrals,
+        user["varname"],
+        user["age"],
+        user["city"],
+        gender,
+        user_verification,
+        user["commentary"],
+        count_referrals,
         f"https://t.me/{load_config().tg_bot.bot_username}?start={call.from_user.id}"
     )
-
-    if user["instagram"]:
-        user_info += "\n\n<b>Инстаграм</b> - <code>{}</code>\n".format(user["instagram"])
 
     await call.message.answer_photo(caption=user_info, photo=user["photo_id"], reply_markup=markup)
 
@@ -84,23 +89,24 @@ async def show_dating_filters(
 
 
 async def registration_menu(
-        call: CallbackQuery,
-        scheduler: Any,
-        send_message_week: Callable,
+        obj: Union[CallbackQuery, Message],
 ) -> None:
     support = await db_commands.select_user(telegram_id=load_config().tg_bot.support_ids[0])
-    markup = await start_keyboard(call)
+    markup = await start_keyboard(obj)
     heart = random.choice(['💙', '💚', '💛', '🧡', '💜', '🖤', '❤', '🤍', '💖', '💝'])
-    await call.message.edit_text(_("Приветствую вас, {fullname}!!\n\n"
-                                   "{heart} <b> QueDateBot </b> - платформа для поиска новых знакомств.\n\n"
-                                   "🪧 Новости о проекте вы можете прочитать в нашем канале - "
-                                   "https://t.me/QueDateGroup \n\n"
-                                   "<b>🤝 Сотрудничество: </b>\n"
-                                   "Если у вас есть предложение о сотрудничестве, пишите агенту поддержки - "
-                                   "@{supports}\n\n").format(fullname=call.from_user.full_name, heart=heart,
-                                                             supports=support['username']),
-                                 reply_markup=markup)
-    scheduler.add_job(send_message_week, trigger="interval", weeks=3, jitter=120, args={call.message})
+    text = _("Приветствую вас, {fullname}!!\n\n"
+             "{heart} <b> QueDateBot </b> - платформа для поиска новых знакомств.\n\n"
+             "🪧 Новости о проекте вы можете прочитать в нашем канале - "
+             "https://t.me/QueDateGroup \n\n"
+             "<b>🤝 Сотрудничество: </b>\n"
+             "Если у вас есть предложение о сотрудничестве, пишите агенту поддержки - "
+             "@{supports}\n\n").format(fullname=obj.from_user.full_name, heart=heart,
+                                       supports=support['username'])
+    try:
+        await obj.message.edit_text(text, reply_markup=markup)
+        scheduler.add_job(send_message_week, trigger="interval", weeks=3, jitter=120, args={obj.message})
+    except AttributeError:
+        await obj.answer(text, reply_markup=markup)
 
 
 async def finished_registration(
@@ -220,3 +226,33 @@ async def dump_users_to_file():
 async def backup_configs():
     shutil.make_archive("backup_data", 'zip', "./logs/")
     return "./backup_data.zip"
+
+
+async def send_photo_with_caption(
+        call: CallbackQuery,
+        photo: str,
+        caption: str,
+        step: int,
+        total_steps: int,
+) -> None:
+    markup = await create_pagination_keyboard(step, total_steps)
+
+    await call.message.delete()
+    await call.message.answer_photo(types.InputFile(photo), reply_markup=markup, caption=caption)
+
+
+async def handle_guide_callback(
+        call: CallbackQuery,
+        callback_data: dict,
+) -> None:
+    step = int(callback_data.get("value"))
+
+    photo_path = f"brandbook/{step}_page.png"
+    caption = _("Руководство по боту: \n<b>Страница №{}</b>").format(step)
+    await send_photo_with_caption(
+        call=call,
+        photo=photo_path,
+        caption=caption,
+        step=step,
+        total_steps=len(os.listdir("brandbook/"))
+    )

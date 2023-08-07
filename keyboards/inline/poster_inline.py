@@ -1,20 +1,27 @@
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from typing import Union
+
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message, CallbackQuery
 
 from loader import _
+from utils.db_api import db_commands
 
 
-async def poster_keyboard(is_admin: bool, verification_status: bool) -> InlineKeyboardMarkup:
-    markup = InlineKeyboardMarkup(row_width=6)
+async def poster_keyboard(obj: Union[Message, CallbackQuery]) -> InlineKeyboardMarkup:
+    user = await db_commands.select_user_meetings(telegram_id=obj.from_user.id)
+    is_admin = user.get("is_admin")
+    is_verification = user.get("verification_status")
+    markup = InlineKeyboardMarkup(row_width=1)
     create_poster = InlineKeyboardButton(text=_("✍️Создать афишу"), callback_data="create_poster")
-    view_poster = InlineKeyboardButton(text=_("Смотреть афиши"), callback_data="view_poster")
+    view_poster = InlineKeyboardButton(text=_("🎭 Смотреть афиши"), callback_data="view_poster")
     my_appointment = InlineKeyboardButton(text=_("📝 Мои записи"), callback_data="my_appointment")
-    my_event = InlineKeyboardButton(text=_("🎭 Моё событие"), callback_data="my_event")
+    my_event = InlineKeyboardButton(text=_("📃 Моё событие"), callback_data="my_event")
     back = InlineKeyboardButton(text=_("⏪️ Вернуться в меню"), callback_data="start_menu")
-    if is_admin and verification_status:
-        markup.add(my_event)
-    markup.row(create_poster)
-    markup.row(view_poster, my_appointment)
-    markup.add(back)
+    if is_verification and is_admin:
+        markup_items = [my_event, view_poster, my_appointment, back]
+    else:
+        markup_items = [create_poster, view_poster, my_appointment, back]
+
+    markup.add(*markup_items)
     return markup
 
 
