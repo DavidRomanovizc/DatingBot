@@ -17,8 +17,11 @@ storage = RedisStorage2() if load_config().tg_bot.use_redis else MemoryStorage()
 dp = Dispatcher(bot, storage=storage)
 db = Database()
 client = Client(api_key=load_config().misc.yandex_api_key)
-wallet = QiwiWrapper(api_access_token=load_config().misc.qiwi_key, phone_number=load_config().misc.phone_number,
-                     secret_p2p=load_config().misc.secret_p2p_key)
+wallet = QiwiWrapper(
+    api_access_token=load_config().misc.qiwi_key,
+    phone_number=load_config().misc.phone_number,
+    secret_p2p=load_config().misc.secret_p2p_key
+)
 
 scheduler = AsyncIOScheduler()
 
