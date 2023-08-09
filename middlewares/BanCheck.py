@@ -3,7 +3,7 @@ from typing import Union, NoReturn
 from aiogram import types
 from aiogram.dispatcher.handler import CancelHandler
 from aiogram.dispatcher.middlewares import BaseMiddleware
-from loguru import logger
+from loader import logger
 
 from keyboards.inline.admin_inline import unban_user_keyboard
 from loader import _

@@ -1,20 +1,25 @@
 import os
 
 from asgiref.sync import sync_to_async
-from django.db.models import F, Q
-from django.db.models.expressions import CombinedExpression, Value
+
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_project.telegrambot.telegrambot.settings')
 import django
 
 django.setup()
-from django_project.telegrambot.usersmanage.models import (
-    User,
-    UserMeetings,
-    SettingModel,
-    ViewedProfile
-)
+from django.db.models import F, Q
+from django.db.models.expressions import CombinedExpression, Value
 
+from django_project.telegrambot.usersmanage.models.meetings import UserMeetings
+from django_project.telegrambot.usersmanage.models.settings_models import SettingModel
+from django_project.telegrambot.usersmanage.models.viewed_profile import ViewedProfile
+from django_project.telegrambot.usersmanage.models.user import User
+from django_project.telegrambot.usersmanage.models.necessary_link import NecessaryLink
+
+@sync_to_async
+def select_all_links():
+    links = NecessaryLink.objects.all().values()
+    return links
 
 @sync_to_async
 def select_user(telegram_id: int):

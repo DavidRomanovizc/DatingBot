@@ -3,7 +3,7 @@ import aiogram
 import aiogram.utils.exceptions
 from aiogram import Dispatcher
 from aiogram.utils.exceptions import ChatNotFound
-from loguru import logger
+from loader import logger
 
 from data.config import load_config
 from loader import bot
