@@ -87,7 +87,10 @@ async def create_form(
                 telegram_id=call.from_user.id
             )
     except BadRequest:
-        await call.answer(_("На данный момент у нас нет подходящих мероприятий для вас"), show_alert=True)
+        await call.answer(
+            text=_("На данный момент у нас нет подходящих мероприятий для вас"),
+            show_alert=True
+        )
 
 
 async def get_next_random_event_id(telegram_id: int) -> Optional[int]:
@@ -96,7 +99,10 @@ async def get_next_random_event_id(telegram_id: int) -> Optional[int]:
     """
     event_ids = await db_commands.search_event_forms()
 
-    other_events_ids = [e['telegram_id'] for e in event_ids if e['telegram_id'] != telegram_id]
+    other_events_ids = []
+    for e in event_ids:
+        if e['telegram_id'] != telegram_id:
+            other_events_ids.append(e['telegram_id'])
 
     for event_id in other_events_ids:
         if not await db_commands.check_returned_event_id(telegram_id=telegram_id, id_of_events_seen=event_id):

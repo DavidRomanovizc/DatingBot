@@ -79,7 +79,7 @@ async def change_age(message: types.Message, state: FSMContext) -> None:
                 text=_("Ваш новый возраст: <b>{messages}</b>").format(
                     messages=message.text)
             )
-            await asyncio.sleep(3)
+            await asyncio.sleep(1)
             await message.answer(
                 text=_("Выберите, что вы хотите изменить: "),
                 reply_markup=markup
@@ -131,27 +131,14 @@ async def change_sex(call: CallbackQuery) -> None:
 @dp.callback_query_handler(state=NewData.sex)
 async def change_sex(call: CallbackQuery, state: FSMContext) -> None:
     markup = await change_info_keyboard()
-    if call.data == 'male':
-        try:
-            await db_commands.update_user_data(sex="Мужской", telegram_id=call.from_user.id)
-            await call.message.edit_text(_("Ваш новый пол: <b>Мужской</b>"))
-            await asyncio.sleep(3)
-            await call.message.edit_text(_("Выберите, что вы хотите изменить: "), reply_markup=markup)
-            await state.reset_state()
-        except Exception as err:
-            await call.message.edit_text(_("Произошла неизвестная ошибка. Попробуйте ещё раз"), reply_markup=markup)
-            await state.reset_state()
-    if call.data == 'female':
-        try:
-            await db_commands.update_user_data(sex='Женский', telegram_id=call.from_user.id)
-            await call.message.edit_text(_("Ваш новый пол: <b>Женский</b>"))
-            await asyncio.sleep(3)
-            await call.message.edit_text(_("Выберите, что вы хотите изменить: "), reply_markup=markup)
-            await state.reset_state()
-        except Exception as err:
-            await call.message.edit_text(_("Произошла неизвестная ошибка. Попробуйте ещё раз"), reply_markup=markup)
-            await state.reset_state()
-
+    gender = "Мужской" if call.data == "male" else "Женский"
+    await db_commands.update_user_data(sex=gender, telegram_id=call.from_user.id)
+    await call.message.edit_text(_("Ваш новый пол: <b>{}</b>".format(gender)))
+    await asyncio.sleep(1)
+    await call.message.edit_text(
+        text=_("Выберите, что вы хотите изменить: "),
+        reply_markup=markup
+    )
     await state.reset_state()
 
 
@@ -160,7 +147,7 @@ async def new_photo(call: CallbackQuery) -> None:
     await delete_message(call.message)
     await call.message.answer(_("Отправьте мне новую фотографию"), reply_markup=await get_photo_from_profile())
     await NewData.photo.set()
-    await asyncio.sleep(3)
+    await asyncio.sleep(1)
     await delete_message(call.message)
 
 
@@ -171,9 +158,17 @@ async def get_photo_profile(message: types.Message, state: FSMContext) -> None:
     profile_pictures = await dp.bot.get_user_profile_photos(telegram_id)
     try:
         file_id = dict((profile_pictures.photos[0][0])).get("file_id")
-        await update_normal_photo(message, telegram_id, file_id, state, markup)
+        await update_normal_photo(
+            message=message,
+            telegram_id=telegram_id,
+            file_id=file_id,
+            state=state,
+            markup=markup
+        )
     except IndexError:
-        await message.answer(_("Произошла ошибка, проверьте настройки конфиденциальности"))
+        await message.answer(
+            text=_("Произошла ошибка, проверьте настройки конфиденциальности")
+        )
 
 
 @dp.message_handler(content_types=ContentType.PHOTO, state=NewData.photo)
@@ -188,14 +183,29 @@ async def update_photo_complete(message: types.Message, state: FSMContext) -> No
     data = await classification_image(path)
     safe, unsafe = data.get(path).get("safe"), data.get(path).get("unsafe")
     if safe > 0.6 or unsafe < 0.2:
-        await update_normal_photo(message, telegram_id, file_id, state, markup)
+        await update_normal_photo(
+            message=message,
+            telegram_id=telegram_id,
+            file_id=file_id,
+            state=state,
+            markup=markup
+        )
         os.remove(path)
     else:
-        await generate_censored_image(image_path=path,
-                                      out_path=out_path)
-        await saving_censored_photo(message, telegram_id, state, out_path, markup=markup, flag="change_datas")
+        await generate_censored_image(
+            image_path=path,
+            out_path=out_path
+        )
+        await saving_censored_photo(
+            message=message,
+            telegram_id=telegram_id,
+            state=state,
+            out_path=out_path,
+            markup=markup,
+            flag="change_datas"
+        )
         os.remove(path)
-        await asyncio.sleep(3)
+        await asyncio.sleep(1)
         os.remove(out_path)
 
 
@@ -235,7 +245,7 @@ async def update_comment_complete(message: types.Message, state: FSMContext) -> 
         censored = censored_message(message.text)
         await db_commands.update_user_data(commentary=quote_html(censored), telegram_id=message.from_user.id)
         await message.answer(_("Комментарий принят!"))
-        await asyncio.sleep(3)
+        await asyncio.sleep(1)
         await delete_message(message)
         await message.answer(_("Выберите, что вы хотите изменить: "), reply_markup=markup)
         await state.reset_state()

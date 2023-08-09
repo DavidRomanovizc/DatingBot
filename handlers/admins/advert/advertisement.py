@@ -11,14 +11,16 @@ from loader import dp, _
 @dp.message_handler(IsAdmin(), commands="ad", state="*")
 @dp.message_handler(IsAdmin(), text="📊 Реклама", state="*")
 async def adv_handler(message: Message):
-    await message.answer("<u><b>📊 Реклама:</b></u>", reply_markup=await mailing_menu())
+    await message.answer(
+        text="<u><b>📊 Реклама</b></u>", reply_markup=await mailing_menu()
+    )
 
 
 @dp.callback_query_handler(IsAdmin(), text="adv:mailing")
 async def broadcast_get_text(call: CallbackQuery, state: FSMContext) -> None:
     await call.message.edit_text(
         text=_(
-            "<u><b>📧 Рассылка:</b></u>\n"
+            "<u><b>📧 Рассылка</b></u>\n"
             "Пришлите текст для рассылки либо фото с текстом для рассылки! Чтобы отредактировать, "
             "используйте встроенный редактор телеграма!\n"
         ),
@@ -29,9 +31,14 @@ async def broadcast_get_text(call: CallbackQuery, state: FSMContext) -> None:
 
 @dp.callback_query_handler(IsAdmin(), text="adv:ref_urls")
 async def ref_handler(call: CallbackQuery):
-    await call.message.edit_text("<u><b>🔗 Реферальные ссылки:</b></u>", reply_markup=await referral_keyboard())
+    await call.message.edit_text(
+        text="<u><b>🔗 Реферальные ссылки</b></u>",
+        reply_markup=await referral_keyboard()
+    )
 
 
 @dp.callback_query_handler(IsAdmin(), text="adv:required_subs")
 async def required_subs_handler(call: CallbackQuery):
-    await call.message.edit_text("<u><b>🧑‍💻 Обязательная подписка</b></u>")
+    await call.message.edit_text(
+        text="<u><b>🧑‍💻 Обязательная подписка</b></u>"
+    )

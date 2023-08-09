@@ -41,7 +41,10 @@ class BanMiddleware(BaseMiddleware):
             is_banned = user.get("is_banned")
             try:
                 if is_banned:
-                    await call.message.answer(_("Вы забанены!"), reply_markup=await unban_user_keyboard())
+                    await call.message.answer(
+                        text=_("Вы забанены!"),
+                        reply_markup=await unban_user_keyboard()
+                    )
             except TypeError as err:
                 logger.info(err)
                 raise CancelHandler()
@@ -54,7 +57,10 @@ class BanMiddleware(BaseMiddleware):
 
                 if is_banned:
                     try:
-                        await message.answer(_("Вы забанены!"), reply_markup=await unban_user_keyboard())
+                        await message.answer(
+                            text=_("Вы забанены!"),
+                            reply_markup=await unban_user_keyboard()
+                        )
                     except TypeError as err:
                         logger.info(err)
                         raise CancelHandler()

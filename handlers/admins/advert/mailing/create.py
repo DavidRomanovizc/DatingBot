@@ -132,11 +132,13 @@ async def get_photo_for_confirm(message: types.Message, state: FSMContext) -> No
     escape_md(text)
     quote_html(text)
     photo = message.photo[-1].file_id
-    await message.answer_photo(caption=_("Вот сообщение: \n\n{text}\n\n Вы подтверждаете отправку? "
-                                         "Или хотите что-то добавить?").format(text=text),
-                               photo=photo,
-                               reply_markup=await add_buttons_keyboard(),
-                               parse_mode="Markdown")
+    await message.answer_photo(
+        caption=_("Вот сообщение: \n\n{text}\n\n Вы подтверждаете отправку? "
+                  "Или хотите что-то добавить?").format(text=text),
+        photo=photo,
+        reply_markup=await add_buttons_keyboard(),
+        parse_mode="Markdown"
+    )
     await state.update_data(text=text)
     await state.update_data(photo=photo)
     await state.set_state("broadcast_confirming_photo")
@@ -223,8 +225,13 @@ async def confirm_with_button_no_photo(call: CallbackQuery, state: FSMContext) -
         await call.message.edit_text(text=_("Начинаю рассылку!"))
         for i in chats:
             try:
-                await bot.send_photo(chat_id=i.get('telegram_id'), photo=photo, reply_markup=markup,
-                                     caption=text, parse_mode="MarkDown")
+                await bot.send_photo(
+                    chat_id=i.get('telegram_id'),
+                    photo=photo,
+                    reply_markup=markup,
+                    caption=text,
+                    parse_mode="MarkDown"
+                )
                 count += 1
                 await asyncio.sleep(1)
             except Exception as err:
@@ -233,5 +240,6 @@ async def confirm_with_button_no_photo(call: CallbackQuery, state: FSMContext) -
                                                                                  chat=(i.get('telegram_id'))))
 
             await call.message.edit_text(
-                text=_("Рассылка проведена успешно! Ее получили: {count} чатов!\n").format(count=count))
+                text=_("Рассылка проведена успешно! Ее получили: {count} чатов!\n").format(count=count)
+            )
         await state.reset_state(with_data=True)

@@ -20,8 +20,10 @@ async def command_start(message: Message, state: FSMContext):
 async def tech_works_menu(message: Message) -> None:
     settings = await db_commands.select_setting(message.from_user.id)
     tech_works = settings.get("technical_works")
-    await message.answer(text=_("Чтобы включить/выключить технические работы, нажмите на кнопку ниже"),
-                         reply_markup=await tech_works_keyboard(tech_works))
+    await message.answer(
+        text=_("Чтобы включить/выключить технические работы, нажмите на кнопку ниже"),
+        reply_markup=await tech_works_keyboard(tech_works)
+    )
 
 
 @dp.callback_query_handler(text="set_up_tech_work")

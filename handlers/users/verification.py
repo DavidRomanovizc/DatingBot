@@ -23,12 +23,21 @@ async def get_contact(message: types.Message) -> None:
     telegram_id = message.from_user.id
     if contact:
         await db_commands.update_user_data(verification=True, telegram_id=telegram_id)
-        await db_commands.update_user_data(phone_number=contact.phone_number, telegram_id=telegram_id)
+        await db_commands.update_user_data(
+            phone_number=contact.phone_number,
+            telegram_id=telegram_id
+        )
         await asyncio.sleep(2)
-        await message.answer(_("Спасибо, {contact_full_name}.\n"
-                               "Ваш номер {contact_phone_number} был получен.")
-                             .format(contact_full_name=contact.full_name, contact_phone_number=contact.phone_number),
-                             reply_markup=ReplyKeyboardRemove())
+        await message.answer(
+            text=_(
+                "Спасибо, {contact_full_name}.\n"
+                "Ваш номер {contact_phone_number} был получен."
+            ).format(
+                contact_full_name=contact.full_name,
+                contact_phone_number=contact.phone_number
+            ),
+            reply_markup=ReplyKeyboardRemove()
+        )
         await asyncio.sleep(4)
         await delete_message(message)
         await message.answer(_("Вы были возвращены в меню"),

@@ -35,6 +35,9 @@ async def order_answer(call: CallbackQuery) -> None:
         await call.message.delete()
         await call.message.answer(_("Отклонено!"))
         await db_commands.delete_user_meetings(telegram_id=call_data[1])
-        await bot.send_message(chat_id=call_data[1], text=_("К сожалению ваше мероприятие не прошло модерацию"),
-                               reply_markup=await poster_keyboard(obj=call))
+        await bot.send_message(
+            chat_id=call_data[1],
+            text=_("К сожалению ваше мероприятие не прошло модерацию"),
+            reply_markup=await poster_keyboard(obj=call)
+        )
     await db_commands.update_user_meetings_data(telegram_id=call_data[1], moderation_process=True)

@@ -1,7 +1,12 @@
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery
 
-from functions.event.extra_features import create_form, check_event_date, add_events_to_user, get_next_random_event_id
+from functions.event.extra_features import (
+    create_form,
+    check_event_date,
+    add_events_to_user,
+    get_next_random_event_id
+)
 from keyboards.inline.poster_inline import poster_keyboard
 from loader import dp, _, bot
 

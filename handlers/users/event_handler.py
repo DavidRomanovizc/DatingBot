@@ -126,7 +126,10 @@ async def finish_registration(message: Message, state: FSMContext) -> None:
     user = await db_commands.select_user_meetings(telegram_id=message.from_user.id)
     photo_id = message.photo[-1].file_id
     markup = await poster_keyboard(obj=message)
-    await db_commands.update_user_meetings_data(telegram_id=message.from_user.id, photo_id=photo_id)
+    await db_commands.update_user_meetings_data(
+        telegram_id=message.from_user.id,
+        photo_id=photo_id
+    )
     await message.answer(_("Фото принято"))
 
     await state.finish()

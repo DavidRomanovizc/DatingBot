@@ -22,8 +22,11 @@ wallet = QiwiWrapper(
     phone_number=load_config().misc.phone_number,
     secret_p2p=load_config().misc.secret_p2p_key
 )
-
-scheduler = AsyncIOScheduler()
+job_defaults = dict(coalesce=False, max_instances=3)
+scheduler = AsyncIOScheduler(
+    timezone=load_config().tg_bot.timezone,
+    job_defaults=job_defaults
+)
 
 detector = NudeDetector()
 classifier = NudeClassifier()
