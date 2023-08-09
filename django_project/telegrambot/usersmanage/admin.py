@@ -23,9 +23,12 @@ class UserSettingsAdmin(admin.ModelAdmin):
 
 @admin.register(NecessaryLink)
 class NecessaryLinkAdmin(admin.ModelAdmin):
-    list_display = ["id",
-                    "link",
-                    "telegram_link_id",
-                    "title"]
+list_display = [
+    "id",
+    "link",
+    "telegram_link_id",
+    "title"
+]
+
     search_fields = ("link__startswith", "title__startswith", "telegram_link_id__startswith")
 
