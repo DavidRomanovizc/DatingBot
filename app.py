@@ -11,6 +11,7 @@ import filters
 from django_project.telegrambot.telegrambot import settings
 # noinspection PyUnresolvedReferences
 from loader import dp, db, scheduler
+from utils.logger import setup_logger
 from utils.notify_admins import AdminNotification
 from utils.set_bot_commands import set_default_commands
 
@@ -32,6 +33,7 @@ def setup_django():
 
 if __name__ == '__main__':
     setup_django()
+    setup_logger("INFO", ["aiogram.bot.api"])
     # noinspection PyUnresolvedReferences
     import middlewares
     # noinspection PyUnresolvedReferences

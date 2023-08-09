@@ -26,7 +26,7 @@ async def get_filters(call: CallbackQuery) -> None:
 
 @dp.callback_query_handler(text="dating_filters")
 async def get_dating_filters(call: CallbackQuery) -> None:
-    await show_dating_filters(call, message=None)
+    await show_dating_filters(obj=call)
 
 
 @dp.callback_query_handler(text="user_age_period")
@@ -37,31 +37,23 @@ async def desired_age(call: CallbackQuery, state: FSMContext) -> None:
 
 @dp.message_handler(state="age_period")
 async def desired_min_age_state(message: types.Message, state: FSMContext) -> None:
-    try:
-
-        messages = message.text
-        int_message = re.findall('[0-9]+', messages)
-        int_messages = "".join(int_message)
-        await db_commands.update_user_data(telegram_id=message.from_user.id, need_partner_age_min=int_messages)
-        await message.answer(_("Теперь введите максимальный возраст"))
-        await state.reset_state()
-        await state.set_state("max_age_period")
-
-    except Exception as err:
-        await message.answer(_("Произошла неизвестная ошибка! Попробуйте еще раз"))
+    messages = message.text
+    int_message = re.findall('[0-9]+', messages)
+    int_messages = "".join(int_message)
+    await db_commands.update_user_data(telegram_id=message.from_user.id, need_partner_age_min=int_messages)
+    await message.answer(_("Теперь введите максимальный возраст"))
+    await state.reset_state()
+    await state.set_state("max_age_period")
 
 
 @dp.message_handler(state="max_age_period")
 async def desired_max_age_state(message: types.Message, state: FSMContext) -> None:
-    try:
-        messages = message.text
-        int_message = re.findall('[0-9]+', messages)
-        int_messages = "".join(int_message)
-        await db_commands.update_user_data(telegram_id=message.from_user.id, need_partner_age_max=int_messages)
-        await state.finish()
-        await show_dating_filters(call=None, message=message)
-    except Exception as err:
-        await message.answer(_("Произошла неизвестная ошибка! Попробуйте еще раз"))
+    messages = message.text
+    int_message = re.findall('[0-9]+', messages)
+    int_messages = "".join(int_message)
+    await db_commands.update_user_data(telegram_id=message.from_user.id, need_partner_age_max=int_messages)
+    await state.finish()
+    await show_dating_filters(obj=message)
 
 
 @dp.callback_query_handler(text="user_need_gender")
@@ -76,7 +68,7 @@ async def desired_gender(call: CallbackQuery, state: FSMContext) -> None:
     await choice_gender(call)
     await call.message.edit_text(_("Данные сохранены"))
     await asyncio.sleep(1)
-    await show_dating_filters(call, message=None)
+    await show_dating_filters(obj=call)
     await state.finish()
 
 
@@ -104,7 +96,7 @@ async def get_hobbies(call: CallbackQuery, state: FSMContext) -> None:
     await call.message.edit_text(_("Данные сохранены"))
     await asyncio.sleep(2)
     if await state.get_state() == "city":
-        await show_dating_filters(call, message=None)
+        await show_dating_filters(obj=call)
     else:
         await get_event_filters(call)
 

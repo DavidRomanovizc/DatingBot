@@ -8,7 +8,13 @@ from typing import Union, Optional
 import aiofiles
 from aiogram import types
 from aiogram.dispatcher import FSMContext
-from aiogram.types import CallbackQuery, ReplyKeyboardRemove, InputFile, InlineKeyboardMarkup, Message
+from aiogram.types import (
+    CallbackQuery,
+    ReplyKeyboardRemove,
+    InputFile,
+    InlineKeyboardMarkup,
+    Message
+)
 from asyncpg import UniqueViolationError
 
 from data.config import load_config
@@ -18,6 +24,7 @@ from keyboards.inline.guide_inline import create_pagination_keyboard
 from keyboards.inline.main_menu_inline import start_keyboard
 from loader import _, bot, scheduler
 from utils.db_api import db_commands
+from utils.db_api.db_commands import check_user_exists, check_user_meetings_exists
 
 
 async def choice_gender(call: CallbackQuery) -> None:
@@ -46,11 +53,14 @@ async def display_profile(call: CallbackQuery, markup: InlineKeyboardMarkup) -> 
     Функция для отображения профиля пользователя
     """
     user = await db_commands.select_user(telegram_id=call.from_user.id)
-    count_referrals = await db_commands.count_all_users_kwarg(referrer_id=call.from_user.id)
+    # count_referrals = await db_commands.count_all_users_kwarg(referrer_id=call.from_user.id)
     user_verification = "✅" if user["verification"] else ""
     gender = "Мужчина" if user.get("sex") == "Мужской" else "Женщина"
+    # user_info_template = _(
+    #     "{}, {} лет, {}, {} {}\n\n{}\n\n<u>Партнерка:</u>\nКоличество приглашенных друзей: {}\nРеферальная ссылка: {}"
+    # )
     user_info_template = _(
-        "{}, {} лет, {}, {} {}\n\n{}\n\n<u>Партнерка:</u>\nКоличество приглашенных друзей: {}\nРеферальная ссылка: {}"
+        "{}, {} лет, {}, {} {}\n\n{}\n\n"
     )
 
     user_info = user_info_template.format(
@@ -60,18 +70,17 @@ async def display_profile(call: CallbackQuery, markup: InlineKeyboardMarkup) -> 
         gender,
         user_verification,
         user["commentary"],
-        count_referrals,
-        f"https://t.me/{load_config().tg_bot.bot_username}?start={call.from_user.id}"
+        # count_referrals,
+        # f"https://t.me/{load_config().tg_bot.bot_username}?start={call.from_user.id}"
     )
 
     await call.message.answer_photo(caption=user_info, photo=user["photo_id"], reply_markup=markup)
 
 
 async def show_dating_filters(
-        call: Optional[CallbackQuery] = None,
-        message: Optional[types.Message] = None
+        obj: Union[CallbackQuery, Message]
 ) -> None:
-    user_id = call.from_user.id if call else message.from_user.id
+    user_id = obj.from_user.id
     user = await db_commands.select_user(telegram_id=user_id)
     markup = await dating_filters_keyboard()
 
@@ -85,7 +94,10 @@ async def show_dating_filters(
         user.get("need_partner_age_max"),
         user.get("need_city"),
     )
-    await (call.message.edit_text(text, reply_markup=markup) if call else message.answer(text, reply_markup=markup))
+    try:
+        await obj.message.edit_text(text, reply_markup=markup)
+    except AttributeError:
+        await obj.answer(text, reply_markup=markup)
 
 
 async def registration_menu(
@@ -104,15 +116,50 @@ async def registration_menu(
                                        supports=support['username'])
     try:
         await obj.message.edit_text(text, reply_markup=markup)
-        scheduler.add_job(send_message_week, trigger="interval", weeks=3, jitter=120, args={obj.message})
+        scheduler.add_job(
+            send_message_week,
+            trigger="interval",
+            weeks=1,
+            jitter=120,
+            args={obj.message}
+        )
     except AttributeError:
         await obj.answer(text, reply_markup=markup)
+
+
+async def check_user_in_db(telegram_id: int, message: Message, username: str) -> None:
+    if not await check_user_exists(telegram_id) and not await check_user_meetings_exists(telegram_id):
+
+        referrer_id = message.text[7:]
+        if referrer_id != "" and referrer_id != telegram_id:
+            await db_commands.add_user(
+                name=message.from_user.full_name,
+                telegram_id=telegram_id,
+                username=username,
+                referrer_id=referrer_id
+            )
+            await bot.send_message(
+                chat_id=referrer_id,
+                text=_("По вашей ссылке зарегистрировался пользователь {}!").format(
+                    message.from_user.username
+                )
+            )
+        else:
+            await db_commands.add_user(
+                name=message.from_user.full_name,
+                telegram_id=telegram_id,
+                username=username
+            )
+        await db_commands.add_meetings_user(telegram_id=telegram_id,
+                                            username=username)
+        if telegram_id in load_config().tg_bot.admin_ids:
+            await db_commands.add_user_to_settings(telegram_id=telegram_id)
 
 
 async def finished_registration(
         state: FSMContext,
         telegram_id: int,
-        message: types.Message
+        message: Message
 ) -> None:
     await state.finish()
     await db_commands.update_user_data(telegram_id=telegram_id, status=True)
@@ -135,7 +182,7 @@ async def finished_registration(
 
 
 async def saving_normal_photo(
-        message: types.Message,
+        message: Message,
         telegram_id: int,
         file_id: int,
         state: FSMContext
@@ -144,17 +191,26 @@ async def saving_normal_photo(
     Функция, сохраняющая фотографию пользователя без цензуры
     """
     try:
-        await db_commands.update_user_data(telegram_id=telegram_id, photo_id=file_id)
+        await db_commands.update_user_data(
+            telegram_id=telegram_id,
+            photo_id=file_id
+        )
 
-        await message.answer(_("Фото принято!"))
+        await message.answer(text=_("Фото принято!"))
     except:
-        await message.answer(_("Произошла ошибка! Попробуйте еще раз либо отправьте другую фотографию. \n"
-                               "Если ошибка осталась, напишите агенту поддержки."))
-    await finished_registration(state, telegram_id, message)
+        await message.answer(
+            text=_("Произошла ошибка! Попробуйте еще раз либо отправьте другую фотографию. \n"
+                   "Если ошибка осталась, напишите агенту поддержки.")
+        )
+    await finished_registration(
+        state=state,
+        telegram_id=telegram_id,
+        message=message
+    )
 
 
 async def saving_censored_photo(
-        message: types.Message,
+        message: Message,
         telegram_id: int,
         state: FSMContext,
         out_path: Union[str, pathlib.Path],
@@ -187,11 +243,15 @@ async def saving_censored_photo(
         await message.answer(_("Выберите, что вы хотите изменить: "), reply_markup=markup)
         await state.reset_state()
     elif flag == "registration":
-        await finished_registration(state, telegram_id, message)
+        await finished_registration(
+            state=state,
+            telegram_id=telegram_id,
+            message=message
+        )
 
 
 async def update_normal_photo(
-        message: types.Message,
+        message: Message,
         telegram_id: int,
         file_id: int,
         state: FSMContext,

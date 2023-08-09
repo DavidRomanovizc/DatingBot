@@ -18,7 +18,7 @@ async def start_keyboard(obj: Union[CallbackQuery, Message]) -> InlineKeyboardMa
     view_ques = InlineKeyboardButton(text=_("💌 Найти пару"), callback_data="find_ques")
     meetings = InlineKeyboardButton(text=_("🗓️ Афиша"), callback_data="meetings")
     support = InlineKeyboardButton(text=_("🆘 Поддержка"), callback_data="support")
-    information = InlineKeyboardButton(text=_("✏️ Информация"), callback_data="information")
+    information = InlineKeyboardButton(text=_("ℹ️ Информация"), callback_data="information")
     if not status:
         markup.row(registration)
         markup.row(support, information)

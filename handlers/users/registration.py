@@ -8,7 +8,6 @@ from aiogram.utils.markdown import quote_html
 from asyncpg import UniqueViolationError
 
 from functions.main_app.auxiliary_tools import choice_gender, saving_normal_photo, saving_censored_photo
-from functions.main_app.determin_location import Location
 from keyboards.default.get_location_default import location_keyboard
 from keyboards.default.get_photo import get_photo_from_profile
 from keyboards.inline.change_data_profile_inline import gender_keyboard
@@ -111,20 +110,40 @@ async def get_age(message: types.Message, state: FSMContext) -> None:
     except Exception as err:
         await message.answer(_("Вы ввели не число"))
         return
-    await message.answer(text=_("Введите город в котором проживаете.\n"
-                                "Для точного определения местоположения, можете нажать на кнопку ниже!"),
+    await message.answer(text=_("Нажмите на кнопку ниже, чтобы определить ваш местоположение!"),
                          reply_markup=markup)
     await RegData.town.set()
 
 
-@dp.message_handler(state=RegData.town)
-async def get_city(message: types.Message) -> None:
-    try:
-        loc = await Location(message=message)
-        await loc.det_loc_in_registration(message)
-    except Exception as err:
-        await message.answer(_("Произошла неизвестная ошибка! Попробуйте еще раз.\n"
-                               "Вероятнее всего вы ввели город неправильно"))
+# TODO: Нужно отловить None
+# @dp.message_handler(state=RegData.town)
+# async def get_city(message: types.Message) -> None:
+#     try:
+#         loc = await Location(message=message)
+#         await loc.det_loc_in_registration(message)
+#     except NothingFound:
+#         await message.answer("Мы не смогли найти такой город, попробуйте еще раз")
+
+
+@dp.message_handler(content_types=['location'], state=RegData.town)
+async def fill_form(message: types.Message) -> None:
+    x = message.location.longitude
+    y = message.location.latitude
+    address = await client.address(f"{x}", f"{y}")
+    address = address.split(",")[0:2]
+    address = ",".join(address)
+    await db_commands.update_user_data(
+        telegram_id=message.from_user.id,
+        city=address,
+        longitude=x,
+        latitude=y,
+        need_city=address
+    )
+
+    await asyncio.sleep(1)
+
+    await message.answer(_("И напоследок, Пришлите мне вашу фотографию"), reply_markup=await get_photo_from_profile())
+    await RegData.photo.set()
 
 
 @dp.callback_query_handler(text="yes_all_good", state=RegData.town)
@@ -132,29 +151,6 @@ async def get_hobbies(call: CallbackQuery) -> None:
     await call.message.delete()
     await call.message.answer(_("И напоследок, Пришлите мне вашу фотографию"),
                               reply_markup=await get_photo_from_profile())
-    await RegData.photo.set()
-
-
-@dp.message_handler(content_types=['location'], state=RegData.town)
-async def fill_form(message: types.Message) -> None:
-    try:
-        x = message.location.longitude
-        y = message.location.latitude
-        address = await client.address(f"{x}", f"{y}")
-        address = address.split(",")[0:2]
-        address = ",".join(address)
-        await db_commands.update_user_data(
-            telegram_id=message.from_user.id,
-            city=address,
-            longitude=x,
-            latitude=y,
-            need_city=address
-        )
-    except Exception as err:
-        pass
-    await asyncio.sleep(1)
-
-    await message.answer(_("И напоследок, Пришлите мне вашу фотографию"), reply_markup=await get_photo_from_profile())
     await RegData.photo.set()
 
 
