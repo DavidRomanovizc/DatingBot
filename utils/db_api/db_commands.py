@@ -8,7 +8,12 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_project.telegrambot.tele
 import django
 
 django.setup()
-from django_project.telegrambot.usersmanage.models import User, UserMeetings, SettingModel
+from django_project.telegrambot.usersmanage.models import (
+    User,
+    UserMeetings,
+    SettingModel,
+    ViewedProfile
+)
 
 
 @sync_to_async
@@ -18,14 +23,27 @@ def select_user(telegram_id: int):
 
 
 @sync_to_async
+def select_user_object(telegram_id: int):
+    user = User.objects.filter(telegram_id=telegram_id).first()
+    return user
+
+
+@sync_to_async
+def add_profile_to_viewed(user, viewed_profile):
+    return ViewedProfile.objects.create(viewer=user, profile=viewed_profile)
+
+
+@sync_to_async
 def check_user_exists(telegram_id: int):
     user_exists = User.objects.filter(telegram_id=telegram_id).exists()
     return user_exists
+
 
 @sync_to_async
 def check_user_meetings_exists(telegram_id: int):
     user_exists = UserMeetings.objects.filter(telegram_id=telegram_id).exists()
     return user_exists
+
 
 @sync_to_async
 def add_user(telegram_id, name, username, referrer_id=None):

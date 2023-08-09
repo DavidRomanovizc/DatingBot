@@ -5,11 +5,20 @@ from abc import ABC, abstractmethod
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery
 
-from functions.dating.create_forms_funcs import create_questionnaire, rand_user_list, create_questionnaire_reciprocity
+from functions.dating.create_forms_funcs import (
+    create_questionnaire,
+    rand_user_list,
+    create_questionnaire_reciprocity
+)
 from functions.dating.get_next_user_func import get_next_user
 from keyboards.inline.main_menu_inline import start_keyboard
-from keyboards.inline.questionnaires_inline import action_keyboard, action_reciprocity_keyboard, user_link_keyboard
+from keyboards.inline.questionnaires_inline import (
+    action_keyboard,
+    action_reciprocity_keyboard,
+    user_link_keyboard
+)
 from loader import bot, _, dp
+from utils.db_api import db_commands
 
 
 class ActionStrategy(ABC):
@@ -149,7 +158,12 @@ async def handle_start_finding(call: CallbackQuery, state: FSMContext) -> None:
 @dp.callback_query_handler(action_keyboard.filter(action=["like", "dislike", "stopped"]),
                            state='finding')
 async def handle_action(call: CallbackQuery, state: FSMContext, callback_data: dict[str, str]) -> None:
-    action = callback_data['action']
+    action = callback_data["action"]
+    profile_id = callback_data["target_id"]
+    user = await db_commands.select_user_object(telegram_id=call.from_user.id)
+    viewed_profile = await db_commands.select_user_object(telegram_id=profile_id)
+    await db_commands.add_profile_to_viewed(user=user, viewed_profile=viewed_profile)
+
     strategy_mapping = {
         "like": LikeAction(),
         "dislike": DislikeAction(),

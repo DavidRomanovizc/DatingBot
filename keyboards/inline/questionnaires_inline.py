@@ -13,15 +13,15 @@ async def questionnaires_keyboard(target_id, monitoring=False) -> InlineKeyboard
     like = InlineKeyboardButton(text='❤️', callback_data=action_keyboard.new(action="like",
                                                                              target_id=target_id))
     dislike = InlineKeyboardButton(text='👎', callback_data=action_keyboard.new(action="dislike",
-                                                                               target_id=1))
+                                                                               target_id=target_id))
     go_back = InlineKeyboardButton(text=_("⏪️ Остановить"),
                                    callback_data=action_keyboard.new(action="stopped",
-                                                                     target_id=1))
+                                                                     target_id=target_id))
     ban = InlineKeyboardButton(text=_("🚫 Забанить"),
                                callback_data=action_keyboard_monitoring.new(action="ban",
                                                                             target_id=target_id))
     next_btn = InlineKeyboardButton(text=_("Следующий"), callback_data=action_keyboard_monitoring.new(action="next",
-                                                                                                      target_id=1))
+                                                                                                      target_id=target_id))
     if not monitoring:
         markup.row(like, dislike)
         markup.add(go_back)
@@ -38,7 +38,7 @@ async def reciprocity_keyboard(user_for_like) -> InlineKeyboardMarkup:
                                                                                          user_for_like=user_for_like))
     dislike = InlineKeyboardButton(text='👎',
                                    callback_data=action_reciprocity_keyboard.new(action="dislike_reciprocity",
-                                                                                 user_for_like=1))
+                                                                                 user_for_like=user_for_like))
     markup.row(like, dislike)
 
     return markup

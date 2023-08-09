@@ -82,12 +82,13 @@ class User(DateMixin):
     instagram = models.CharField(
         max_length=200, verbose_name="Ник в инстаграме", null=True, blank=True
     )
-    events = ArrayField(models.CharField(
-        max_length=200), default=list
+    events = ArrayField(
+        models.CharField(max_length=200), default=list
     )
     id_of_events_seen = ArrayField(
         models.CharField(max_length=255), default=list
     )
+    viewed_profiles = models.ManyToManyField('self', through='ViewedProfile', symmetrical=False)
 
     def __str__(self):
         return f"№{self.id} ({self.telegram_id}) - {self.name}"
@@ -98,12 +99,20 @@ class User(DateMixin):
             self.save()
 
 
+class ViewedProfile(models.Model):
+    viewer = models.ForeignKey(User, related_name='viewer', on_delete=models.CASCADE)
+    profile = models.ForeignKey(User, related_name='profile', on_delete=models.CASCADE)
+    viewed_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('viewer', 'profile')
+
+
 class UserMeetings(DateMixin):
     class Meta:
         verbose_name = "Пользователь Мероприятий",
         verbose_name_plural = "Пользователи Мероприятий"
 
-    id = models.AutoField(primary_key=True)
     telegram_id = models.PositiveBigIntegerField(
         unique=True, default=1, verbose_name="ID пользователя Телеграм"
     )
