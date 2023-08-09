@@ -4,6 +4,8 @@ from abc import ABC, abstractmethod
 
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery
+from django.db import IntegrityError
+from loguru import logger
 
 from functions.dating.create_forms_funcs import (
     create_questionnaire,
@@ -162,7 +164,10 @@ async def handle_action(call: CallbackQuery, state: FSMContext, callback_data: d
     profile_id = callback_data["target_id"]
     user = await db_commands.select_user_object(telegram_id=call.from_user.id)
     viewed_profile = await db_commands.select_user_object(telegram_id=profile_id)
-    await db_commands.add_profile_to_viewed(user=user, viewed_profile=viewed_profile)
+    try:
+        await db_commands.add_profile_to_viewed(user=user, viewed_profile=viewed_profile)
+    except IntegrityError:
+        logger.error("Дубликаты профилей")
 
     strategy_mapping = {
         "like": LikeAction(),

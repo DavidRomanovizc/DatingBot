@@ -143,7 +143,14 @@ def select_user_username(username: str):
 
 # https://stackoverflow.com/questions/10040143/and-dont-work-with-filter-in-django
 @sync_to_async
-def search_users(need_partner_sex, need_age_min, need_age_max, user_need_city):
+def search_users(
+        need_partner_sex,
+        need_age_min,
+        need_age_max,
+        user_need_city,
+        offset: int,
+        limit: int
+):
     query = (
             Q(is_banned=False) &
             Q(sex=need_partner_sex) &
@@ -154,7 +161,7 @@ def search_users(need_partner_sex, need_age_min, need_age_max, user_need_city):
             Q(city=user_need_city) &
             Q(status=True)
     )
-    users = User.objects.filter(query).values()
+    users = User.objects.filter(query).values()[offset:offset + limit]
     return users
 
 
@@ -164,8 +171,8 @@ def search_event_forms():
 
 
 @sync_to_async
-def search_users_all():
-    return User.objects.filter(Q(is_banned=False) & Q(status=True)).all().values()
+def search_users_all(offset: int, limit: int):
+    return User.objects.filter(Q(is_banned=False) & Q(status=True)).all().values()[offset:offset + limit]
 
 
 @sync_to_async
