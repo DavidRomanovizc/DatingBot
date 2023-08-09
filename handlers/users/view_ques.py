@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery
 from django.db import IntegrityError
-from loguru import logger
+from loader import logger
 
 from functions.dating.create_forms_funcs import (
     create_questionnaire,

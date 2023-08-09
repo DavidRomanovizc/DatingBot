@@ -4,7 +4,7 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from aiogram.utils.markdown import escape_md, quote_html
-from loguru import logger
+from loader import logger
 
 from filters.IsAdminFilter import IsAdmin
 from keyboards.admin.inline.mailing import confirm_with_button_keyboard, add_buttons_keyboard

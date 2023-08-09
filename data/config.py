@@ -30,16 +30,12 @@ class TgBot:
     I18N_DOMAIN: str
     moderate_chat: str
     use_redis: bool
-    bot_username: str
 
 
 @dataclass(frozen=True)
 class Miscellaneous:
     secret_key: str
     yandex_api_key: str
-    qiwi_key: str
-    phone_number: str
-    secret_p2p_key: str
 
 
 @dataclass(frozen=True)
@@ -84,7 +80,6 @@ def load_config() -> Config:
             I18N_DOMAIN='dating',
             moderate_chat=env.str("MODERATE_CHAT"),
             use_redis=env.bool("USE_REDIS"),
-            bot_username=env.str("BOT_USERNAME")
         ),
         db=DataBaseConfig(
             user=env.str('DB_USER'),
@@ -96,9 +91,6 @@ def load_config() -> Config:
         misc=Miscellaneous(
             secret_key=env.str("SECRET_KEY"),
             yandex_api_key=env.str('API_KEY'),
-            qiwi_key=env.str("QIWI_KEY"),
-            phone_number=env.str("PHONE_NUMBER"),
-            secret_p2p_key=env.str("SECRET_P2")
         )
     )
 

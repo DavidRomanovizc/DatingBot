@@ -15,8 +15,6 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
-    'jazzmin',
-    'django_project.telegrambot.usersmanage',
     'django_project.telegrambot.common',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -24,6 +22,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'jazzmin',
+    "django_project.telegrambot.usersmanage",
 ]
 
 MIDDLEWARE = [

@@ -2,7 +2,7 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery
 from aiogram.utils.markdown import hcode
-from loguru import logger
+from loader import logger
 
 from keyboards.inline.main_menu_inline import start_keyboard
 from loader import dp, _

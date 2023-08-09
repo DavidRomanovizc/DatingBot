@@ -2,7 +2,7 @@ from typing import Optional
 
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.utils.exceptions import BadRequest
-from loguru import logger
+from loader import logger
 
 from keyboards.inline.questionnaires_inline import (
     questionnaires_keyboard,
