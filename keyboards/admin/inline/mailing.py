@@ -6,9 +6,7 @@ from loader import _
 async def mailing_menu():
     markup = InlineKeyboardMarkup(row_width=1)
     mailing = InlineKeyboardButton("📧 Рассылка", callback_data="adv:mailing")
-    ref_links = InlineKeyboardButton("🔗 Реферальные ссылки", callback_data="adv:ref_urls")
-    required_sub = InlineKeyboardButton("🧑‍💻 Обязательная подписка", callback_data="adv:required_subs")
-    markup.add(mailing, ref_links, required_sub)
+    markup.add(mailing)
     return markup
 
 
