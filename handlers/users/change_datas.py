@@ -24,7 +24,10 @@ from utils.misc.profanityFilter import censored_message
 async def start_change_data(call: CallbackQuery) -> None:
     markup = await change_info_keyboard()
     await delete_message(call.message)
-    await call.message.answer(_("Выберите, что вы хотите изменить: "), reply_markup=markup)
+    await call.message.answer(
+        text="<u>Ваши данные: </u>\n",
+        reply_markup=markup
+    )
 
 
 @dp.callback_query_handler(text='name')

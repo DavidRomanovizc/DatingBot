@@ -46,4 +46,3 @@ class UserMeetings(TimeBasedModel):
 
     def __str__(self):
         return f"№{self.id} ({self.telegram_id} - {self.username})"
-

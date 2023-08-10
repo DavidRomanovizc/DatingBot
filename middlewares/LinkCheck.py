@@ -2,7 +2,7 @@ from aiogram import types
 from aiogram.dispatcher.middlewares import BaseMiddleware
 
 from keyboards.inline.necessary_links_inline import necessary_links_keyboard
-from loader import bot, logger
+from loader import bot, logger, _
 from utils.db_api import db_commands
 
 
@@ -23,10 +23,15 @@ class LinkCheckMiddleware(BaseMiddleware):
                         count += 1
 
                 if len(links_ids) != count:
-                    await message.answer('Вы подписались не на все каналы! Чтобы продолжить пользоваться ботом, '
-                                         'подпишитесь! Ссылки ниже: ',
-                                         reply_markup=await necessary_links_keyboard(telegram_id=message.from_user.id,
-                                                                                     links_db=links_db))
+                    await message.answer(
+                        text=_(
+                            "Вы подписались не на все каналы! Чтобы продолжить пользоваться ботом, "
+                            "подпишитесь! Ссылки ниже: "
+                        ),
+                        reply_markup=await necessary_links_keyboard(
+                            telegram_id=message.from_user.id,
+                            links_db=links_db)
+                    )
                     raise BaseException
             except Exception as err:
                 logger.error(err)
