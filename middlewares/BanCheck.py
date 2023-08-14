@@ -5,10 +5,9 @@ from aiogram.dispatcher.handler import CancelHandler
 from aiogram.dispatcher.middlewares import BaseMiddleware
 
 from handlers.users.start_handler import register_user
-from loader import logger
-
 from keyboards.inline.admin_inline import unban_user_keyboard
 from loader import _
+from loader import logger
 from utils.db_api import db_commands
 
 
@@ -25,12 +24,13 @@ class BanMiddleware(BaseMiddleware):
         user = await db_commands.select_user(telegram_id=call.from_user.id)
         is_banned = user.get("is_banned")
         if (user is not None and is_banned) and \
-                (call.data != "unban" and
-                 call.data != "unban_menu" and
-                 call.data != "check_price" and
-                 call.data != "pay_qiwi" and
-                 call.data != "check_payment" and
-                 call.data != "cancel_payment"):
+                (
+                        call.data != "unban" and
+                        call.data != "unban_menu" and
+                        call.data != "yoomoney:check_payment" and
+                        call.data != "cancel_payment" and
+                        call.data != "yoomoney"
+                ):
             await self.check_ban_user(call=call)
 
     async def check_ban_user(

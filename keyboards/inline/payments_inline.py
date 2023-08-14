@@ -4,9 +4,16 @@ from yarl import URL
 from loader import _
 
 
-async def payments_keyboard(url: str | URL = None) -> InlineKeyboardMarkup:
+async def payment_menu_keyboard() -> InlineKeyboardMarkup:
+    markup = InlineKeyboardMarkup()
+    yoomoney = InlineKeyboardButton(text=_("💳 ЮMoney"), callback_data="yoomoney")
+    markup.add(yoomoney)
+    return markup
+
+
+async def yoomoney_keyboard(url: str | URL = None) -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup(row_width=1)
-    pay_qiwi = InlineKeyboardButton(text=_("💳 ЮMoney"), url=url)
-    check_prices = InlineKeyboardButton(text=_("🔄 Проверить оплату"), callback_data="check_payment")
-    markup.add(pay_qiwi, check_prices)
+    pay_yoomoney = InlineKeyboardButton(text=_("💳 Оплатить"), url=url)
+    check_prices = InlineKeyboardButton(text=_("🔄 Проверить оплату"), callback_data="yoomoney:check_payment")
+    markup.add(pay_yoomoney, check_prices)
     return markup
