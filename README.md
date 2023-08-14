@@ -35,10 +35,30 @@ If you get an answer like this, it means that `Python` is installed.
 $ Python 3.9.5
 ```
 
-#### Then fork the DatingBot
+#### Then clone the DatingBot
 
 ```sh
-$ https://github.com/DavidRomanovizc/DatingBot.git
+$ git clone https://github.com/DavidRomanovizc/DatingBot.git
+```
+
+and create a Virtual Environment
+
+```sh
+$ python -m venv venv
+```
+
+Activate the virtual environment:
+
+<u>On Windows:</u>
+
+```sh
+$ venv\Scripts\activate
+```
+
+<u>On macOS and Linux:</u>
+
+```sh
+$ source venv/bin/activate
 ```
 
 and install requirements
