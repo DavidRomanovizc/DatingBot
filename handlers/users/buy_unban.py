@@ -1,65 +1,73 @@
-from typing import Union
+import uuid
 
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery
-from glQiwiApi import types as qiwi_types
 
+from data.config import load_config
 from keyboards.inline.admin_inline import unban_user_keyboard
-from keyboards.inline.payments_inline import payments_keyboard, making_payment, check_payment_keyboard
-from loader import wallet, dp, bot, _
+from keyboards.inline.main_menu_inline import start_keyboard
+from keyboards.inline.payments_inline import payments_keyboard
+from loader import dp, bot, _, wallet
 from utils.db_api import db_commands
-
-
-async def create_payment(amount: Union[float, int] = 1) -> qiwi_types.Bill:
-    async with wallet:
-        return await wallet.create_p2p_bill(amount=amount)
+from utils.yoomoney.types import PaymentSource
 
 
 @dp.callback_query_handler(text="unban")
-async def get_payment(call: CallbackQuery) -> None:
-    await call.answer(cache_time=60)
-    await call.message.edit_text(_("<b>💳 Стоимость разбана - 600</b>\n"
-                                   "├Чтобы проверить актуальность цен, нажмите на кнопку \n<b>├🔄 Проверить цены</b>\n"
-                                   "├Если у вас нет Qiwi или нет возможности\n├оплатить с помощью киви,"
-                                   " напишите агенту поддержки"),
-                                 reply_markup=await payments_keyboard("unban"))
+async def get_payment(call: CallbackQuery, state: FSMContext) -> None:
+    payment_form = await wallet.create_payment_form(
+        amount_rub=2,
+        unique_label=uuid.uuid4().hex,
+        payment_source=PaymentSource.YOOMONEY_WALLET,
+        success_redirect_url=load_config().misc.redirect_url,
+    )
+
+    await call.message.edit_text(
+        text=_(
+            "<b>💳 Стоимость разбана - 600</b>\n"
+            "├Чтобы проверить актуальность цен, нажмите на кнопку \n"
+            "├Оплата обычно приходить в течение 1-3 минут\n\n"
+        ),
+        reply_markup=await payments_keyboard(url=payment_form.link_for_customer)
+    )
+
+    await state.set_state("payment")
+    await state.update_data(
+        {
+            "label": payment_form.payment_label,
+            "form": payment_form.link_for_customer
+        }
+    )
+
+
+@dp.callback_query_handler(text="check_payment", state="payment")
+async def check_payment(call: CallbackQuery, state: FSMContext) -> None:
+    data = await state.get_data()
+    payment_is_completed: bool = await wallet.check_payment_on_successful(label=data.get("label"))
+    markup = await start_keyboard(obj=call)
+    if payment_is_completed:
+        await call.message.edit_text(
+            text=_(
+                "Поздравляем! Вы были разрабанены"
+            ),
+            reply_markup=markup
+        )
+        await db_commands.update_user_data(telegram_id=call.from_user.id, is_banned=False)
+        await state.reset_state()
+    else:
+        await call.message.edit_text(
+            text=_(
+                "Оплата не прошла! Подождите минут 10, а затем еще раз попробуйте нажать кнопку ниже"
+            ),
+            reply_markup=await payments_keyboard(url=data.get("form"))
+        )
+
+
+@dp.callback_query_handler(state='payment', text='unban_menu')
+async def cancel_payment(call: CallbackQuery, state: FSMContext) -> None:
+    await call.message.answer(_("Вы забанены!"), reply_markup=await unban_user_keyboard())
+    await state.reset_state()
 
 
 @dp.callback_query_handler(text="check_price")
 async def check_price(call: CallbackQuery) -> None:
     await bot.answer_callback_query(call.id, text=_("✔️ Цена актуальна"))
-
-
-@dp.callback_query_handler(text='pay_qiwi')
-async def payment(call: CallbackQuery, state: FSMContext) -> None:
-    await call.answer(cache_time=60)
-    bill = await create_payment()
-
-    await call.message.edit_text(_("После оплаты нажмите <b>Проверить оплату</b>\n"
-                                   "Если не получается оплатить по странице ниже"),
-                                 reply_markup=await making_payment(bill))
-    await state.set_state("payment")
-    await state.update_data(bill=bill)
-
-
-@dp.callback_query_handler(state="payment", text="check_payment")
-async def successful_payment(call: CallbackQuery, state: FSMContext) -> None:
-    await call.answer(cache_time=60)
-    async with state.proxy() as data:
-        bill: qiwi_types.Bill = data.get("bill")
-    status = await bill.check()
-    if status:
-        await call.message.edit_text(_("Оплата прошла успешно!"))
-        await db_commands.update_user_data(telegram_id=call.from_user.id, is_banned=False)
-        await state.reset_state(with_data=False)
-    else:
-        await call.message.answer(_("Оплата не прошла! Подождите минут 10, а затем еще раз попробуйте нажать кнопку "
-                                    "ниже"),
-                                  reply_markup=await check_payment_keyboard())
-
-
-@dp.callback_query_handler(state='payment', text='cancel_payment')
-async def cancel_payment(call: CallbackQuery, state: FSMContext) -> None:
-    await call.answer(cache_time=60)
-    await call.message.edit_text(_("Вы забанены!"), reply_markup=await unban_user_keyboard())
-    await state.reset_state()

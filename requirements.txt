@@ -4,18 +4,21 @@ loguru==0.7.0
 asyncpg==0.27.0
 Django==4.2
 psycopg2-binary==2.9.6
-jsonfield
+jsonfield~=3.1.0
 asgiref==3.6.0
 uuid~=1.30
 pip==23.1
 setuptools==67.6.1
-requests==2.28.2
-django-jazzmin
-better_profanity
+django-jazzmin~=2.6.0
+better_profanity~=0.7.0
 pytest==7.3.1
-numpy==1.24.2
 aiohttp==3.8.4
 pytest-asyncio==0.21.0
-glqiwiapi~=1.1.4 # Don't update the version of this library
 APScheduler==3.10.1
 NudeNet~=2.0.9
+yarl~=1.8.2
+aiofiles~=23.1.0
+pre-commit~=3.3.3
+testresources
+pydantic~=1.10.2
+redis~=4.6.0

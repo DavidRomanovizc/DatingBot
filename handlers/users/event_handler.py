@@ -4,7 +4,6 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery, Message, ContentType
 from aiogram.utils.exceptions import MessageNotModified, MessageToEditNotFound, BadRequest
-from loguru import logger
 
 from data.config import load_config
 from functions.event.extra_features import check_event_date
@@ -18,29 +17,26 @@ from utils.db_api import db_commands
 
 @dp.callback_query_handler(text="meetings")
 async def view_meetings_handler(call: CallbackQuery) -> None:
+    markup = await poster_keyboard(obj=call)
     try:
         await check_event_date(call.from_user.id)
     except TypeError:
         pass
-    user = await db_commands.select_user_meetings(telegram_id=call.from_user.id)
-    is_admin = user.get("is_admin")
-    is_verification = user.get("verification_status")
     text = _("Вы перешли в меню афиш")
     try:
-        await call.message.edit_text(text, reply_markup=await poster_keyboard(is_admin, is_verification))
+        await call.message.edit_text(text, reply_markup=markup)
     except MessageToEditNotFound:
-        await call.message.answer(text, reply_markup=await poster_keyboard(is_admin, is_verification))
+        await call.message.answer(text, reply_markup=markup)
     except BadRequest:
-        await call.message.answer(text, reply_markup=await poster_keyboard(is_admin, is_verification))
+        await call.message.answer(text, reply_markup=markup)
+
 
 @dp.callback_query_handler(text="create_poster")
 async def registrate_poster_name(call: CallbackQuery, state: FSMContext) -> None:
     user = await db_commands.select_user_meetings(telegram_id=call.from_user.id)
-    is_admin = user.get("is_admin")
-    is_verification = user.get("verification_status")
     moderation_process = user.get("moderation_process")
+    markup = await poster_keyboard(obj=call)
     try:
-        # TODO: Проверить как это работает
         if moderation_process:
             await call.message.edit_text(_("Введите название мероприятие"),
                                          reply_markup=await cancel_registration_keyboard())
@@ -49,7 +45,7 @@ async def registrate_poster_name(call: CallbackQuery, state: FSMContext) -> None
             try:
                 await call.message.edit_text(
                     "Вы уже создали мероприятие, которое проходит модерацию. Дождитесь проверки, пожалуйста",
-                    reply_markup=await poster_keyboard(is_admin, is_verification))
+                    reply_markup=markup)
             except MessageNotModified:
                 await call.answer(
                     _("Прочитайте сообщение и не нажимайте на кнопку, пока ваше мероприятие не пройдет модерацию"),
@@ -62,7 +58,7 @@ async def registrate_poster_name(call: CallbackQuery, state: FSMContext) -> None
             await db_commands.add_meetings_user(telegram_id=call.from_user.id,
                                                 username="None")
         await call.message.edit_text(_("Произошла ошибка, попробуйте еще раз"),
-                                     reply_markup=await poster_keyboard(is_admin, is_verification))
+                                     reply_markup=markup)
 
 
 @dp.message_handler(state="register_handler_name")
@@ -91,7 +87,6 @@ async def process_simple_calendar(call: CallbackQuery, callback_data, state: FSM
             return
         await state.set_state("register_handler_place")
     except Exception as err:
-        logger.info(err)
         pass
 
 
@@ -103,7 +98,6 @@ async def send_city(message: types.Message) -> None:
     except Exception as err:
         await message.answer(_("Произошла неизвестная ошибка! Попробуйте еще раз.\n"
                                "Вероятнее всего вы ввели город неправильно"))
-        logger.error(err)
 
 
 @dp.callback_query_handler(text="yes_all_good", state="register_handler_place")
@@ -112,7 +106,7 @@ async def registrate_poster_commentary(call: CallbackQuery, state: FSMContext) -
         await call.message.edit_text(_("Хорошо, теперь напишите короткое или длинное описание вашего мероприятия"),
                                      reply_markup=await cancel_registration_keyboard())
     except Exception as err:
-        logger.info(err)
+        pass
     await state.set_state("register_handler_commentary")
 
 
@@ -123,34 +117,35 @@ async def registrate_poster_commentary(message: Message, state: FSMContext) -> N
                              reply_markup=await cancel_registration_keyboard())
         await db_commands.update_user_meetings_data(telegram_id=message.from_user.id, commentary=message.text)
     except Exception as err:
-        logger.info(err)
+        pass
     await state.set_state("register_handler_poster")
 
 
 @dp.message_handler(content_types=ContentType.PHOTO, state="register_handler_poster")
 async def finish_registration(message: Message, state: FSMContext) -> None:
     user = await db_commands.select_user_meetings(telegram_id=message.from_user.id)
-    is_admin = user.get("is_admin")
-    is_verification = user.get("verification_status")
     photo_id = message.photo[-1].file_id
-
-    await db_commands.update_user_meetings_data(telegram_id=message.from_user.id, photo_id=photo_id)
+    markup = await poster_keyboard(obj=message)
+    await db_commands.update_user_meetings_data(
+        telegram_id=message.from_user.id,
+        photo_id=photo_id
+    )
     await message.answer(_("Фото принято"))
 
     await state.finish()
 
     document = {
+        "telegram_id": message.from_user.id,
         "title": user.get("event_name"),
         "date": user.get("time_event"),
         "place": user.get("venue"),
         "description": user.get("commentary"),
-        "photo_id": photo_id,
-        "telegram_id": message.from_user.id
+        "photo_id": photo_id
     }
-    await db_commands.update_user_meetings_data(telegram_id=message.from_user.id, moderation_process=False)
+    await db_commands.update_user_meetings_data(telegram_id=message.from_user.id, moderation_process=True)
     await ME.send_event_message(text=document, bot=bot, chat_id=load_config().tg_bot.moderate_chat, moderate=True)
     await message.answer(_("Ваше мероприятие отправлено на модерацию"),
-                         reply_markup=await poster_keyboard(is_admin, is_verification))
+                         reply_markup=markup)
 
 
 @dp.callback_query_handler(text="my_event")

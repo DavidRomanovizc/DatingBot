@@ -16,13 +16,13 @@ class IsMaintenance(BaseMiddleware):
     async def on_process_message(self, message: types.Message, data: dict):
         try:
 
-            await self.check_tech_works(message)
+            await self.check_tech_works(message=message)
         except AttributeError:
             pass
 
     async def on_process_callback_query(self, call: types.CallbackQuery, data: dict):
         try:
-            await self.check_tech_works(call)
+            await self.check_tech_works(call=call)
         except AttributeError:
             pass
 
@@ -31,11 +31,11 @@ class IsMaintenance(BaseMiddleware):
         setting = await db_commands.select_setting_tech_work()
 
         if call and setting.get("technical_works") and call.from_user.id not in load_config().tg_bot.admin_ids:
-            await call.answer("Ведутся технические работы!!!", show_alert=True)
+            await call.answer("Ведутся технические работы", show_alert=True)
             raise CancelHandler()
         else:
             pass
         if message:
             if setting.get("technical_works") and message.from_user.id not in load_config().tg_bot.admin_ids:
-                await message.answer("Ведутся технические работы!!!")
+                await message.answer("Ведутся технические работы")
                 raise CancelHandler()

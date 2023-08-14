@@ -3,7 +3,9 @@ from typing import Union, NoReturn
 from aiogram import types
 from aiogram.dispatcher.handler import CancelHandler
 from aiogram.dispatcher.middlewares import BaseMiddleware
-from loguru import logger
+
+from handlers.users.start_handler import register_user
+from loader import logger
 
 from keyboards.inline.admin_inline import unban_user_keyboard
 from loader import _
@@ -16,7 +18,6 @@ class BanMiddleware(BaseMiddleware):
         super(BanMiddleware, self).__init__()
 
     async def on_process_message(self, message: types.Message, data: dict) -> None:
-        user = await db_commands.select_user(telegram_id=message.from_user.id)
         await self.check_ban_user(message)
 
     async def on_process_callback_query(self, call: types.CallbackQuery, data: dict) -> None:
@@ -42,24 +43,30 @@ class BanMiddleware(BaseMiddleware):
             is_banned = user.get("is_banned")
             try:
                 if is_banned:
-                    await call.message.answer(_("Вы забанены!"), reply_markup=await unban_user_keyboard())
+                    await call.message.answer(
+                        text=_("Вы забанены!"),
+                        reply_markup=await unban_user_keyboard()
+                    )
             except TypeError as err:
                 logger.info(err)
                 raise CancelHandler()
             raise CancelHandler()
 
         if message:
-            user = await db_commands.select_user(telegram_id=message.from_user.id)
             try:
+                user = await db_commands.select_user(telegram_id=message.from_user.id)
                 is_banned = user.get("is_banned")
 
                 if is_banned:
                     try:
-                        await message.answer(_("Вы забанены!"), reply_markup=await unban_user_keyboard())
+                        await message.answer(
+                            text=_("Вы забанены!"),
+                            reply_markup=await unban_user_keyboard()
+                        )
                     except TypeError as err:
                         logger.info(err)
                         raise CancelHandler()
                     raise CancelHandler()
             except AttributeError as err:
                 logger.info(err)
-                # await register_user(message)
+                await register_user(message)

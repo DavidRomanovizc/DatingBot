@@ -1,41 +1,29 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.utils.callback_data import CallbackData
 
 from loader import _
 
+guide_callback = CallbackData(
+    "guide_callback",
+    "action",
+    "value"
+)
 
-async def first_str_keyboard() -> InlineKeyboardMarkup:
+
+async def create_pagination_keyboard(step: int, total_steps: int) -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup()
-    forward = InlineKeyboardButton(text=_("Вперед ➡️"), callback_data='forward_f')
-    back = InlineKeyboardButton(text=_("❌ Закрыть"), callback_data='back_with_delete')
-    markup.add(forward)
-    markup.add(back)
-    return markup
-
-
-async def second_str_keyboard() -> InlineKeyboardMarkup:
-    markup = InlineKeyboardMarkup()
-    backward = InlineKeyboardButton(text=_("⏪️ Назад"), callback_data='backward_s')
-    forward = InlineKeyboardButton(text=_("Вперед ➡️"), callback_data='forward_s')
-    back = InlineKeyboardButton(text=_("❌ Закрыть"), callback_data='back_with_delete')
-    markup.add(backward, forward)
-    markup.add(back)
-    return markup
-
-
-async def third_str_keyboard() -> InlineKeyboardMarkup:
-    markup = InlineKeyboardMarkup()
-    backward = InlineKeyboardButton(text=_("⏪️ Назад"), callback_data='backward_th')
-    forward = InlineKeyboardButton(text=_("Вперед ➡️"), callback_data='forward_th')
-    back = InlineKeyboardButton(text=_("❌ Закрыть"), callback_data='back_with_delete')
-    markup.add(backward, forward)
-    markup.add(back)
-    return markup
-
-
-async def fourth_str_keyboard() -> InlineKeyboardMarkup:
-    markup = InlineKeyboardMarkup()
-    backward = InlineKeyboardButton(text=_("⏪️ Назад"), callback_data='backward_four')
-    back = InlineKeyboardButton(text=_("❌ Закрыть"), callback_data='back_with_delete')
-    markup.add(backward)
+    if step > 1:
+        backward = InlineKeyboardButton(text=_("⏪️ Назад"), callback_data=guide_callback.new(
+            action="backward",
+            value=step - 1
+        ))
+        markup.insert(backward)
+    if step < total_steps:
+        forward = InlineKeyboardButton(text=_("Вперед ➡️"), callback_data=guide_callback.new(
+            action="forward",
+            value=step + 1
+        ))
+        markup.insert(forward)
+    back = InlineKeyboardButton(text=_("❌ Закрыть"), callback_data='back_to_info_menu')
     markup.add(back)
     return markup

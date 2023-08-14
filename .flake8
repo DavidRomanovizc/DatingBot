@@ -1,0 +1,10 @@
+[flake8]
+exclude =
+    venv,
+    .env,
+    .gitignore,
+    README.md,
+    migrations,
+    .git,
+max-line-length = 99
+extend-ignore = F401, E402

@@ -4,7 +4,7 @@
 
 1. We pull the texts out of the files (he finds it himself)
    ```sh
-   $ pybabel extract . -o locales/dating.pot
+   $ pybabel extract -F babel.cfg -o locales/dating.pot .
    ```
 2. Creating a folder for translation into English
    ```sh
@@ -23,7 +23,7 @@
 
 1. We pull the texts out of the files, Add the text to the translated versions
    ```sh
-   $ pybabel extract . -o locales/dating.pot
+   $ pybabel extract -F babel.cfg -o locales/dating.pot .
    $ pybabel update -d locales -D dating -i locales/dating.pot
    ```
 2. Manually make transfers, and then collect
@@ -37,7 +37,7 @@
 
 1. Вытаскиваем тексты из файлов (он сам находит)
    ```sh
-   $ pybabel extract . -o locales/dating.pot
+   $ pybabel extract -F babel.cfg -o locales/dating.pot .
    ```
 2. Создаем папку для перевода на английский
    ```sh
@@ -54,9 +54,9 @@
 
 ### Обновляем переводы
 
-1. Вытаскиваем тексты из файлов, Добавляем текст в переведенные версии
+1. Вытаскиваем тексты из файлов, Добавляем их в переведенные версии
    ```sh
-   $ pybabel extract . -o locales/dating.pot
+   $ pybabel extract -F babel.cfg -o locales/dating.pot .
    $ pybabel update -d locales -D dating -i locales/dating.pot
    ```
 2. Вручную делаем переводы, а потом собираем
@@ -71,7 +71,7 @@
 1. Extrahieren Sie Texte aus Dateien (er findet sie automatisch)
 
 ```sh
-$ pybabel extract . -o locales/dating.pot
+$ pybabel extract -F babel.cfg -o locales/dating.pot .
 ```
 
 2. Erstellen Sie einen Ordner für die Übersetzung ins Englische
@@ -97,7 +97,7 @@ pybabel compile -d locales -D dating
 1. Extrahieren Sie Texte aus Dateien, fügen Sie den Text zu den übersetzten Versionen hinzu
 
 ```sh
-$ pybabel extract . -o locales/dating.pot
+$ pybabel extract -F babel.cfg -o locales/dating.pot .
 $ pybabel update -d locales -D dating -i locales/dating.pot
 ```
 
