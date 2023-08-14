@@ -3,6 +3,7 @@ import os
 import pathlib
 import random
 import shutil
+from contextlib import suppress
 from typing import Union, Optional
 
 import aiofiles
@@ -15,6 +16,7 @@ from aiogram.types import (
     InlineKeyboardMarkup,
     Message
 )
+from aiogram.utils.exceptions import BadRequest, MessageCantBeDeleted, MessageToDeleteNotFound
 from asyncpg import UniqueViolationError
 
 from data.config import load_config
@@ -25,6 +27,11 @@ from keyboards.inline.main_menu_inline import start_keyboard
 from loader import _, bot, scheduler
 from utils.db_api import db_commands
 from utils.db_api.db_commands import check_user_exists, check_user_meetings_exists
+
+
+async def delete_message(message: Message) -> None:
+    with suppress(MessageCantBeDeleted, MessageToDeleteNotFound):
+        await message.delete()
 
 
 async def choice_gender(call: CallbackQuery) -> None:
@@ -53,25 +60,22 @@ async def display_profile(call: CallbackQuery, markup: InlineKeyboardMarkup) -> 
     Функция для отображения профиля пользователя
     """
     user = await db_commands.select_user(telegram_id=call.from_user.id)
-    # count_referrals = await db_commands.count_all_users_kwarg(referrer_id=call.from_user.id)
+    count_referrals = await db_commands.count_all_users_kwarg(referrer_id=call.from_user.id)
     user_verification = "✅" if user["verification"] else ""
-    gender = "Мужчина" if user.get("sex") == "Мужской" else "Женщина"
-    # user_info_template = _(
-    #     "{}, {} лет, {}, {} {}\n\n{}\n\n<u>Партнерка:</u>\nКоличество приглашенных друзей: {}\nРеферальная ссылка: {}"
-    # )
-    user_info_template = _(
-        "{}, {} лет, {}, {} {}\n\n{}\n\n"
-    )
 
+    user_info_template = _(
+        "{name}, {age} лет, {city}, {verification}\n\n{commentary}\n\n"
+        "<u>Партнерка:</u>\nКоличество приглашенных друзей: {reff}\nРеферальная ссылка:\n {link}"
+    )
+    info = await bot.get_me()
     user_info = user_info_template.format(
-        user["varname"],
-        user["age"],
-        user["city"],
-        gender,
-        user_verification,
-        user["commentary"],
-        # count_referrals,
-        # f"https://t.me/{load_config().tg_bot.bot_username}?start={call.from_user.id}"
+        name=user["varname"],
+        age=user["age"],
+        city=user["city"],
+        verification=user_verification,
+        commentary=user["commentary"],
+        reff=count_referrals,
+        link=f"https://t.me/{info.username}?start={call.from_user.id}"
     )
 
     await call.message.answer_photo(caption=user_info, photo=user["photo_id"], reply_markup=markup)
@@ -115,7 +119,10 @@ async def registration_menu(
              "@{supports}\n\n").format(fullname=obj.from_user.full_name, heart=heart,
                                        supports=support['username'])
     try:
-        await obj.message.edit_text(text, reply_markup=markup)
+        await obj.message.edit_text(
+            text=text,
+            reply_markup=markup
+        )
         scheduler.add_job(
             send_message_week,
             trigger="interval",
@@ -124,7 +131,24 @@ async def registration_menu(
             args={obj.message}
         )
     except AttributeError:
-        await obj.answer(text, reply_markup=markup)
+        await obj.answer(
+            text=text,
+            reply_markup=markup
+        )
+        scheduler.add_job(
+            send_message_week,
+            trigger="interval",
+            weeks=1,
+            jitter=120,
+            args={obj}
+        )
+    except BadRequest:
+        await delete_message(obj.message)
+
+        await obj.message.answer(
+            text=text,
+            reply_markup=markup
+        )
 
 
 async def check_user_in_db(telegram_id: int, message: Message, username: str) -> None:

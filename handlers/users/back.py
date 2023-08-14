@@ -1,31 +1,20 @@
 import datetime
-import random
 from abc import abstractmethod, ABC
-from contextlib import suppress
 
 from aiogram.dispatcher import FSMContext
-from aiogram.types import CallbackQuery, Message
+from aiogram.types import CallbackQuery
 from aiogram.utils.exceptions import (
     BadRequest,
-    MessageCantBeDeleted,
-    MessageToDeleteNotFound,
 )
 
-from data.config import load_config
-from functions.main_app.auxiliary_tools import registration_menu, display_profile
+from functions.main_app.auxiliary_tools import registration_menu, display_profile, delete_message
 from handlers.users.event_handler import view_own_event, view_meetings_handler
 from keyboards.inline.admin_inline import unban_user_keyboard
 from keyboards.inline.filters_inline import filters_keyboard
-from keyboards.inline.main_menu_inline import start_keyboard
 from keyboards.inline.menu_profile_inline import get_profile_keyboard
 from keyboards.inline.settings_menu import information_keyboard
 from loader import _, dp
 from utils.db_api import db_commands
-
-
-async def delete_message(message: Message) -> None:
-    with suppress(MessageCantBeDeleted, MessageToDeleteNotFound):
-        await message.delete()
 
 
 class Command(ABC):
@@ -36,32 +25,7 @@ class Command(ABC):
 
 class OpenMenuCommand(Command):
     async def execute(self, call: CallbackQuery, **kwargs) -> None:
-        heart = random.choice(['💙', '💚', '💛', '🧡', '💜', '🖤', '❤', '🤍', '💖', '💝'])
-        markup = await start_keyboard(obj=call)
-        support = await db_commands.select_user(telegram_id=load_config().tg_bot.support_ids[0])
-        fullname = call.from_user.full_name
-        text = _("Приветствую вас, {fullname}!!\n\n"
-                 "{heart} <b> QueDateBot </b> - платформа для поиска новых знакомств.\n\n"
-                 "🪧 Новости о проекте вы можете прочитать в нашем канале - "
-                 "https://t.me/QueDateGroup \n\n"
-                 "<b>🤝 Сотрудничество: </b>\n"
-                 "Если у вас есть предложение о сотрудничестве, пишите агенту поддержки - "
-                 "@{supports}\n\n").format(fullname=fullname, heart=heart,
-                                           supports=support['username'])
-        try:
-            await call.message.edit_text(text,
-                                         reply_markup=markup)
-
-        except BadRequest:
-            await delete_message(call.message)
-
-            await call.message.answer(text,
-                                      reply_markup=markup)
-
-
-class BackToRegistrationMenuCommand(Command):
-    async def execute(self, call: CallbackQuery, **kwargs) -> None:
-        await registration_menu(call)
+        await registration_menu(obj=call)
 
 
 class BackToProfileMenuCommand(Command):
@@ -130,7 +94,7 @@ class CancelCommand(Command):
 
 menu_commands = {
     "back_with_delete": OpenMenuCommand(),
-    "back_to_reg_menu": BackToRegistrationMenuCommand(),
+    "back_to_reg_menu": OpenMenuCommand(),
     "back_to_profile_menu": BackToProfileMenuCommand(),
     "unban_menu": UnbanMenuCommand(),
     "back_to_filter_menu": BackToFiltersMenuCommand(),

@@ -5,8 +5,7 @@ from aiogram.types import CallbackQuery
 from aiogram.utils.exceptions import BadRequest
 
 from filters import IsPrivate
-from functions.main_app.auxiliary_tools import registration_menu, check_user_in_db
-from handlers.users.back import delete_message
+from functions.main_app.auxiliary_tools import registration_menu, check_user_in_db, delete_message
 from keyboards.inline.language_inline import language_keyboard
 from loader import dp, _
 from utils.db_api import db_commands
@@ -20,7 +19,9 @@ async def register_user(message: types.Message) -> None:
     try:
         await registration_menu(message)
     except TypeError:
-        await message.answer(text=_("Вам необходимо зарегистрировать агента(ов) тех поддержки"))
+        await message.answer(
+            text=_("Вам необходимо зарегистрировать агента(ов) тех поддержки")
+        )
 
 
 @dp.callback_query_handler(text="start_menu")
