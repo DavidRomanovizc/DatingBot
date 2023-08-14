@@ -17,7 +17,10 @@ async def register_user(message: types.Message) -> None:
     username = message.from_user.username if message.from_user.username else ""
     telegram_id = message.from_user.id
     await check_user_in_db(message=message, username=username, telegram_id=telegram_id)
-    await registration_menu(message)
+    try:
+        await registration_menu(message)
+    except TypeError:
+        await message.answer(text=_("Вам необходимо зарегистрировать агента(ов) тех поддержки"))
 
 
 @dp.callback_query_handler(text="start_menu")

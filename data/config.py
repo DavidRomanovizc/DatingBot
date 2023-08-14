@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import List
 
 from environs import Env
+from yarl import URL
 
 env = Env()
 env.read_env()
@@ -36,6 +37,9 @@ class TgBot:
 class Miscellaneous:
     secret_key: str
     yandex_api_key: str
+    client_id: str
+    redirect_url: URL
+    yoomoney_key: str
 
 
 @dataclass(frozen=True)
@@ -91,6 +95,9 @@ def load_config() -> Config:
         misc=Miscellaneous(
             secret_key=env.str("SECRET_KEY"),
             yandex_api_key=env.str('API_KEY'),
+            client_id=env.str("CLIENT_ID"),
+            redirect_url=env.str("REDIRECT_URI"),
+            yoomoney_key=env.str("YOOMONEY_KEY"),
         )
     )
 

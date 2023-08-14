@@ -8,6 +8,7 @@ from aiogram.utils.markdown import quote_html
 from asyncpg import UniqueViolationError
 
 from functions.main_app.auxiliary_tools import choice_gender, saving_normal_photo, saving_censored_photo
+from functions.main_app.determin_location import Location
 from keyboards.default.get_location_default import location_keyboard
 from keyboards.default.get_photo import get_photo_from_profile
 from keyboards.inline.change_data_profile_inline import gender_keyboard
@@ -15,6 +16,7 @@ from keyboards.inline.registration_inline import second_registration_keyboard
 from loader import dp, client, _
 from states.reg_state import RegData
 from utils.NudeNet.predictor import classification_image, generate_censored_image
+from utils.YandexMap.exceptions import NothingFound
 from utils.db_api import db_commands
 from utils.misc.profanityFilter import censored_message
 
@@ -116,13 +118,13 @@ async def get_age(message: types.Message, state: FSMContext) -> None:
 
 
 # TODO: Нужно отловить None
-# @dp.message_handler(state=RegData.town)
-# async def get_city(message: types.Message) -> None:
-#     try:
-#         loc = await Location(message=message)
-#         await loc.det_loc_in_registration(message)
-#     except NothingFound:
-#         await message.answer("Мы не смогли найти такой город, попробуйте еще раз")
+@dp.message_handler(state=RegData.town)
+async def get_city(message: types.Message) -> None:
+    try:
+        loc = await Location(message=message)
+        await loc.det_loc_in_registration(message)
+    except NothingFound:
+        await message.answer("Мы не смогли найти такой город, попробуйте еще раз")
 
 
 @dp.message_handler(content_types=['location'], state=RegData.town)

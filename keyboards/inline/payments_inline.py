@@ -1,10 +1,12 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from yarl import URL
+
 from loader import _
 
 
-async def payments_keyboard(menu: str) -> InlineKeyboardMarkup:
+async def payments_keyboard(menu: str, url: str | URL = None) -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup(row_width=4)
-    pay_qiwi = InlineKeyboardButton(text=_("💳 Qiwi"), callback_data="pay_qiwi")
+    pay_qiwi = InlineKeyboardButton(text=_("💳 ЮMoney"), url=url)
     check_prices = InlineKeyboardButton(text=_("🔄 Проверить цены"), callback_data="check_price")
     markup.add(pay_qiwi, check_prices)
     if menu == "unban":

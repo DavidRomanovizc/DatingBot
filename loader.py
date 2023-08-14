@@ -12,6 +12,7 @@ from data.config import load_config
 from functions.main_app.language_ware import setup_middleware
 from utils.YandexMap.api import Client
 from utils.db_api.postgres import Database
+from utils.yoomoney import YooMoneyWallet
 
 bot = Bot(token=load_config().tg_bot.token, parse_mode=types.ParseMode.HTML)
 storage = RedisStorage2() if load_config().tg_bot.use_redis else MemoryStorage()
@@ -23,7 +24,7 @@ scheduler = AsyncIOScheduler(
     timezone=load_config().tg_bot.timezone,
     job_defaults=job_defaults
 )
-
+wallet = YooMoneyWallet(access_token=load_config().misc.yoomoney_key)
 detector = NudeDetector()
 classifier = NudeClassifier()
 
