@@ -4,10 +4,8 @@ from aiogram import types
 from aiogram.dispatcher.handler import CancelHandler
 from aiogram.dispatcher.middlewares import BaseMiddleware
 
-from handlers.users.start_handler import register_user
 from keyboards.inline.admin_inline import unban_user_keyboard
 from loader import _
-from loader import logger
 from utils.db_api import db_commands
 
 
@@ -17,56 +15,43 @@ class BanMiddleware(BaseMiddleware):
         super(BanMiddleware, self).__init__()
 
     async def on_process_message(self, message: types.Message, data: dict) -> None:
-        await self.check_ban_user(message)
+        await self.check_ban_user(obj=message)
 
     async def on_process_callback_query(self, call: types.CallbackQuery, data: dict) -> None:
 
         user = await db_commands.select_user(telegram_id=call.from_user.id)
-        is_banned = user.get("is_banned")
-        if (user is not None and is_banned) and \
+        is_banned = user.get("is_banned", False)
+        if (
+                (
+                        user is not None and is_banned
+                ) and
                 (
                         call.data != "unban" and
                         call.data != "unban_menu" and
                         call.data != "yoomoney:check_payment" and
                         call.data != "cancel_payment" and
                         call.data != "yoomoney"
-                ):
-            await self.check_ban_user(call=call)
+                )
+        ):
+            await self.check_ban_user(obj=call)
 
     async def check_ban_user(
             self,
-            message: Union[None, types.Message] = None,
-            call: Union[None, types.CallbackQuery] = None) -> NoReturn:
-
-        if call:
-            user = await db_commands.select_user(telegram_id=call.from_user.id)
-            is_banned = user.get("is_banned")
+            obj: Union[types.CallbackQuery, types.Message]
+    ) -> NoReturn:
+        user = await db_commands.select_user(telegram_id=obj.from_user.id)
+        is_banned = user.get("is_banned", False)
+        text = _("😢 Вы заблокированы!")
+        markup = await unban_user_keyboard()
+        if is_banned:
             try:
-                if is_banned:
-                    await call.message.answer(
-                        text=_("Вы забанены!"),
-                        reply_markup=await unban_user_keyboard()
-                    )
-            except TypeError as err:
-                logger.info(err)
-                raise CancelHandler()
+                await obj.answer(
+                    text=text,
+                    reply_markup=markup
+                )
+            except TypeError:
+                await obj.message.answer(
+                    text=text,
+                    reply_markup=markup
+                )
             raise CancelHandler()
-
-        if message:
-            try:
-                user = await db_commands.select_user(telegram_id=message.from_user.id)
-                is_banned = user.get("is_banned")
-
-                if is_banned:
-                    try:
-                        await message.answer(
-                            text=_("Вы забанены!"),
-                            reply_markup=await unban_user_keyboard()
-                        )
-                    except TypeError as err:
-                        logger.info(err)
-                        raise CancelHandler()
-                    raise CancelHandler()
-            except AttributeError as err:
-                logger.info(err)
-                await register_user(message)
