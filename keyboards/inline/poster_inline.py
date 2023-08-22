@@ -10,13 +10,15 @@ async def poster_keyboard(obj: Union[Message, CallbackQuery]) -> InlineKeyboardM
     user = await db_commands.select_user_meetings(telegram_id=obj.from_user.id)
     is_admin = user.get("is_admin")
     is_verification = user.get("verification_status")
+    moderation_process = user.get("moderation_process")
     markup = InlineKeyboardMarkup(row_width=1)
     create_poster = InlineKeyboardButton(text=_("✍️Создать афишу"), callback_data="create_poster")
     view_poster = InlineKeyboardButton(text=_("🎭 Смотреть афиши"), callback_data="view_poster")
     my_appointment = InlineKeyboardButton(text=_("📝 Мои записи"), callback_data="my_appointment")
     my_event = InlineKeyboardButton(text=_("📃 Моё событие"), callback_data="my_event")
     back = InlineKeyboardButton(text=_("⏪️ Вернуться в меню"), callback_data="start_menu")
-    if is_verification and is_admin:
+
+    if is_verification and is_admin and not moderation_process:
         markup_items = [my_event, view_poster, my_appointment, back]
     else:
         markup_items = [create_poster, view_poster, my_appointment, back]

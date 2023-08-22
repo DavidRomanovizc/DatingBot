@@ -33,7 +33,7 @@ class UserMeetings(TimeBasedModel):
         verbose_name="Статус пользователя", default=False
     )
     moderation_process = models.BooleanField(
-        verbose_name="Процесс модерации", default=True
+        verbose_name="Процесс модерации", default=False
     )
     is_premium = models.BooleanField(
         verbose_name="Премиум", default=False
