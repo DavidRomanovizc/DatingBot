@@ -1,11 +1,14 @@
 from typing import List
 
+from async_lru import alru_cache
+
 from utils.db_api import db_commands
 
 
+@alru_cache
 async def get_next_user(
         telegram_id: int,
-        call, monitoring: bool = False,
+        monitoring: bool = False,
         offset: int = 0,
         limit: int = 100
 ) -> List[int]:
