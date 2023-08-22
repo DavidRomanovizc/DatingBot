@@ -7,10 +7,14 @@ from loader import _
 from utils.db_api import db_commands
 
 
-async def start_keyboard(obj: Union[CallbackQuery, Message]) -> InlineKeyboardMarkup:
+async def start_keyboard(obj: Union[CallbackQuery, Message, int]) -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup(row_width=2)
-    user_db = await db_commands.select_user(telegram_id=obj.from_user.id)
+    try:
+        user_db = await db_commands.select_user(telegram_id=obj.from_user.id)
+    except AttributeError:
+        user_db = await db_commands.select_user(telegram_id=obj)
     status = user_db["status"]
+    support_ids = load_config().tg_bot.support_ids[0]
     registration = InlineKeyboardButton(text=_("➕ Регистрация"), callback_data="registration")
     language = InlineKeyboardButton(text=_("🌐 Язык"), callback_data="language_reg")
     my_profile = InlineKeyboardButton(text=_("👤 Моя анекта"), callback_data="my_profile")
@@ -27,6 +31,10 @@ async def start_keyboard(obj: Union[CallbackQuery, Message]) -> InlineKeyboardMa
         markup.row(my_profile)
         markup.row(view_ques, meetings)
         markup.row(information, filters)
-        if load_config().tg_bot.support_ids[0] != obj.from_user.id:
-            markup.row(support)
+        try:
+            if support_ids != obj.from_user.id:
+                markup.row(support)
+        except AttributeError:
+            if support_ids != obj:
+                markup.row(support)
     return markup
