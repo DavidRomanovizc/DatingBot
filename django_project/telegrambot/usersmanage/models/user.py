@@ -89,6 +89,7 @@ class User(TimeBasedModel):
         models.CharField(max_length=255), default=list
     )
     viewed_profiles = models.ManyToManyField('self', through='ViewedProfile', symmetrical=False)
+    limit_of_views = models.PositiveIntegerField(default=10, null=True)
 
     def __str__(self):
         return f"№{self.id} ({self.telegram_id}) - {self.name}"

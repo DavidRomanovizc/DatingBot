@@ -1,25 +1,36 @@
 import os
+from functools import lru_cache
 
 from asgiref.sync import sync_to_async
-
+from async_lru import alru_cache
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_project.telegrambot.telegrambot.settings')
 import django
 
 django.setup()
-from django.db.models import F, Q
-from django.db.models.expressions import CombinedExpression, Value
+from django.db.models import (
+    F,
+    Q,
+)
+from django.db.models.expressions import (
+    CombinedExpression,
+    Value
+)
 
-from django_project.telegrambot.usersmanage.models.meetings import UserMeetings
-from django_project.telegrambot.usersmanage.models.settings_models import SettingModel
-from django_project.telegrambot.usersmanage.models.viewed_profile import ViewedProfile
-from django_project.telegrambot.usersmanage.models.user import User
-from django_project.telegrambot.usersmanage.models.necessary_link import NecessaryLink
+from django_project.telegrambot.usersmanage.models import (
+    UserMeetings,
+    SettingModel,
+    ViewedProfile,
+    User,
+    NecessaryLink
+)
+
 
 @sync_to_async
 def select_all_links():
     links = NecessaryLink.objects.all().values()
     return links
+
 
 @sync_to_async
 def select_user(telegram_id: int):
@@ -177,7 +188,9 @@ def search_event_forms():
 
 @sync_to_async
 def search_users_all(offset: int, limit: int):
-    return User.objects.filter(Q(is_banned=False) & Q(status=True)).all().values()[offset:offset + limit]
+    return User.objects.filter(
+        Q(is_banned=False) & Q(status=True)
+    ).all().values()[offset:offset + limit]
 
 
 @sync_to_async
@@ -224,3 +237,8 @@ def add_returned_event_id(telegram_id: int, id_of_events_seen: int):
     returned_event, created = User.objects.get_or_create(telegram_id=telegram_id)
     returned_event.id_of_events_seen.append(id_of_events_seen)
     returned_event.save()
+
+
+@sync_to_async
+def reset_view_limit():
+    return User.objects.filter(limit_of_views__lt=10).update(limit_of_views=10)
