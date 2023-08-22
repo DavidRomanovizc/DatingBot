@@ -1,4 +1,5 @@
 import asyncio
+import datetime
 import os
 import pathlib
 import random
@@ -16,7 +17,11 @@ from aiogram.types import (
     InlineKeyboardMarkup,
     Message
 )
-from aiogram.utils.exceptions import BadRequest, MessageCantBeDeleted, MessageToDeleteNotFound
+from aiogram.utils.exceptions import (
+    BadRequest,
+    MessageCantBeDeleted,
+    MessageToDeleteNotFound
+)
 from asyncpg import UniqueViolationError
 
 from data.config import load_config
@@ -24,9 +29,17 @@ from functions.main_app.app_scheduler import send_message_week
 from keyboards.inline.filters_inline import dating_filters_keyboard
 from keyboards.inline.guide_inline import create_pagination_keyboard
 from keyboards.inline.main_menu_inline import start_keyboard
-from loader import _, bot, scheduler
+from keyboards.inline.settings_menu import information_keyboard
+from loader import (
+    _,
+    bot,
+    scheduler
+)
 from utils.db_api import db_commands
-from utils.db_api.db_commands import check_user_exists, check_user_meetings_exists
+from utils.db_api.db_commands import (
+    check_user_exists,
+    check_user_meetings_exists
+)
 
 
 async def delete_message(message: Message) -> None:
@@ -152,8 +165,11 @@ async def registration_menu(
 
 
 async def check_user_in_db(telegram_id: int, message: Message, username: str) -> None:
-    if not await check_user_exists(telegram_id) and not await check_user_meetings_exists(telegram_id):
-
+    if (
+            not await check_user_exists(telegram_id) and
+            not await check_user_meetings_exists(telegram_id)
+    ):
+        user = await db_commands.select_user_object(telegram_id=telegram_id)
         referrer_id = message.text[7:]
         if referrer_id != "" and referrer_id != telegram_id:
             await db_commands.add_user(
@@ -162,9 +178,16 @@ async def check_user_in_db(telegram_id: int, message: Message, username: str) ->
                 username=username,
                 referrer_id=referrer_id
             )
+            await db_commands.update_user_data(
+                telegram_id=telegram_id,
+                limit_of_views=user.limit_of_views + 15
+            )
             await bot.send_message(
                 chat_id=referrer_id,
-                text=_("По вашей ссылке зарегистрировался пользователь {}!").format(
+                text=_(
+                    "По вашей ссылке зарегистрировался пользователь {}!\n"
+                    "Вы получаете дополнительных 15 ❤️"
+                ).format(
                     message.from_user.username
                 )
             )
@@ -256,15 +279,29 @@ async def saving_censored_photo(
     file_id = id_photo['photo'][0]['file_id']
     await asyncio.sleep(1)
     try:
-        await db_commands.update_user_data(telegram_id=telegram_id, photo_id=file_id)
+        await db_commands.update_user_data(
+            telegram_id=telegram_id,
+            photo_id=file_id
+        )
 
     except Exception as err:
-        await message.answer(_("Произошла ошибка! Попробуйте еще раз либо отправьте другую фотографию. \n"
-                               "Если ошибка осталась, напишите агенту поддержки."))
+        await message.answer(
+            text=_(
+                "Произошла ошибка!"
+                " Попробуйте еще раз либо отправьте другую фотографию. \n"
+                "Если ошибка осталась, напишите агенту поддержки."
+            )
+        )
     if flag == "change_datas":
-        await message.answer(_("Фото принято!"), reply_markup=ReplyKeyboardRemove())
+        await message.answer(
+            text=_("Фото принято!"),
+            reply_markup=ReplyKeyboardRemove()
+        )
         await asyncio.sleep(3)
-        await message.answer(_("Выберите, что вы хотите изменить: "), reply_markup=markup)
+        await message.answer(
+            text=_("Выберите, что вы хотите изменить: "),
+            reply_markup=markup
+        )
         await state.reset_state()
     elif flag == "registration":
         await finished_registration(
@@ -285,14 +322,27 @@ async def update_normal_photo(
     Функция, которая обновляет фотографию пользователя
     """
     try:
-        await db_commands.update_user_data(telegram_id=telegram_id, photo_id=file_id)
-        await message.answer(_("Фото принято!"), reply_markup=ReplyKeyboardRemove())
+        await db_commands.update_user_data(
+            telegram_id=telegram_id,
+            photo_id=file_id
+        )
+        await message.answer(
+            text=_("Фото принято!"),
+            reply_markup=ReplyKeyboardRemove()
+        )
         await asyncio.sleep(3)
-        await message.answer(_("Выберите, что вы хотите изменить: "), reply_markup=markup)
+        await message.answer(
+            text=_("Выберите, что вы хотите изменить: "),
+            reply_markup=markup
+        )
         await state.reset_state()
     except:
-        await message.answer(_("Произошла ошибка! Попробуйте еще раз либо отправьте другую фотографию. \n"
-                               "Если ошибка осталась, напишите агенту поддержки."))
+        await message.answer(
+            text=_(
+                "Произошла ошибка! Попробуйте еще раз либо отправьте другую фотографию. \n"
+                "Если ошибка осталась, напишите агенту поддержки."
+            )
+        )
 
 
 async def dump_users_to_file():
@@ -340,3 +390,26 @@ async def handle_guide_callback(
         step=step,
         total_steps=len(os.listdir("brandbook/"))
     )
+
+
+async def information_menu(call: CallbackQuery):
+    start_date = datetime.datetime(2021, 8, 10, 14, 0)
+    now_date = datetime.datetime.now()
+    delta = now_date - start_date
+    count_users = await db_commands.count_users()
+    markup = await information_keyboard()
+    txt = _("Вы попали в раздел <b>Информации</b> бота, здесь вы можете посмотреть: статистику,"
+            "изменить язык, а также посмотреть наш брендбук.\n\n"
+            "🌐 Дней работаем: <b>{}</b>\n"
+            "👤 Всего пользователей: <b>{}</b>\n").format(delta.days, count_users)
+    try:
+        await call.message.edit_text(
+            text=txt,
+            reply_markup=markup
+        )
+    except BadRequest:
+        await delete_message(call.message)
+        await call.message.answer(
+            text=txt,
+            reply_markup=markup
+        )

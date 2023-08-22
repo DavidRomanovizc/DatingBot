@@ -1,19 +1,25 @@
-import datetime
 from abc import abstractmethod, ABC
 
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery
-from aiogram.utils.exceptions import (
-    BadRequest,
-)
 
-from functions.main_app.auxiliary_tools import registration_menu, display_profile, delete_message
-from handlers.users.event_handler import view_own_event, view_meetings_handler
+from functions.main_app.auxiliary_tools import (
+    registration_menu,
+    display_profile,
+    delete_message,
+    information_menu
+)
+from handlers.users.event_handler import (
+    view_own_event,
+    view_meetings_handler
+)
 from keyboards.inline.admin_inline import unban_user_keyboard
 from keyboards.inline.filters_inline import filters_keyboard
 from keyboards.inline.menu_profile_inline import get_profile_keyboard
-from keyboards.inline.settings_menu import information_keyboard
-from loader import _, dp
+from loader import (
+    _,
+    dp
+)
 from utils.db_api import db_commands
 
 
@@ -52,26 +58,7 @@ class BackToFiltersMenuCommand(Command):
 
 class BackToGuideMenuCommand(Command):
     async def execute(self, call: CallbackQuery, **kwargs) -> None:
-        start_date = datetime.datetime(2021, 8, 10, 14, 0)
-        now_date = datetime.datetime.now()
-        delta = now_date - start_date
-        count_users = await db_commands.count_users()
-        txt = _("Вы попали в раздел <b>настроек</b> бота, здесь вы можете посмотреть: статистику,"
-                "изменить язык, отключить уведомления, а также узнать информацию.\n\n"
-                "🌐 Дней работаем: <b>{}</b>\n"
-                "👤 Всего пользователей: <b>{}</b>\n").format(delta.days, count_users)
-
-        try:
-            await call.message.edit_text(
-                text=txt,
-                reply_markup=await information_keyboard()
-            )
-        except BadRequest:
-            await delete_message(call.message)
-            await call.message.answer(
-                text=txt,
-                reply_markup=await information_keyboard()
-            )
+        await information_menu(call)
 
 
 class BackToEventProfileCommand(Command):
@@ -101,6 +88,7 @@ menu_commands = {
     "back_to_info_menu": BackToGuideMenuCommand(),
     "go_out": EventProfileBackCommand(),
     "event_menu": EventProfileBackCommand(),
+    "back_to_event_profile": BackToEventProfileCommand()
 }
 
 
