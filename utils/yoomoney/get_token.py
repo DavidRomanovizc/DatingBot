@@ -1,5 +1,4 @@
 import asyncio
-from os import environ
 
 from data.config import load_config
 from utils.yoomoney import authorize_app

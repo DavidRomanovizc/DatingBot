@@ -1,6 +1,5 @@
-from typing import Any
 import logging
-
+from typing import Any
 
 from aiogram import Bot, Dispatcher, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
@@ -30,6 +29,5 @@ classifier = NudeClassifier()
 
 i18n = setup_middleware(dp)
 _: Any = i18n.gettext
-
 
 logger = logging.getLogger(__name__)
