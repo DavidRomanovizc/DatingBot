@@ -12,7 +12,7 @@ from utils.yoomoney.types import PaymentSource
 
 
 @dp.callback_query_handler(text="unban")
-async def get_payment(call: CallbackQuery) -> None:
+async def get_payment_menu(call: CallbackQuery) -> None:
     await call.message.edit_text(
         text=_(
             "<b>💳 Сейчас вам нужно выбрать способ оплаты</b>\n\n"
@@ -66,7 +66,8 @@ async def check_payment(call: CallbackQuery, state: FSMContext) -> None:
     else:
         await call.message.edit_text(
             text=_(
-                "Оплата не прошла! Подождите минут 10, а затем еще раз попробуйте нажать кнопку ниже"
+                "Оплата не прошла! Подождите минут 10,"
+                " а затем еще раз попробуйте нажать кнопку ниже"
             ),
             reply_markup=await yoomoney_keyboard(url=data.get("form"))
         )
