@@ -1,7 +1,7 @@
 from aiogram import types
 from aiogram.dispatcher.middlewares import BaseMiddleware
 
-from utils.logger import logger
+from loader import logger
 
 
 class LogMiddleware(BaseMiddleware):

@@ -2,8 +2,6 @@ import logging
 
 import loguru
 
-from loader import logger
-
 log_format = "{time:MMMM D, YYYY > HH:mm:ss} | {level} | {message}"
 log_levels = ["INFO", "ERROR", "DEBUG"]
 

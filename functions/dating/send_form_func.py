@@ -2,13 +2,13 @@ from typing import Optional
 
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.utils.exceptions import BadRequest
-from loader import logger
 
 from keyboards.inline.questionnaires_inline import (
     questionnaires_keyboard,
     reciprocity_keyboard
 )
 from loader import bot, _
+from loader import logger
 from utils.db_api import db_commands
 
 
@@ -116,10 +116,4 @@ async def send_questionnaire(
                 reply_markup=await reciprocity_keyboard(user_for_like=owner_id)
             )
     except BadRequest as err:
-        logger.info(err)
-        await bot.send_message(
-            chat_id=chat_id,
-            text=_(
-                "Произошла ошибка! Попробуйте еще раз\n"
-                "Если ошибка осталась, напишите агенту поддержки.")
-        )
+        logger.info(f"{err}. Error in the send_questionnaire function")
