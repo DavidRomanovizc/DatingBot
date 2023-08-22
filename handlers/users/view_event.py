@@ -43,6 +43,8 @@ async def list_poster_reaction(call: CallbackQuery, state: FSMContext) -> None:
                                             message_id=call.message.message_id,
                                             reply_markup=await poster_keyboard(obj=call))
         text = _("Рад был помочь, {fullname}!\n"
-                 "Надеюсь, ты нашел кого-то благодаря мне").format(fullname=call.from_user.full_name)
+                 "Надеюсь, ты нашел кого-то благодаря мне").format(
+            fullname=call.from_user.full_name
+        )
         await call.answer(text)
         await state.reset_state(with_data=False)

@@ -13,26 +13,35 @@ from utils.statistics import get_statistics
 async def command_start(message: Message, state: FSMContext):
     await state.finish()
     text = await get_statistics(message)
-    await message.answer(text, reply_markup=await admin_keyboard())
+    markup = await admin_keyboard()
+    await message.answer(
+        text=text,
+        reply_markup=markup
+    )
 
 
 @dp.message_handler(IsAdmin(), text="🛑 Тех.Работа")
 async def tech_works_menu(message: Message) -> None:
     settings = await db_commands.select_setting(message.from_user.id)
     tech_works = settings.get("technical_works")
+
     await message.answer(
         text=_("Чтобы включить/выключить технические работы, нажмите на кнопку ниже"),
-        reply_markup=await tech_works_keyboard(tech_works)
+        reply_markup=await tech_works_keyboard(tech_works=tech_works)
     )
 
 
 @dp.callback_query_handler(text="set_up_tech_work")
 async def set_up_tech_works(call: CallbackQuery) -> None:
     await db_commands.update_setting(telegram_id=call.from_user.id, technical_works=True)
-    await call.message.edit_text(_("Технические работы включены"))
+    await call.message.edit_text(
+        text=_("Технические работы включены")
+    )
 
 
 @dp.callback_query_handler(text="disable_tech_work")
 async def set_up_tech_works(call: CallbackQuery) -> None:
     await db_commands.update_setting(telegram_id=call.from_user.id, technical_works=False)
-    await call.message.edit_text(_("Технические работы выключены"))
+    await call.message.edit_text(
+        text=_("Технические работы выключены")
+    )

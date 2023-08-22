@@ -30,8 +30,10 @@ class YooMoneyWallet:
 
     async def get_operation_history(self, label: str | None = None) -> list[Operation, ...]:
         """
-        Получение последних 30 операций. На 10.03.2023 API yoomoney напросто игнорирует указанные
-        в документации параметры https://yoomoney.ru/docs/payment-buttons/using-api/forms?lang=ru#parameters
+        Получение последних 30 операций.
+        На 10.03.2023 API yoomoney напросто игнорирует указанные в документации параметры
+
+        https://yoomoney.ru/docs/payment-buttons/using-api/forms?lang=ru#parameters
         """
         history_url = self.host + "/api/operation-history"
         response, data = await send_request(
@@ -74,5 +76,7 @@ class YooMoneyWallet:
     async def revoke_token(self) -> None:
         url = self.host + "/api/revoke"
         response = await send_request(url=url, response_without_data=True, headers=self.__headers)
-        print(f"Запрос на отзыв токена завершен с кодом {response.status} "
-              f"https://yoomoney.ru/docs/wallet/using-api/authorization/revoke-access-token#response")
+        print(
+            f"Запрос на отзыв токена завершен с кодом {response.status} "
+            "https://yoomoney.ru/docs/wallet/using-api/authorization/revoke-access-token#response"
+        )

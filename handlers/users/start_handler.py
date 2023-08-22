@@ -53,6 +53,7 @@ async def change_language(call: CallbackQuery, language: str) -> None:
             telegram_id=telegram_id,
             language=language
         )
+
         await call.message.edit_text(
             text=_("Язык был успешно изменен. Введите команду /start",
                    locale=language)
@@ -67,7 +68,7 @@ language_codes = {
     "Russian": "ru",
     "Deutsch": "de",
     "English": "en",
-    "Indonesian": "id",
+    "Indonesian": "in",
 }
 
 language_menus = {
@@ -78,7 +79,11 @@ language_menus = {
 
 def register_callbacks(callback_dict, callback_function):
     for callback_text, value in callback_dict.items():
-        dp.callback_query_handler(text=callback_text)(lambda call, value=value: callback_function(call, value))
+        dp.callback_query_handler(
+            text=callback_text
+        )(
+            lambda call, value=value: callback_function(call, value)
+        )
 
 
 register_callbacks(language_codes, change_language)

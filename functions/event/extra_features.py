@@ -105,8 +105,14 @@ async def get_next_random_event_id(telegram_id: int) -> Optional[int]:
             other_events_ids.append(e['telegram_id'])
 
     for event_id in other_events_ids:
-        if not await db_commands.check_returned_event_id(telegram_id=telegram_id, id_of_events_seen=event_id):
-            await db_commands.add_returned_event_id(telegram_id=telegram_id, id_of_events_seen=event_id)
+        if not await db_commands.check_returned_event_id(
+                telegram_id=telegram_id,
+                id_of_events_seen=event_id
+        ):
+            await db_commands.add_returned_event_id(
+                telegram_id=telegram_id,
+                id_of_events_seen=event_id
+            )
             return event_id
 
     raise ValueError("No more event ids")

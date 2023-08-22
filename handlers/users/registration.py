@@ -3,19 +3,36 @@ import os
 
 from aiogram import types
 from aiogram.dispatcher import FSMContext
-from aiogram.types import CallbackQuery, ContentType, InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.types import (
+    CallbackQuery,
+    ContentType,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup
+)
 from aiogram.utils.markdown import quote_html
 from asyncpg import UniqueViolationError
+from django.db import DataError
 
-from functions.main_app.auxiliary_tools import choice_gender, saving_normal_photo, saving_censored_photo
+from functions.main_app.auxiliary_tools import (
+    choice_gender,
+    saving_normal_photo,
+    saving_censored_photo
+)
 from functions.main_app.determin_location import Location
 from keyboards.default.get_location_default import location_keyboard
 from keyboards.default.get_photo import get_photo_from_profile
 from keyboards.inline.change_data_profile_inline import gender_keyboard
 from keyboards.inline.registration_inline import second_registration_keyboard
-from loader import dp, client, _
+from loader import (
+    dp,
+    client,
+    _, logger
+)
 from states.reg_state import RegData
-from utils.NudeNet.predictor import classification_image, generate_censored_image
+from utils.NudeNet.predictor import (
+    classification_image,
+    generate_censored_image
+)
 from utils.YandexMap.exceptions import NothingFound
 from utils.db_api import db_commands
 from utils.misc.profanityFilter import censored_message
@@ -34,8 +51,9 @@ async def registration(call: CallbackQuery) -> None:
         markup = InlineKeyboardMarkup()
         markup.add(InlineKeyboardButton(text="⬆️ Изменить анкету", callback_data="change_profile"))
         await call.message.edit_text(
-            "Вы уже зарегистрированы, если вам нужно изменить анкету, то нажмите на кнопку ниже",
-            reply_markup=markup)
+            text=_("Вы уже зарегистрированы, если вам нужно изменить анкету, то нажмите на кнопку ниже"),
+            reply_markup=markup
+        )
 
 
 @dp.callback_query_handler(text_contains="survey")
@@ -68,20 +86,31 @@ async def commentary_reg(message: types.Message) -> None:
     markup = await gender_keyboard(m_gender=_("👱🏻‍♂️ Парня"), f_gender=_("👱🏻‍♀️ Девушку"))
     try:
         censored = censored_message(message.text)
-        await db_commands.update_user_data(commentary=quote_html(censored), telegram_id=message.from_user.id)
-        await message.answer(_('Комментарий принят! Выберите, кого вы хотите найти: '), reply_markup=markup)
+        await db_commands.update_user_data(
+            commentary=quote_html(censored),
+            telegram_id=message.from_user.id
+        )
+        await message.answer(
+            text=_('Комментарий принят! Выберите, кого вы хотите найти: '),
+            reply_markup=markup
+        )
 
-    except Exception as err:
-        await message.answer(_("Произошла неизвестная ошибка! Попробуйте изменить комментарий позже в разделе "
-                               "\"Меню\"\n\n"
-                               "Выберите, кого вы хотите найти: "), reply_markup=markup)
+    except DataError:
+        await message.answer(
+            text=_("Произошла неизвестная ошибка! Попробуйте изменить комментарий позже в разделе "
+                   "\"Меню\"\n\n"
+                   "Выберите, кого вы хотите найти: "),
+            reply_markup=markup
+        )
     await RegData.need_partner_sex.set()
 
 
 @dp.callback_query_handler(state=RegData.need_partner_sex)
 async def sex_reg(call: CallbackQuery) -> None:
     await choice_gender(call)
-    await call.message.edit_text(_("Отлично! Теперь напишите мне ваше имя, которое будут все видеть в анкете"))
+    await call.message.edit_text(
+        text=_("Отлично! Теперь напишите мне ваше имя, которое будут все видеть в анкете")
+    )
     await RegData.name.set()
 
 
@@ -90,7 +119,10 @@ async def get_name(message: types.Message, state: FSMContext) -> None:
     await state.update_data(name=message.text)
     try:
         censored = censored_message(message.text)
-        await db_commands.update_user_data(telegram_id=message.from_user.id, varname=quote_html(censored))
+        await db_commands.update_user_data(
+            telegram_id=message.from_user.id,
+            varname=quote_html(censored)
+        )
 
     except UniqueViolationError:
         pass
@@ -104,12 +136,16 @@ async def get_age(message: types.Message, state: FSMContext) -> None:
     markup = await location_keyboard()
     await state.update_data(age=message.text)
     try:
-        if 0 < int(message.text) < 110:
-            await db_commands.update_user_data(telegram_id=message.from_user.id, age=int(message.text))
+        if 10 < int(message.text) < 99:
+            await db_commands.update_user_data(
+                telegram_id=message.from_user.id,
+                age=int(message.text)
+            )
         else:
             await message.answer(_("Вы ввели недопустимое число, попробуйте еще раз"))
             return
-    except Exception as err:
+    except ValueError as ex:
+        logger.error(ex)
         await message.answer(_("Вы ввели не число"))
         return
     await message.answer(text=_("Нажмите на кнопку ниже, чтобы определить ваш местоположение!"),
@@ -117,7 +153,6 @@ async def get_age(message: types.Message, state: FSMContext) -> None:
     await RegData.town.set()
 
 
-# TODO: Нужно отловить None
 @dp.message_handler(state=RegData.town)
 async def get_city(message: types.Message) -> None:
     try:
@@ -144,15 +179,26 @@ async def fill_form(message: types.Message) -> None:
 
     await asyncio.sleep(1)
 
-    await message.answer(_("И напоследок, Пришлите мне вашу фотографию"), reply_markup=await get_photo_from_profile())
+    await message.answer(
+        text=_(
+            "И напоследок, Пришлите мне вашу фотографию"
+            " (отправлять надо сжатое изображение, а не как документ)"
+        ),
+        reply_markup=await get_photo_from_profile()
+    )
     await RegData.photo.set()
 
 
 @dp.callback_query_handler(text="yes_all_good", state=RegData.town)
 async def get_hobbies(call: CallbackQuery) -> None:
     await call.message.delete()
-    await call.message.answer(_("И напоследок, Пришлите мне вашу фотографию"),
-                              reply_markup=await get_photo_from_profile())
+    await call.message.answer(
+        text=_(
+            "И напоследок, Пришлите мне вашу фотографию"
+            " (отправлять надо сжатое изображение, а не как документ)"
+        ),
+        reply_markup=await get_photo_from_profile()
+    )
     await RegData.photo.set()
 
 
@@ -169,7 +215,9 @@ async def get_photo_profile(message: types.Message, state: FSMContext) -> None:
             state=state
         )
     except IndexError:
-        await message.answer(_("Произошла ошибка, проверьте настройки конфиденциальности"))
+        await message.answer(
+            text=_("Произошла ошибка, проверьте настройки конфиденциальности")
+        )
 
 
 @dp.message_handler(content_types=ContentType.PHOTO, state=RegData.photo)

@@ -6,8 +6,10 @@ from data.config import load_config
 
 async def set_user_commands(dp: Dispatcher, user_id: int, commands: list[types.BotCommand]):
     try:
-        await dp.bot.set_my_commands(commands,
-                                     scope=types.BotCommandScopeChat(user_id))
+        await dp.bot.set_my_commands(
+            commands=commands,
+            scope=types.BotCommandScopeChat(user_id)
+        )
     except Exception as ex:
         loguru.logger.error(f"{user_id}: Commands are not installed. {ex}")
 

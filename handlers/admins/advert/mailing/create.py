@@ -4,11 +4,11 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from aiogram.utils.markdown import escape_md, quote_html
-from loader import logger
 
 from filters.IsAdminFilter import IsAdmin
 from keyboards.admin.inline.mailing import confirm_with_button_keyboard, add_buttons_keyboard
 from loader import bot, _, dp
+from loader import logger
 from utils.db_api import db_commands
 
 
@@ -47,10 +47,17 @@ async def broadcast_confirming(call: CallbackQuery, state: FSMContext) -> None:
                     )
 
             await call.message.edit_text(
-                text=_("Рассылка проведена успешно! Ее получили: {count} чатов!\n").format(count=count))
+                text=_(
+                    "Рассылка проведена успешно! Ее получили: {count} чатов!\n"
+                ).format(
+                    count=count
+                )
+            )
             await state.reset_state(with_data=True)
         elif call.data == "add_buttons":
-            await call.message.edit_text(text=_("Пришлите мне название кнопки!"))
+            await call.message.edit_text(
+                text=_("Пришлите мне название кнопки!")
+            )
             await state.set_state("get_button_name")
 
 
@@ -58,7 +65,12 @@ async def broadcast_confirming(call: CallbackQuery, state: FSMContext) -> None:
 async def get_button_name(message: types.Message, state: FSMContext) -> None:
     button_name = message.text
     await state.update_data(button_name=button_name)
-    await message.reply(text=_("Название кнопки принято! Теперь отправьте мне ссылку для этой кнопки!"))
+    await message.reply(
+        text=_(
+            "Название кнопки принято!"
+            " Теперь отправьте мне ссылку для этой кнопки!"
+        )
+    )
     await state.set_state("get_button_url")
 
 
@@ -114,14 +126,15 @@ async def confirm_with_button_no_photo(call: CallbackQuery, state: FSMContext) -
                 logger.error(
                     _("Сообщение не дошло в чат {chat} Причина: \n{err}").format(
                         err=err,
-                        chat=(
-                            i.get('telegram_id')
-                        )
+                        chat=(i.get('telegram_id'))
                     )
                 )
 
             await call.message.edit_text(
-                text=_("Рассылка проведена успешно! Ее получили: {count} чатов!\n").format(count=count)
+                text=_(
+                    "Рассылка проведена успешно!"
+                    " Ее получили: {count} чатов!\n"
+                ).format(count=count)
             )
         await state.reset_state(with_data=True)
 
@@ -156,20 +169,36 @@ async def broadcast_confirming_photo(call: CallbackQuery, state: FSMContext) -> 
             await call.message.answer(text="Начинаю рассылку!")
             for i in chats:
                 try:
-                    await bot.send_photo(chat_id=i.get('telegram_id'),
-                                         caption=text, photo=photo, parse_mode="MarkdownV2")
+                    await bot.send_photo(
+                        chat_id=i.get('telegram_id'),
+                        caption=text,
+                        photo=photo,
+                        parse_mode="MarkdownV2"
+                    )
                     count += 1
                     await asyncio.sleep(1)
                 except Exception as err:
                     logger.error(
-                        _("Сообщение не дошло в чат {chat} Причина: \n{err}").format(err=err,
-                                                                                     chat=(i.get('telegram_id'))))
+                        _("Сообщение не дошло в чат {chat} Причина: \n{err}").format(
+                            err=err,
+                            chat=(
+                                i.get('telegram_id')
+                            )
+                        )
+                    )
 
                 await call.message.edit_text(
-                    text=_("Рассылка проведена успешно! Ее получили: {count} чатов!\n").format(count=count))
+                    text=_(
+                        "Рассылка проведена успешно! Ее получили: {count} чатов!\n"
+                    ).format(
+                        count=count
+                    )
+                )
             await state.reset_state(with_data=True)
         elif call.data == "add_buttons":
-            await call.message.answer(text="Пришлите мне название кнопки!")
+            await call.message.answer(
+                text="Пришлите мне название кнопки!"
+            )
             await state.set_state("get_button_name_photo")
 
 
@@ -177,7 +206,9 @@ async def broadcast_confirming_photo(call: CallbackQuery, state: FSMContext) -> 
 async def get_button_name_photo(message: types.Message, state: FSMContext) -> None:
     button_name = message.text
     await state.update_data(button_name=button_name)
-    await message.reply(text="Название кнопки принято! Теперь отправьте мне ссылку для этой кнопки!")
+    await message.reply(
+        text="Название кнопки принято! Теперь отправьте мне ссылку для этой кнопки!"
+    )
     await state.set_state("get_button_url_photo")
 
 
@@ -202,8 +233,12 @@ async def get_button_url(message: types.Message, state: FSMContext) -> None:
         await state.set_state("confirm_with_button_photo")
     except Exception as err:
         logger.error(err)
-        await message.answer(text=_("Произошла ошибка! Скорее всего, неправильно введена ссылка! "
-                                    "Попробуйте еще раз."))
+        await message.answer(
+            text=_(
+                "Произошла ошибка! Скорее всего, неправильно введена ссылка! "
+                "Попробуйте еще раз."
+            )
+        )
 
 
 @dp.callback_query_handler(state="confirm_with_button_photo")
@@ -236,10 +271,17 @@ async def confirm_with_button_no_photo(call: CallbackQuery, state: FSMContext) -
                 await asyncio.sleep(1)
             except Exception as err:
                 logger.error(
-                    _("Сообщение не дошло в чат {chat} Причина: \n{err}").format(err=err,
-                                                                                 chat=(i.get('telegram_id'))))
+                    _("Сообщение не дошло в чат {chat} Причина: \n{err}").format(
+                        err=err,
+                        chat=(
+                            i.get('telegram_id')
+                        )
+                    )
+                )
 
             await call.message.edit_text(
-                text=_("Рассылка проведена успешно! Ее получили: {count} чатов!\n").format(count=count)
+                text=_("Рассылка проведена успешно! Ее получили: {count} чатов!\n").format(
+                    count=count
+                )
             )
         await state.reset_state(with_data=True)

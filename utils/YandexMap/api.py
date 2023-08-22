@@ -1,5 +1,7 @@
-import aiohttp
 from typing import Tuple, Any
+
+import aiohttp
+
 from utils.YandexMap.exceptions import UnexpectedResponse, InvalidKey, NothingFound
 
 
@@ -44,11 +46,29 @@ class Client:
             raise NothingFound(f'Nothing found for "{longitude} {latitude}"')
 
         try:
-            address_details = data[0]["GeoObject"]["metaDataProperty"]["GeocoderMetaData"]["AddressDetails"]["Country"]
+            address_details = (
+                data[0]
+                ["GeoObject"]
+                ["metaDataProperty"]
+                ["GeocoderMetaData"]
+                ["AddressDetails"]
+                ["Country"]
+            )
             try:
-                locality = address_details["AdministrativeArea"]["Locality"]["LocalityName"]
+                locality = (
+                    address_details
+                    ["AdministrativeArea"]
+                    ["Locality"]
+                    ["LocalityName"]
+                )
             except KeyError:
-                locality = address_details["AdministrativeArea"]["SubAdministrativeArea"]["Locality"]["LocalityName"]
+                locality = (
+                    address_details
+                    ["AdministrativeArea"]
+                    ["SubAdministrativeArea"]
+                    ["Locality"]
+                    ["LocalityName"]
+                )
 
             return locality
         except KeyError:

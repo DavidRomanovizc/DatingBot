@@ -32,7 +32,11 @@ async def ask_support_call(call: types.CallbackQuery) -> None:
 
 
 @dp.callback_query_handler(support_callback.filter(messages="many", as_user="yes"))
-async def send_to_support_call(call: types.CallbackQuery, state: FSMContext, callback_data: dict) -> None:
+async def send_to_support_call(
+        call: types.CallbackQuery,
+        state: FSMContext,
+        callback_data: dict
+) -> None:
     await call.message.edit_text(
         text=_("Вы обратились в техническую поддержку. Ждем ответа от оператора!")
     )
@@ -64,7 +68,11 @@ async def send_to_support_call(call: types.CallbackQuery, state: FSMContext, cal
 
 
 @dp.callback_query_handler(support_callback.filter(messages="many", as_user="no"))
-async def answer_support_call(call: types.CallbackQuery, state: FSMContext, callback_data: dict) -> None:
+async def answer_support_call(
+        call: types.CallbackQuery,
+        state: FSMContext,
+        callback_data: dict
+) -> None:
     second_id = int(callback_data.get("user_id"))
     user_state = dp.current_state(user=second_id, chat=second_id)
 
@@ -106,7 +114,10 @@ async def not_supported(message: types.Message, state: FSMContext) -> None:
     )
 
 
-@dp.callback_query_handler(cancel_support_callback.filter(), state=["in_support", "wait_in_support", None])
+@dp.callback_query_handler(
+    cancel_support_callback.filter(),
+    state=["in_support", "wait_in_support", None]
+)
 async def exit_support(call: types.CallbackQuery, state: FSMContext, callback_data: dict) -> None:
     markup = await start_keyboard(obj=call)
     user_id = int(callback_data.get("user_id"))

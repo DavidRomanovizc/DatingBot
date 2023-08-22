@@ -7,21 +7,28 @@ from aiogram.types import CallbackQuery
 from aiogram.utils.exceptions import BadRequest
 
 from functions.main_app.auxiliary_tools import choice_gender, show_dating_filters
-from functions.main_app.determin_location import Location
+from functions.main_app.determin_location import Location, FiltersStrategy
 from handlers.users.back import delete_message
 from keyboards.inline.change_data_profile_inline import gender_keyboard
 from keyboards.inline.filters_inline import filters_keyboard, event_filters_keyboard
 from loader import dp, _
+from utils.YandexMap.exceptions import NothingFound
 from utils.db_api import db_commands
 
 
 @dp.callback_query_handler(text="filters")
 async def get_filters(call: CallbackQuery) -> None:
     try:
-        await call.message.edit_text(_("Вы перешли в раздел с фильтрами"), reply_markup=await filters_keyboard())
+        await call.message.edit_text(
+            text=_("Вы перешли в раздел с фильтрами"),
+            reply_markup=await filters_keyboard()
+        )
     except BadRequest:
         await delete_message(message=call.message)
-        await call.message.answer(_("Вы перешли в раздел с фильтрами"), reply_markup=await filters_keyboard())
+        await call.message.answer(
+            text=_("Вы перешли в раздел с фильтрами"),
+            reply_markup=await filters_keyboard()
+        )
 
 
 @dp.callback_query_handler(text="dating_filters")
@@ -31,7 +38,7 @@ async def get_dating_filters(call: CallbackQuery) -> None:
 
 @dp.callback_query_handler(text="user_age_period")
 async def desired_age(call: CallbackQuery, state: FSMContext) -> None:
-    await call.message.edit_text(_("Напишите минимальный возраст"))
+    await call.message.edit_text(text=_("Напишите минимальный возраст"))
     await state.set_state("age_period")
 
 
@@ -40,7 +47,10 @@ async def desired_min_age_state(message: types.Message, state: FSMContext) -> No
     messages = message.text
     int_message = re.findall('[0-9]+', messages)
     int_messages = "".join(int_message)
-    await db_commands.update_user_data(telegram_id=message.from_user.id, need_partner_age_min=int_messages)
+    await db_commands.update_user_data(
+        telegram_id=message.from_user.id,
+        need_partner_age_min=int_messages
+    )
     await message.answer(_("Теперь введите максимальный возраст"))
     await state.reset_state()
     await state.set_state("max_age_period")
@@ -51,7 +61,10 @@ async def desired_max_age_state(message: types.Message, state: FSMContext) -> No
     messages = message.text
     int_message = re.findall('[0-9]+', messages)
     int_messages = "".join(int_message)
-    await db_commands.update_user_data(telegram_id=message.from_user.id, need_partner_age_max=int_messages)
+    await db_commands.update_user_data(
+        telegram_id=message.from_user.id,
+        need_partner_age_max=int_messages
+    )
     await state.finish()
     await show_dating_filters(obj=message)
 
@@ -81,10 +94,10 @@ async def user_city_filter(call: CallbackQuery, state: FSMContext) -> None:
 @dp.message_handler(state="city")
 async def user_city_filter_state(message: types.Message) -> None:
     try:
-        loc = await Location(message=message)
-        await loc.det_loc_in_filters(message)
+        loc = await Location(message=message, strategy=FiltersStrategy)
+        await loc.det_loc(message)
 
-    except Exception as err:
+    except NothingFound:
         await message.answer(_("Произошла ошибка, попробуйте еще раз"))
         return
 
@@ -118,9 +131,9 @@ async def set_city_by_filter(call: CallbackQuery, state: FSMContext) -> None:
 @dp.message_handler(state="set_city_event")
 async def user_city_filter_state(message: types.Message) -> None:
     try:
-        loc = await Location(message=message)
-        await loc.det_loc_in_filters_event(message)
+        loc = await Location(message=message, strategy=FiltersStrategy)
+        await loc.det_loc(message)
 
-    except Exception as err:
+    except NothingFound:
         await message.answer(_("Произошла ошибка, попробуйте еще раз"))
         return

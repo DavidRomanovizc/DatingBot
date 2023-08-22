@@ -6,16 +6,18 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery, ContentType
 from aiogram.utils.markdown import quote_html
+from django.db import DataError
 
 from functions.main_app.auxiliary_tools import update_normal_photo, saving_censored_photo
-from functions.main_app.determin_location import Location
+from functions.main_app.determin_location import Location, RegistrationStrategy
 from handlers.users.back import delete_message
 from keyboards.default.get_photo import get_photo_from_profile
 from keyboards.inline.change_data_profile_inline import change_info_keyboard, gender_keyboard
 from keyboards.inline.main_menu_inline import start_keyboard
-from loader import dp, _
+from loader import dp, _, logger
 from states.new_data_state import NewData
 from utils.NudeNet.predictor import classification_image, generate_censored_image
+from utils.YandexMap.exceptions import NothingFound
 from utils.db_api import db_commands
 from utils.misc.profanityFilter import censored_message
 
@@ -25,14 +27,14 @@ async def start_change_data(call: CallbackQuery) -> None:
     markup = await change_info_keyboard()
     await delete_message(call.message)
     await call.message.answer(
-        text="<u>Ваши данные: </u>\n",
+        text=_("<u>Ваши данные: </u>\n"),
         reply_markup=markup
     )
 
 
 @dp.callback_query_handler(text='name')
 async def change_name(call: CallbackQuery) -> None:
-    await call.message.edit_text(_("Введите новое имя"))
+    await call.message.edit_text(text=_("Введите новое имя"))
     await NewData.name.set()
 
 
@@ -47,26 +49,29 @@ async def change_name(message: types.Message, state: FSMContext) -> None:
         )
         await message.answer(
             text=_("Ваше новое имя: <b>{censored}</b>").format(
-                censored=censored)
+                censored=censored
+            )
         )
         await message.answer(
             text=_("Выберите, что вы хотите изменить: "),
             reply_markup=markup
         )
         await state.reset_state()
-    except Exception as err:
+    except DataError as ex:
+        logger.error(f"Error in change_name: {ex}")
         await message.answer(
-            text=_("Произошла неизвестная ошибка. Попробуйте ещё раз"),
+            text=_("Произошла неизвестная ошибка. Попробуйте ещё раз\n"
+                   "Возможно, Ваше сообщение слишком большое"),
             reply_markup=markup
         )
-        await state.reset_state()
+        return
 
     await state.reset_state()
 
 
 @dp.callback_query_handler(text='age')
 async def change_age(call: CallbackQuery) -> None:
-    await call.message.edit_text(_("Введите новый возраст"))
+    await call.message.edit_text(text=_("Введите новый возраст"))
     await NewData.age.set()
 
 
@@ -74,13 +79,15 @@ async def change_age(call: CallbackQuery) -> None:
 async def change_age(message: types.Message, state: FSMContext) -> None:
     markup = await change_info_keyboard()
     try:
-        if int(message.text) and 0 < int(message.text) < 110:
+        if int(message.text) and 10 < int(message.text) < 90:
             await db_commands.update_user_data(
-                age=int(message.text), telegram_id=message.from_user.id
+                age=int(message.text),
+                telegram_id=message.from_user.id
             )
             await message.answer(
                 text=_("Ваш новый возраст: <b>{messages}</b>").format(
-                    messages=message.text)
+                    messages=message.text
+                )
             )
             await asyncio.sleep(1)
             await message.answer(
@@ -95,7 +102,7 @@ async def change_age(message: types.Message, state: FSMContext) -> None:
             return
 
     except ValueError:
-        await message.answer(_("Вы ввели недопустимое число, попробуйте еще раз"))
+        await message.answer(text=_("Вы ввели не число, попробуйте еще раз"))
         return
 
     await state.reset_state()
@@ -103,31 +110,43 @@ async def change_age(message: types.Message, state: FSMContext) -> None:
 
 @dp.callback_query_handler(text='city')
 async def change_city(call: CallbackQuery) -> None:
-    await call.message.edit_text(_("Введите новый город"))
+    await call.message.edit_text(text=_("Введите новый город"))
     await NewData.city.set()
 
 
 @dp.message_handler(state=NewData.city)
 async def change_city(message: types.Message) -> None:
     try:
-        loc = await Location(message=message)
-        await loc.det_loc_in_registration(message)
-    except Exception as err:
-        await message.answer(_("Произошла неизвестная ошибка. Попробуйте ещё раз"),
-                             reply_markup=await change_info_keyboard())
+        loc = await Location(message=message, strategy=RegistrationStrategy())
+        await loc.det_loc()
+    except NothingFound as ex:
+        logger.error(f"Error in change_city. {ex}")
+        await message.answer(
+            text=_(
+                "Мы не смогли найти город {city}. Попробуйте ещё раз"
+            ).format(
+                city=message.text
+            )
+        )
+        return
 
 
 @dp.callback_query_handler(text="yes_all_good", state=NewData.city)
 async def get_hobbies(call: CallbackQuery, state: FSMContext) -> None:
-    await call.message.edit_text(_("Данные успешно изменены.\nВыберите, что вы хотите изменить: "),
-                                 reply_markup=await change_info_keyboard())
+    await call.message.edit_text(
+        text=_(
+            "Данные успешно изменены.\n"
+            "Выберите, что вы хотите изменить: "
+        ),
+        reply_markup=await change_info_keyboard()
+    )
     await state.reset_state()
 
 
 @dp.callback_query_handler(text='gender')
 async def change_sex(call: CallbackQuery) -> None:
     markup = await gender_keyboard(m_gender=_("👱🏻‍♂️ Мужской"), f_gender=_("👱🏻‍♀️ Женский"))
-    await call.message.edit_text(_("Выберите новый пол: "), reply_markup=markup)
+    await call.message.edit_text(text=_("Выберите новый пол: "), reply_markup=markup)
     await NewData.sex.set()
 
 
@@ -136,7 +155,7 @@ async def change_sex(call: CallbackQuery, state: FSMContext) -> None:
     markup = await change_info_keyboard()
     gender = "Мужской" if call.data == "male" else "Женский"
     await db_commands.update_user_data(sex=gender, telegram_id=call.from_user.id)
-    await call.message.edit_text(_("Ваш новый пол: <b>{}</b>".format(gender)))
+    await call.message.edit_text(text=_("Ваш новый пол: <b>{}</b>".format(gender)))
     await asyncio.sleep(1)
     await call.message.edit_text(
         text=_("Выберите, что вы хотите изменить: "),
@@ -148,7 +167,12 @@ async def change_sex(call: CallbackQuery, state: FSMContext) -> None:
 @dp.callback_query_handler(text='photo')
 async def new_photo(call: CallbackQuery) -> None:
     await delete_message(call.message)
-    await call.message.answer(_("Отправьте мне новую фотографию"), reply_markup=await get_photo_from_profile())
+    await call.message.answer(
+        text=_(
+            "Отправьте мне новую фотографию"
+        ),
+        reply_markup=await get_photo_from_profile()
+    )
     await NewData.photo.set()
     await asyncio.sleep(1)
     await delete_message(call.message)
@@ -217,9 +241,9 @@ async def new_comment(call: CallbackQuery) -> None:
     user = await db_commands.select_user(telegram_id=call.from_user.id)
     voice_id = user.get("voice_id")
     if voice_id is None:
-        await call.message.edit_text(_("Отправьте мне новое описание анкеты:"))
+        await call.message.edit_text(text=_("Отправьте мне новое описание анкеты:"))
     else:
-        await call.message.edit_text(_("Отправьте голосовое сообщение"))
+        await call.message.edit_text(text=_("Отправьте голосовое сообщение"))
     await NewData.commentary.set()
 
 
@@ -228,16 +252,25 @@ async def voice_reg(message: types.Message, state: FSMContext) -> None:
     markup = await change_info_keyboard()
     voice_message_id = message.voice.file_id
     try:
-        await db_commands.update_user_data(voice_id=voice_message_id, telegram_id=message.from_user.id)
-        await message.answer(_("Комментарий принят!"))
+        await db_commands.update_user_data(
+            voice_id=voice_message_id,
+            telegram_id=message.from_user.id
+        )
+        await message.answer(text=_("Комментарий принят!"))
         await asyncio.sleep(1)
         await delete_message(message)
-        await message.answer(_("Выберите, что вы хотите изменить: "), reply_markup=markup)
+        await message.answer(text=_("Выберите, что вы хотите изменить: "), reply_markup=markup)
         await state.reset_state()
-    except Exception as err:
-        await message.answer(_("Произошла неизвестная ошибка! Попробуйте изменить комментарий позже в разделе "
-                               "\"Меню\"\n\n"
-                               "Выберите, кого вы хотите найти: "), reply_markup=markup)
+    except DataError:
+        await message.answer(
+            text=_(
+                "Произошла неизвестная ошибка!"
+                " Попробуйте изменить комментарий позже в разделе "
+                "\"Меню\"\n\n"
+                "Выберите, кого вы хотите найти: "
+            ),
+            reply_markup=markup
+        )
     await state.reset_state()
 
 
@@ -246,26 +279,30 @@ async def update_comment_complete(message: types.Message, state: FSMContext) -> 
     markup = await change_info_keyboard()
     try:
         censored = censored_message(message.text)
-        await db_commands.update_user_data(commentary=quote_html(censored), telegram_id=message.from_user.id)
-        await message.answer(_("Комментарий принят!"))
+        await db_commands.update_user_data(
+            commentary=quote_html(censored),
+            telegram_id=message.from_user.id
+        )
+        await message.answer(text=_("Комментарий принят!"))
         await asyncio.sleep(1)
         await delete_message(message)
-        await message.answer(_("Выберите, что вы хотите изменить: "), reply_markup=markup)
+        await message.answer(text=_("Выберите, что вы хотите изменить: "), reply_markup=markup)
         await state.reset_state()
-    except Exception as err:
-        await message.answer(_("Произошла ошибка! Попробуйте еще раз изменить описание. "
-                               "Возможно, Ваше сообщение слишком большое\n"
-                               "Если ошибка осталась, напишите системному администратору."))
-        await state.reset_state()
+    except DataError as ex:
+        logger.error(f"Error in update_comment_complete {ex}")
+        await message.answer(text=_("Произошла ошибка! Попробуйте еще раз изменить описание. "
+                                    "Возможно, Ваше сообщение слишком большое\n"
+                                    "Если ошибка осталась, напишите в поддержку."))
+        return
 
 
 @dp.callback_query_handler(text="add_inst")
 async def add_inst(call: CallbackQuery, state: FSMContext) -> None:
     await delete_message(call.message)
-    await call.message.answer(_("Напишите имя своего аккаунта\n\n"
-                                "Примеры:\n"
-                                "<code>@unknown</code>\n"
-                                "<code>https://www.instagram.com/unknown</code>"))
+    await call.message.answer(text=_("Напишите имя своего аккаунта\n\n"
+                                     "Примеры:\n"
+                                     "<code>@unknown</code>\n"
+                                     "<code>https://www.instagram.com/unknown</code>"))
     await state.set_state("inst")
 
 
@@ -278,14 +315,20 @@ async def add_inst_state(message: types.Message, state: FSMContext) -> None:
         result = regex
         if bool(regex):
             await state.update_data(inst=message.text)
-            await db_commands.update_user_data(instagram=result[0], telegram_id=message.from_user.id)
-            await message.answer(_("Ваш аккаунт успешно добавлен"))
+            await db_commands.update_user_data(
+                instagram=result[0],
+                telegram_id=message.from_user.id
+            )
+            await message.answer(text=_("Ваш аккаунт успешно добавлен"))
             await asyncio.sleep(1)
             await state.reset_state()
-            await message.answer(_("Вы были возвращены в меню"), reply_markup=markup)
+            await message.answer(text=_("Вы были возвращены в меню"), reply_markup=markup)
         else:
-            await message.answer(_("Вы ввели неправильную ссылку или имя аккаунта.\n\nПримеры:\n"
-                                   "<code>@unknown</code>\n<code>https://www.instagram.com/unknown</code>"))
+            await message.answer(
+                text=_("Вы ввели неправильную ссылку или имя аккаунта.\n\nПримеры:\n"
+                       "<code>@unknown</code>\n<code>https://www.instagram.com/unknown</code>")
+            )
 
-    except Exception as err:
-        await message.answer(_("Возникла ошибка. Попробуйте еще раз"))
+    except DataError:
+        await message.answer(text=_("Возникла ошибка. Попробуйте еще раз"))
+        return

@@ -9,23 +9,25 @@ from loader import dp, bot, _
 from utils.db_api import db_commands
 
 
-@dp.callback_query_handler(lambda call: str(call.message.chat.id) == load_config().tg_bot.moderate_chat)
+@dp.callback_query_handler(
+    lambda call: str(call.message.chat.id) == load_config().tg_bot.moderate_chat
+)
 async def order_answer(call: CallbackQuery) -> None:
     call_data = call.data.split("-")
-
-    markup = await start_keyboard(obj=call)
+    telegram_id = call_data[1]
+    markup = await start_keyboard(obj=int(telegram_id))
 
     if call_data[0] == 'moderate_accept':
         await call.message.delete()
         await call.message.answer(_("Принято!"))
         await db_commands.update_user_meetings_data(
-            telegram_id=call_data[1], verification_status=True
-        )
-        await db_commands.update_user_meetings_data(
-            telegram_id=call_data[1], is_admin=True
+            telegram_id=telegram_id,
+            verification_status=True,
+            is_admin=True,
+            moderation_process=False
         )
         await bot.send_message(
-            chat_id=call_data[1],
+            chat_id=telegram_id,
             text=_("Ваше мероприятие прошло модерацию"),
             reply_markup=markup
         )
@@ -34,10 +36,13 @@ async def order_answer(call: CallbackQuery) -> None:
     elif call_data[0] == 'moderate_decline':
         await call.message.delete()
         await call.message.answer(_("Отклонено!"))
-        await db_commands.delete_user_meetings(telegram_id=call_data[1])
+        await db_commands.delete_user_meetings(telegram_id=telegram_id)
         await bot.send_message(
-            chat_id=call_data[1],
+            chat_id=telegram_id,
             text=_("К сожалению ваше мероприятие не прошло модерацию"),
             reply_markup=await poster_keyboard(obj=call)
         )
-    await db_commands.update_user_meetings_data(telegram_id=call_data[1], moderation_process=True)
+    await db_commands.update_user_meetings_data(
+        telegram_id=telegram_id,
+        moderation_process=False
+    )
