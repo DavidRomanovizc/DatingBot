@@ -74,11 +74,6 @@ class EventProfileBackCommand(Command):
         await view_meetings_handler(call)
 
 
-class CancelCommand(Command):
-    async def execute(self, call: CallbackQuery, **kwargs) -> None:
-        await OpenMenuCommand.execute(call=call, **kwargs)
-
-
 menu_commands = {
     "back_with_delete": OpenMenuCommand(),
     "back_to_reg_menu": OpenMenuCommand(),
@@ -88,7 +83,8 @@ menu_commands = {
     "back_to_info_menu": BackToGuideMenuCommand(),
     "go_out": EventProfileBackCommand(),
     "event_menu": EventProfileBackCommand(),
-    "back_to_event_profile": BackToEventProfileCommand()
+    "back_to_event_profile": BackToEventProfileCommand(),
+    "registration:stopped": OpenMenuCommand()
 }
 
 
@@ -96,7 +92,8 @@ menu_commands = {
 async def handle_menu_action(call: CallbackQuery, state: FSMContext) -> None:
     menu_action = call.data
     command = menu_commands[menu_action]
+    await state.reset_state()
     try:
-        await command.execute(call, )
+        await command.execute(call)
     except TypeError:
         await command.execute(call, state)

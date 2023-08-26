@@ -95,7 +95,7 @@ async def user_city_filter(call: CallbackQuery, state: FSMContext) -> None:
 async def user_city_filter_state(message: types.Message) -> None:
     try:
         loc = await Location(message=message, strategy=FiltersStrategy)
-        await loc.det_loc(message)
+        await loc.det_loc()
 
     except NothingFound:
         await message.answer(_("Произошла ошибка, попробуйте еще раз"))
@@ -132,7 +132,7 @@ async def set_city_by_filter(call: CallbackQuery, state: FSMContext) -> None:
 async def user_city_filter_state(message: types.Message) -> None:
     try:
         loc = await Location(message=message, strategy=FiltersStrategy)
-        await loc.det_loc(message)
+        await loc.det_loc()
 
     except NothingFound:
         await message.answer(_("Произошла ошибка, попробуйте еще раз"))

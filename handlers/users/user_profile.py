@@ -18,6 +18,6 @@ async def my_profile_menu(call: CallbackQuery) -> None:
 
 @dp.callback_query_handler(text="disable")
 async def disable_profile(call: CallbackQuery) -> None:
-    await db_commands.delete_user(telegram_id=call.from_user.id)
+    await db_commands.update_user_data(telegram_id=call.from_user.id, status=False)
     await delete_message(call.message)
     await call.message.answer(_("Ваша анкета удалена!\nЯ надеюсь вы кого-нибудь нашли"))

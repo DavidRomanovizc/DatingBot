@@ -20,12 +20,11 @@ async def set_default_commands(dp: Dispatcher) -> None:
     ]
 
     admin_commands = [
-        types.BotCommand("admin", "[Admin] ⚒ Админ-Меню"),
-        types.BotCommand("users", "[Admin] 🫂 Пользователи"),
-        types.BotCommand("settings", "[Admin] ⚙️ Настройки"),
-        types.BotCommand("ad", "[Admin] 📊 Реклама"),
-        types.BotCommand("check", "[Admin] /check [name]"),
-        types.BotCommand("logs", "[Owner] 🗒 Логи")
+        types.BotCommand("admin", "⚒ Админ-Меню"),
+        types.BotCommand("users", "🫂 Пользователи"),
+        types.BotCommand("settings", "⚙️ Настройки"),
+        types.BotCommand("ad", "📊 Реклама"),
+        types.BotCommand("logs", "🗒 Логи")
     ]
 
     await dp.bot.set_my_commands(default_commands, scope=types.BotCommandScopeDefault())

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Type, Union
+from typing import Type
 
 from aiogram.types import Message
 
@@ -13,7 +13,7 @@ from utils.misc.AsyncObj import AsyncObj
 
 class UserDataUpdateStrategy(ABC):
     @abstractmethod
-    async def update_user_data(self: Union["Location", Message]):
+    async def update_user_data(self: "Location", message: Message):
         pass
 
 
@@ -42,15 +42,15 @@ class Location(AsyncObj):
                 reply_markup=self.markup
             )
             try:
-                await self.strategy.update_user_data(self)
+                await self.strategy.update_user_data(self, message=self.message)
             except TypeError:
                 logger.info("Error in det_loc")
 
 
 class RegistrationStrategy(UserDataUpdateStrategy):
-    async def update_user_data(self: Union[Location, Message]):
+    async def update_user_data(self: Location, message: Message):
         await db_commands.update_user_data(
-            telegram_id=self.from_user.id,
+            telegram_id=message.from_user.id,
             city=self.city,
             need_city=self.city,
             longitude=self.x,
@@ -59,24 +59,24 @@ class RegistrationStrategy(UserDataUpdateStrategy):
 
 
 class FiltersStrategy(UserDataUpdateStrategy):
-    async def update_user_data(self: Union[Location, Message]):
+    async def update_user_data(self: Location, message: Message):
         await db_commands.update_user_data(
-            telegram_id=self.from_user.id,
+            telegram_id=message.from_user.id,
             need_city=self.city
         )
 
 
 class EventStrategy(UserDataUpdateStrategy):
-    async def update_user_data(self: Union[Location, Message]):
+    async def update_user_data(self: Location, message: Message):
         await db_commands.update_user_meetings_data(
-            telegram_id=self.from_user.id,
+            telegram_id=message.from_user.id,
             venue=self.city
         )
 
 
 class EventFiltersStrategy(UserDataUpdateStrategy):
-    async def update_user_data(self: Union[Location, Message]):
+    async def update_user_data(self: Location, message: Message):
         await db_commands.update_user_meetings_data(
-            telegram_id=self.from_user.id,
+            telegram_id=message.from_user.id,
             need_location=self.city
         )

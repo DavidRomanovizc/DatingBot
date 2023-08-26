@@ -9,7 +9,7 @@ from django.db import DataError
 from data.config import load_config
 from functions.event.extra_features import check_event_date
 from functions.event.templates_messages import ME
-from functions.main_app.determin_location import Location
+from functions.main_app.determin_location import Location, EventStrategy
 from keyboards.inline.calendar import calendar_callback, SimpleCalendar, search_cb
 from keyboards.inline.poster_inline import poster_keyboard, cancel_registration_keyboard
 from loader import dp, _, bot, logger
@@ -102,8 +102,8 @@ async def process_simple_calendar(call: CallbackQuery, callback_data, state: FSM
 async def send_city(message: types.Message) -> None:
     try:
         if len(message.text) <= 25:
-            loc = await Location(message=message)
-            await loc.det_loc_in_event(message)
+            loc = await Location(message=message, strategy=EventStrategy)
+            await loc.det_loc()
         else:
             await message.answer(text=_("Вы ввели слишком длинное название города"
                                         "Попробуйте ещё раз."))
