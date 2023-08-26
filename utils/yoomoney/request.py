@@ -6,13 +6,10 @@ from utils.yoomoney.exceptions import UnresolvedRequestMethod, BadResponse
 ALLOWED_METHODS = ("post", "get")
 
 
-async def send_request(url: str,
-                       method: str = "post",
-                       response_without_data: bool = False,
-                       **kwargs) -> (ClientResponse, dict | None):
-    headers = {
-        "Content-Type": "application/x-www-form-urlencoded"
-    }
+async def send_request(
+        url: str, method: str = "post", response_without_data: bool = False, **kwargs
+) -> (ClientResponse, dict | None):
+    headers = {"Content-Type": "application/x-www-form-urlencoded"}
     if add_headers := kwargs.pop("headers", {}):
         headers |= add_headers
 
@@ -38,7 +35,9 @@ async def post_handle_response(response: ClientResponse):
     try:
         response_data = await response.json()
         if isinstance(response_data, dict) and response_data.get("error"):
-            raise BadResponse(f"error — {response_data.get('error')}, response is {response}")
+            raise BadResponse(
+                f"error — {response_data.get('error')}, response is {response}"
+            )
 
     except ContentTypeError:
         pass

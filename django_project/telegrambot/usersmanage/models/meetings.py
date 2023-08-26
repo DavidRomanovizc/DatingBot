@@ -5,27 +5,19 @@ from django_project.telegrambot.usersmanage.models.base import TimeBasedModel
 
 class UserMeetings(TimeBasedModel):
     class Meta:
-        verbose_name = "Пользователь Мероприятий",
+        verbose_name = ("Пользователь Мероприятий",)
         verbose_name_plural = "Пользователи Мероприятий"
 
     telegram_id = models.PositiveBigIntegerField(
         unique=True, default=1, verbose_name="ID пользователя Телеграм"
     )
-    username = models.CharField(
-        max_length=255, verbose_name="Username Telegram"
-    )
-    commentary = models.CharField(
-        max_length=50, verbose_name="Комментарий", null=True
-    )
+    username = models.CharField(max_length=255, verbose_name="Username Telegram")
+    commentary = models.CharField(max_length=50, verbose_name="Комментарий", null=True)
     time_event = models.CharField(
         max_length=10, verbose_name="Время проведения", null=True
     )
-    venue = models.CharField(
-        max_length=50, verbose_name="Место проведения", null=True
-    )
-    need_location = models.CharField(
-        max_length=50, null=True
-    )
+    venue = models.CharField(max_length=50, verbose_name="Место проведения", null=True)
+    need_location = models.CharField(max_length=50, null=True)
     event_name = models.CharField(
         max_length=50, verbose_name="Название мероприятия", null=True
     )
@@ -35,12 +27,8 @@ class UserMeetings(TimeBasedModel):
     moderation_process = models.BooleanField(
         verbose_name="Процесс модерации", default=False
     )
-    is_premium = models.BooleanField(
-        verbose_name="Премиум", default=False
-    )
-    photo_id = models.CharField(
-        max_length=400, verbose_name="Photo_ID", null=True
-    )
+    is_premium = models.BooleanField(verbose_name="Премиум", default=False)
+    photo_id = models.CharField(max_length=400, verbose_name="Photo_ID", null=True)
     is_admin = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
 

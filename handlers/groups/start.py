@@ -8,5 +8,7 @@ from loader import dp, _
 @dp.message_handler(IsGroup(), Command("start"))
 async def start_group_handler(message: Message) -> None:
     await message.answer(
-        text=_("<b>Привет, я бот, проекта Que Group, для верификации анкет для знакомств</b>\n\n")
+        text=_(
+            "<b>Привет, я бот, проекта Que Group, для верификации анкет для знакомств</b>\n\n"
+        )
     )

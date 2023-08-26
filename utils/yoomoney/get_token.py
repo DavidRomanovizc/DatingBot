@@ -15,7 +15,7 @@ async def main():
             "incoming-transfers",
             "payment-p2p",
             "payment-shop",
-        ]
+        ],
     )
 
 

@@ -17,32 +17,23 @@ async def create_questionnaire(
         chat_id: int,
         add_text: Optional[str] = None,
         monitoring: bool = False,
-        report_system: bool = False
+        report_system: bool = False,
 ) -> None:
-    markup = await questionnaires_keyboard(
-        target_id=form_owner,
-        monitoring=monitoring
-    )
+    markup = await questionnaires_keyboard(target_id=form_owner, monitoring=monitoring)
     await send_questionnaire(
         chat_id=chat_id,
         markup=markup,
         add_text=add_text,
         monitoring=monitoring,
         report_system=report_system,
-        owner_id=form_owner
+        owner_id=form_owner,
     )
 
 
 async def create_questionnaire_reciprocity(
-        liker: int,
-        chat_id: int,
-        add_text: str = None
+        liker: int, chat_id: int, add_text: str = None
 ) -> None:
-    await send_questionnaire(
-        chat_id=chat_id,
-        add_text=add_text,
-        owner_id=liker
-    )
+    await send_questionnaire(chat_id=chat_id, add_text=add_text, owner_id=liker)
 
 
 async def monitoring_questionnaire(call: CallbackQuery) -> None:
@@ -53,9 +44,13 @@ async def monitoring_questionnaire(call: CallbackQuery) -> None:
         chat_id=call.from_user.id, message_id=call.message.message_id
     )
     try:
-        await create_questionnaire(form_owner=random_user, chat_id=telegram_id, monitoring=True)
+        await create_questionnaire(
+            form_owner=random_user, chat_id=telegram_id, monitoring=True
+        )
     except BadRequest:
-        await create_questionnaire(form_owner=random_user, chat_id=telegram_id, monitoring=True)
+        await create_questionnaire(
+            form_owner=random_user, chat_id=telegram_id, monitoring=True
+        )
 
 
 async def rand_user_list(call: CallbackQuery) -> int:

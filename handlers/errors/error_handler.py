@@ -8,7 +8,7 @@ from aiogram.utils.exceptions import (
     MessageTextIsEmpty,
     RetryAfter,
     CantParseEntities,
-    MessageCantBeDeleted
+    MessageCantBeDeleted,
 )
 
 from loader import dp

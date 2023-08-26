@@ -23,13 +23,17 @@ class Location(AsyncObj):
     в различных сценариях.
     """
 
-    async def __ainit__(self, message: Message, strategy: Type[UserDataUpdateStrategy]) -> None:
+    async def __ainit__(
+            self, message: Message, strategy: Type[UserDataUpdateStrategy]
+    ) -> None:
         self.markup = await confirm_keyboard()
         self.x, self.y = await client.coordinates(message.text)
         self.city = await client.address(f"{self.x}", f"{self.y}")
-        self.text = _('Я нашел такой адрес:\n'
-                      '<b>{city}</b>\n'
-                      'Если все правильно, то подтвердите').format(city=self.city)
+        self.text = _(
+            "Я нашел такой адрес:\n"
+            "<b>{city}</b>\n"
+            "Если все правильно, то подтвердите"
+        ).format(city=self.city)
         self.strategy = strategy
         self.message = message
 
@@ -37,10 +41,7 @@ class Location(AsyncObj):
         if self.city is None:
             raise NothingFound
         else:
-            await self.message.answer(
-                self.text,
-                reply_markup=self.markup
-            )
+            await self.message.answer(self.text, reply_markup=self.markup)
             try:
                 await self.strategy.update_user_data(self, message=self.message)
             except TypeError:
@@ -54,29 +55,26 @@ class RegistrationStrategy(UserDataUpdateStrategy):
             city=self.city,
             need_city=self.city,
             longitude=self.x,
-            latitude=self.y
+            latitude=self.y,
         )
 
 
 class FiltersStrategy(UserDataUpdateStrategy):
     async def update_user_data(self: Location, message: Message):
         await db_commands.update_user_data(
-            telegram_id=message.from_user.id,
-            need_city=self.city
+            telegram_id=message.from_user.id, need_city=self.city
         )
 
 
 class EventStrategy(UserDataUpdateStrategy):
     async def update_user_data(self: Location, message: Message):
         await db_commands.update_user_meetings_data(
-            telegram_id=message.from_user.id,
-            venue=self.city
+            telegram_id=message.from_user.id, venue=self.city
         )
 
 
 class EventFiltersStrategy(UserDataUpdateStrategy):
     async def update_user_data(self: Location, message: Message):
         await db_commands.update_user_meetings_data(
-            telegram_id=message.from_user.id,
-            need_location=self.city
+            telegram_id=message.from_user.id, need_location=self.city
         )

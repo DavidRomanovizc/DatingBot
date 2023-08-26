@@ -5,7 +5,7 @@ from filters.IsAdminFilter import IsAdmin
 from keyboards.admin.inline.customers import (
     user_manipulation,
     manipulation_callback,
-    user_blocking_keyboard
+    user_blocking_keyboard,
 )
 from keyboards.admin.inline.reply_menu import admin_cancel_keyboard
 from loader import dp
@@ -22,8 +22,10 @@ async def command_start(message: Message, state: FSMContext):
 
 @dp.callback_query_handler(text="db:search_user")
 async def search_users(call: CallbackQuery, state: FSMContext):
-    await call.message.edit_text("<b>🔍 Введите @username или telegram id: </b>",
-                                 reply_markup=await admin_cancel_keyboard())
+    await call.message.edit_text(
+        "<b>🔍 Введите @username или telegram id: </b>",
+        reply_markup=await admin_cancel_keyboard(),
+    )
     await state.set_state("search_user")
 
 
@@ -44,18 +46,23 @@ async def search_handler(message: Message, state: FSMContext):
         )
 
         await message.answer_photo(
-            photo=user['photo_id'],
+            photo=user["photo_id"],
             caption=text,
-            reply_markup=await user_blocking_keyboard(user_id=user['telegram_id'], is_banned=user['is_banned'])
+            reply_markup=await user_blocking_keyboard(
+                user_id=user["telegram_id"], is_banned=user["is_banned"]
+            ),
         )
 
     else:
-        await message.answer("🔍 Пользователь не найден!",
-                             reply_markup=await user_manipulation())
+        await message.answer(
+            "🔍 Пользователь не найден!", reply_markup=await user_manipulation()
+        )
     await state.reset_state()
 
 
-@dp.callback_query_handler(IsAdmin(), manipulation_callback.filter(action=["ban", "unban"]))
+@dp.callback_query_handler(
+    IsAdmin(), manipulation_callback.filter(action=["ban", "unban"])
+)
 async def ban_user_handler(call: CallbackQuery, callback_data: dict):
     user_id = int(callback_data.get("value"))
     action = callback_data.get("action")

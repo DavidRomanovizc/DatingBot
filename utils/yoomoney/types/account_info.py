@@ -20,6 +20,7 @@ class AccountInfo(BaseModel):
     Получение информации о состоянии счета пользователя
     https://yoomoney.ru/docs/wallet/user-account/account-info
     """
+
     account: str  # номер счета
     balance: int  # баланс счета
     currency: str  # код валюты счета

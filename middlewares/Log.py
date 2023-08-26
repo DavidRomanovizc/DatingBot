@@ -5,7 +5,6 @@ from loader import logger
 
 
 class LogMiddleware(BaseMiddleware):
-
     async def on_process_message(self, message: types.Message, data: dict):
         logger.info(message)
 

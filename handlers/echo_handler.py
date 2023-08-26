@@ -10,8 +10,9 @@ from loader import dp, _
 
 @dp.message_handler(state=None)
 async def bot_echo(message: types.Message) -> None:
-    text = _("Эхо без состояния.",
-             "Сообщение:\n {hcode(message.text)}").format(hcode(message.text))
+    text = _("Эхо без состояния.", "Сообщение:\n {hcode(message.text)}").format(
+        hcode(message.text)
+    )
 
     await message.answer(text)
 
@@ -20,11 +21,11 @@ async def bot_echo(message: types.Message) -> None:
 async def bot_echo_all(message: types.Message, state: FSMContext) -> None:
     state_name = await state.get_state()
     text = [
-        f'Эхо в состоянии {hcode(state_name)}',
-        'Содержание сообщения:',
-        hcode(message.text)
+        f"Эхо в состоянии {hcode(state_name)}",
+        "Содержание сообщения:",
+        hcode(message.text),
     ]
-    await message.answer('\n'.join(text))
+    await message.answer("\n".join(text))
 
 
 @dp.callback_query_handler()
@@ -32,7 +33,7 @@ async def cq_echo(call: CallbackQuery) -> None:
     logger.debug(call.data)
 
 
-@dp.message_handler(state='finding')
+@dp.message_handler(state="finding")
 async def echo_message_finding(message: types.Message, state: FSMContext) -> None:
     await message.answer(_("Меню: "), reply_markup=await start_keyboard(message))
     await state.reset_state()

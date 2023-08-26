@@ -10,7 +10,6 @@ from utils.db_api import db_commands
 
 
 class IsMaintenance(BaseMiddleware):
-
     def __init__(self):
         super(IsMaintenance, self).__init__()
 
@@ -21,7 +20,9 @@ class IsMaintenance(BaseMiddleware):
         await self.check_tech_works(obj=call)
 
     @staticmethod
-    async def check_tech_works(obj: Union[types.CallbackQuery, types.Message]) -> NoReturn:
+    async def check_tech_works(
+            obj: Union[types.CallbackQuery, types.Message]
+    ) -> NoReturn:
         text = _("Ведутся технические работы")
         try:
             setting = await db_commands.select_setting_tech_work()

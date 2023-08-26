@@ -12,9 +12,14 @@ from utils.YandexMap.exceptions import UnexpectedResponse, InvalidKey, NothingFo
 @pytest.mark.asyncio
 async def test_request_success() -> NoReturn:
     async with aiohttp.ClientSession() as session:
-        async with session.get(url="https://geocode-maps.yandex.ru/1.x/",
-                               params=dict(format="json",
-                                           apikey=load_config().misc.yandex_api_key, geocode="Detroit")) as response:
+        async with session.get(
+                url="https://geocode-maps.yandex.ru/1.x/",
+                params=dict(
+                    format="json",
+                    apikey=load_config().misc.yandex_api_key,
+                    geocode="Detroit",
+                ),
+        ) as response:
             assert response.status == 200
             data = await response.json()
             assert isinstance(data, dict)

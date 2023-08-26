@@ -7,19 +7,13 @@ from functions.main_app.auxiliary_tools import (
     registration_menu,
     display_profile,
     delete_message,
-    information_menu
+    information_menu,
 )
-from handlers.users.event_handler import (
-    view_own_event,
-    view_meetings_handler
-)
+from handlers.users.event_handler import view_own_event, view_meetings_handler
 from keyboards.inline.admin_inline import unban_user_keyboard
 from keyboards.inline.filters_inline import filters_keyboard
 from keyboards.inline.menu_profile_inline import get_profile_keyboard
-from loader import (
-    _,
-    dp
-)
+from loader import _, dp
 from utils.db_api import db_commands
 
 
@@ -45,14 +39,16 @@ class BackToProfileMenuCommand(Command):
 
 class UnbanMenuCommand(Command):
     async def execute(self, call: CallbackQuery, **kwargs) -> None:
-        await call.message.edit_text(_("Вы забанены!"), reply_markup=await unban_user_keyboard())
+        await call.message.edit_text(
+            _("Вы забанены!"), reply_markup=await unban_user_keyboard()
+        )
 
 
 class BackToFiltersMenuCommand(Command):
     async def execute(self, call: CallbackQuery, **kwargs) -> None:
         await call.message.edit_text(
             text=_("Вы вернулись в меню фильтров"),
-            reply_markup=await filters_keyboard()
+            reply_markup=await filters_keyboard(),
         )
 
 
@@ -62,7 +58,6 @@ class BackToGuideMenuCommand(Command):
 
 
 class BackToEventProfileCommand(Command):
-
     async def execute(self, call: CallbackQuery, **kwargs) -> None:
         await view_own_event(call)
 
@@ -84,7 +79,7 @@ menu_commands = {
     "go_out": EventProfileBackCommand(),
     "event_menu": EventProfileBackCommand(),
     "back_to_event_profile": BackToEventProfileCommand(),
-    "registration:stopped": OpenMenuCommand()
+    "registration:stopped": OpenMenuCommand(),
 }
 
 

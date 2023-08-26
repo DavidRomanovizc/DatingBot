@@ -9,6 +9,7 @@ class Operation(BaseModel):
     Описание платежной операции
     https://yoomoney.ru/docs/wallet/user-account/operation-history#response-operation
     """
+
     operation_id: str
     status: str
     execution_datetime: datetime = Field(alias="datetime")

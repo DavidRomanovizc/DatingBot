@@ -24,16 +24,17 @@ async def admins_actions_handler(call: CallbackQuery):
     actions = {
         "admin:admins:add": [
             "<b>👮‍♂️ Введите ID Администратора для добавления: </b>",
-            AdminsActions.add
+            AdminsActions.add,
         ],
         "admin:admins:delete": [
             "<b>👮‍♂️ Введите ID Администратора для удаления: </b>",
-            AdminsActions.delete
-        ]
+            AdminsActions.delete,
+        ],
     }
 
-    await call.message.edit_text(actions[call.data][0],
-                                 reply_markup=await admin_cancel_keyboard())
+    await call.message.edit_text(
+        actions[call.data][0], reply_markup=await admin_cancel_keyboard()
+    )
     await actions[call.data][1].set()
 
 
@@ -46,18 +47,26 @@ async def admin_add_handler(message: Message, state: FSMContext):
         new_admin_id = int(message.text)
 
         if new_admin_id not in admins:
-            admins += [new_admin_id, ]
+            admins += [
+                new_admin_id,
+            ]
             change_env("ADMINS", ", ".join([str(x) for x in admins]))
 
             await set_default_commands(dp)
-            await message.answer("<b>👮‍♂️ Администратор добавлен!</b>",
-                                 reply_markup=await add_admins_keyboard())
+            await message.answer(
+                "<b>👮‍♂️ Администратор добавлен!</b>",
+                reply_markup=await add_admins_keyboard(),
+            )
         else:
-            await message.answer("<b>🚫 Данный ID уже есть в админ-составе!</b>",
-                                 reply_markup=await admin_cancel_keyboard())
+            await message.answer(
+                "<b>🚫 Данный ID уже есть в админ-составе!</b>",
+                reply_markup=await admin_cancel_keyboard(),
+            )
     else:
-        await message.answer("<b>🚫 Введите ID нового администратора: </b>",
-                             reply_markup=await admin_cancel_keyboard())
+        await message.answer(
+            "<b>🚫 Введите ID нового администратора: </b>",
+            reply_markup=await admin_cancel_keyboard(),
+        )
 
 
 @dp.message_handler(IsAdmin(), state=AdminsActions.delete)
@@ -73,18 +82,17 @@ async def admin_delete_handler(message: Message, state: FSMContext):
         await set_default_commands(dp)
         await message.answer(
             text="<b>👮‍♂️ Администратор удален!</b>",
-            reply_markup=await add_admins_keyboard()
+            reply_markup=await add_admins_keyboard(),
         )
     else:
         await message.answer(
             text="<b>🚫 Данный ID не в админ-составе!</b>",
-            reply_markup=await admin_cancel_keyboard()
+            reply_markup=await admin_cancel_keyboard(),
         )
 
 
 @dp.callback_query_handler(IsAdmin(), text="admin:settings")
 async def back_to_admin_comp(call: CallbackQuery):
     await call.message.edit_text(
-        text="<u>⚙️ Настройки</u>",
-        reply_markup=await settings_keyboard()
+        text="<u>⚙️ Настройки</u>", reply_markup=await settings_keyboard()
     )

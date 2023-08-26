@@ -7,19 +7,15 @@ from keyboards.inline.poster_inline import (
     create_moderate_ik,
     event_settings_keyboard,
     view_event_keyboard,
-    cancel_event_keyboard
+    cancel_event_keyboard,
 )
 from loader import _
 
 
 class TemplateEvent:
-
     def __init__(self) -> None:
         self.message_for_event = _(
-            "<b>{}</b> \n" +
-            "Когда: {} \n" +
-            "Где: {} \n\n" +
-            "{}"
+            "<b>{}</b> \n" + "Когда: {} \n" + "Где: {} \n\n" + "{}"
         )
 
     def template_event(self) -> str:
@@ -50,23 +46,18 @@ class TemplateEvent:
 
         if not moderate and not view_event:
             await bot.delete_message(
-                chat_id=call.from_user.id,
-                message_id=call.message.message_id
+                chat_id=call.from_user.id, message_id=call.message.message_id
             )
             reply_markup = await event_settings_keyboard()
 
         if view_event:
             await bot.delete_message(
-                chat_id=chat_id,
-                message_id=call.message.message_id
+                chat_id=chat_id, message_id=call.message.message_id
             )
             reply_markup = await view_event_keyboard(telegram_id)
 
         await bot.send_photo(
-            chat_id=chat_id,
-            caption=msg,
-            photo=photo,
-            reply_markup=reply_markup
+            chat_id=chat_id, caption=msg, photo=photo, reply_markup=reply_markup
         )
 
     async def send_event_list(
@@ -83,13 +74,10 @@ class TemplateEvent:
         reply_markup = await cancel_event_keyboard(str(text["telegram_id"]))
 
         await bot.delete_message(
-            chat_id=telegram_id,
-            message_id=call.message.message_id
+            chat_id=telegram_id, message_id=call.message.message_id
         )
         await call.message.answer_photo(
-            photo=photo,
-            caption=msg,
-            reply_markup=reply_markup
+            photo=photo, caption=msg, reply_markup=reply_markup
         )
 
 

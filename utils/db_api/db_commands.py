@@ -1,10 +1,10 @@
 import os
-from functools import lru_cache
 
 from asgiref.sync import sync_to_async
-from async_lru import alru_cache
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_project.telegrambot.telegrambot.settings')
+os.environ.setdefault(
+    "DJANGO_SETTINGS_MODULE", "django_project.telegrambot.telegrambot.settings"
+)
 import django
 
 django.setup()
@@ -12,17 +12,14 @@ from django.db.models import (
     F,
     Q,
 )
-from django.db.models.expressions import (
-    CombinedExpression,
-    Value
-)
+from django.db.models.expressions import CombinedExpression, Value
 
 from django_project.telegrambot.usersmanage.models import (
     UserMeetings,
     SettingModel,
     ViewedProfile,
     User,
-    NecessaryLink
+    NecessaryLink,
 )
 
 
@@ -68,14 +65,10 @@ def add_user(telegram_id, name, username, referrer_id=None):
             telegram_id=int(telegram_id),
             name=name,
             username=username,
-            referrer_id=referrer_id
+            referrer_id=referrer_id,
         ).save()
     else:
-        return User(
-            telegram_id=int(telegram_id),
-            name=name,
-            username=username
-        ).save()
+        return User(telegram_id=int(telegram_id), name=name, username=username).save()
 
 
 @sync_to_async
@@ -142,7 +135,8 @@ def select_meetings_user(telegram_id: int):
 @sync_to_async
 def update_user_events(telegram_id: int, events_id: int):
     return User.objects.filter(telegram_id=telegram_id).update(
-        events=CombinedExpression(F('events'), '||', Value([f'{events_id}'])))
+        events=CombinedExpression(F("events"), "||", Value([f"{events_id}"]))
+    )
 
 
 @sync_to_async
@@ -165,19 +159,19 @@ def search_users(
         need_age_max,
         user_need_city,
         offset: int,
-        limit: int
+        limit: int,
 ):
     query = (
-            Q(is_banned=False) &
-            Q(sex=need_partner_sex) &
-            (
-                    (Q(age__gte=need_age_min) & Q(age__lte=need_age_max)) |
-                    (Q(age__gte=need_age_min + 1) & Q(age__lte=need_age_max + 1))
-            ) &
-            Q(city=user_need_city) &
-            Q(status=True)
+            Q(is_banned=False)
+            & Q(sex=need_partner_sex)
+            & (
+                    (Q(age__gte=need_age_min) & Q(age__lte=need_age_max))
+                    | (Q(age__gte=need_age_min + 1) & Q(age__lte=need_age_max + 1))
+            )
+            & Q(city=user_need_city)
+            & Q(status=True)
     )
-    users = User.objects.filter(query).values()[offset:offset + limit]
+    users = User.objects.filter(query).values()[offset: offset + limit]
     return users
 
 
@@ -188,9 +182,11 @@ def search_event_forms():
 
 @sync_to_async
 def search_users_all(offset: int, limit: int):
-    return User.objects.filter(
-        Q(is_banned=False) & Q(status=True)
-    ).all().values()[offset:offset + limit]
+    return (
+        User.objects.filter(Q(is_banned=False) & Q(status=True))
+        .all()
+        .values()[offset: offset + limit]
+    )
 
 
 @sync_to_async

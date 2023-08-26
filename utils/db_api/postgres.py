@@ -10,7 +10,6 @@ from data.config import load_config
 
 
 class Database:
-
     def __init__(self):
         self.pool: Union[Pool, None] = None
 
@@ -20,15 +19,18 @@ class Database:
             password=load_config().db.password,
             host=config.load_config().db.host,
             database=config.load_config().db.database,
-            port=config.load_config().db.port
+            port=config.load_config().db.port,
         )
 
-    async def execute(self, command, *args,
-                      fetch: bool = False,
-                      fetchval: bool = False,
-                      fetchrow: bool = False,
-                      execute: bool = False
-                      ) -> asyncio.Future:
+    async def execute(
+            self,
+            command,
+            *args,
+            fetch: bool = False,
+            fetchval: bool = False,
+            fetchrow: bool = False,
+            execute: bool = False
+    ) -> asyncio.Future:
         async with self.pool.acquire() as connection:
             connection: Connection
             async with connection.transaction():

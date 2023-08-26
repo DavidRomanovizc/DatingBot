@@ -5,7 +5,11 @@ from aiogram.types import CallbackQuery
 from aiogram.utils.exceptions import BadRequest
 
 from filters import IsPrivate
-from functions.main_app.auxiliary_tools import registration_menu, check_user_in_db, delete_message
+from functions.main_app.auxiliary_tools import (
+    registration_menu,
+    check_user_in_db,
+    delete_message,
+)
 from keyboards.inline.language_inline import language_keyboard
 from loader import dp, _
 from utils.db_api import db_commands
@@ -35,32 +39,28 @@ async def start_menu(call: CallbackQuery) -> None:
 async def choice_language(call: CallbackQuery, menu: str) -> None:
     try:
         await call.message.edit_text(
-            text=_("Выберите язык"),
-            reply_markup=await language_keyboard(menu)
+            text=_("Выберите язык"), reply_markup=await language_keyboard(menu)
         )
     except BadRequest:
         await delete_message(call.message)
         await call.message.answer(
-            text=_("Выберите язык"),
-            reply_markup=await language_keyboard(menu)
+            text=_("Выберите язык"), reply_markup=await language_keyboard(menu)
         )
 
 
 async def change_language(call: CallbackQuery, language: str) -> None:
     telegram_id = call.from_user.id
     try:
-        await db_commands.update_user_data(
-            telegram_id=telegram_id,
-            language=language
-        )
+        await db_commands.update_user_data(telegram_id=telegram_id, language=language)
 
         await call.message.edit_text(
-            text=_("Язык был успешно изменен. Введите команду /start",
-                   locale=language)
+            text=_("Язык был успешно изменен. Введите команду /start", locale=language)
         )
     except aiogram.utils.exceptions.MessageToDeleteNotFound:
         await call.message.edit_text(
-            text=_("Произошла какая-то ошибка. Введите команду /start и попробуйте еще раз")
+            text=_(
+                "Произошла какая-то ошибка. Введите команду /start и попробуйте еще раз"
+            )
         )
 
 
@@ -79,9 +79,7 @@ language_menus = {
 
 def register_callbacks(callback_dict, callback_function):
     for callback_text, value in callback_dict.items():
-        dp.callback_query_handler(
-            text=callback_text
-        )(
+        dp.callback_query_handler(text=callback_text)(
             lambda call, value=value: callback_function(call, value)
         )
 

@@ -19,8 +19,7 @@ async def backup_users_handler(call: CallbackQuery):
     path = await dump_users_to_file()
     await delete_message(call.message)
     await call.message.answer_document(
-        document=InputFile(path),
-        caption="<b>🗒 Выгрузка пользователей в .txt</b>"
+        document=InputFile(path), caption="<b>🗒 Выгрузка пользователей в .txt</b>"
     )
     await os.remove(path)
 
@@ -29,5 +28,7 @@ async def backup_users_handler(call: CallbackQuery):
 async def backup_configs_handler(call: CallbackQuery):
     path = await backup_configs()
     await delete_message(call.message)
-    await call.message.answer_document(InputFile(path), caption="<b>🗒 Выгрузка конфигов</b>")
+    await call.message.answer_document(
+        InputFile(path), caption="<b>🗒 Выгрузка конфигов</b>"
+    )
     await os.remove(path)

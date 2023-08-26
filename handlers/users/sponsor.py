@@ -13,5 +13,5 @@ async def show_sponsors(call: CallbackQuery) -> None:
             "С помощью кнопки <b>💰 Донат</b>"
             " вы можете отправить своё пожертвование"
         ),
-        reply_markup=await sponsor_keyboard()
+        reply_markup=await sponsor_keyboard(),
     )

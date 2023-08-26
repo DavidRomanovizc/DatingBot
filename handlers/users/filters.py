@@ -21,13 +21,13 @@ async def get_filters(call: CallbackQuery) -> None:
     try:
         await call.message.edit_text(
             text=_("Вы перешли в раздел с фильтрами"),
-            reply_markup=await filters_keyboard()
+            reply_markup=await filters_keyboard(),
         )
     except BadRequest:
         await delete_message(message=call.message)
         await call.message.answer(
             text=_("Вы перешли в раздел с фильтрами"),
-            reply_markup=await filters_keyboard()
+            reply_markup=await filters_keyboard(),
         )
 
 
@@ -45,11 +45,10 @@ async def desired_age(call: CallbackQuery, state: FSMContext) -> None:
 @dp.message_handler(state="age_period")
 async def desired_min_age_state(message: types.Message, state: FSMContext) -> None:
     messages = message.text
-    int_message = re.findall('[0-9]+', messages)
+    int_message = re.findall("[0-9]+", messages)
     int_messages = "".join(int_message)
     await db_commands.update_user_data(
-        telegram_id=message.from_user.id,
-        need_partner_age_min=int_messages
+        telegram_id=message.from_user.id, need_partner_age_min=int_messages
     )
     await message.answer(_("Теперь введите максимальный возраст"))
     await state.reset_state()
@@ -59,11 +58,10 @@ async def desired_min_age_state(message: types.Message, state: FSMContext) -> No
 @dp.message_handler(state="max_age_period")
 async def desired_max_age_state(message: types.Message, state: FSMContext) -> None:
     messages = message.text
-    int_message = re.findall('[0-9]+', messages)
+    int_message = re.findall("[0-9]+", messages)
     int_messages = "".join(int_message)
     await db_commands.update_user_data(
-        telegram_id=message.from_user.id,
-        need_partner_age_max=int_messages
+        telegram_id=message.from_user.id, need_partner_age_max=int_messages
     )
     await state.finish()
     await show_dating_filters(obj=message)
@@ -71,8 +69,12 @@ async def desired_max_age_state(message: types.Message, state: FSMContext) -> No
 
 @dp.callback_query_handler(text="user_need_gender")
 async def desired_max_range(call: CallbackQuery, state: FSMContext) -> None:
-    markup = await gender_keyboard(m_gender=_("👱🏻‍♂️ Парня"), f_gender=_("👱🏻‍♀️ Девушку"))
-    await call.message.edit_text(_("Выберите, кого вы хотите найти:"), reply_markup=markup)
+    markup = await gender_keyboard(
+        m_gender=_("👱🏻‍♂️ Парня"), f_gender=_("👱🏻‍♀️ Девушку")
+    )
+    await call.message.edit_text(
+        _("Выберите, кого вы хотите найти:"), reply_markup=markup
+    )
     await state.set_state("gender")
 
 
@@ -118,13 +120,17 @@ async def get_hobbies(call: CallbackQuery, state: FSMContext) -> None:
 
 @dp.callback_query_handler(text="event_filters")
 async def get_event_filters(call: CallbackQuery) -> None:
-    await call.message.edit_text(_("Вы перешли в меню настроек фильтров для мероприятий"),
-                                 reply_markup=await event_filters_keyboard())
+    await call.message.edit_text(
+        _("Вы перешли в меню настроек фильтров для мероприятий"),
+        reply_markup=await event_filters_keyboard(),
+    )
 
 
 @dp.callback_query_handler(text="city_event")
 async def set_city_by_filter(call: CallbackQuery, state: FSMContext) -> None:
-    await call.message.edit_text(_("Напишите город, в котором бы хотели сходить куда-нибудь"))
+    await call.message.edit_text(
+        _("Напишите город, в котором бы хотели сходить куда-нибудь")
+    )
     await state.set_state("set_city_event")
 
 

@@ -20,8 +20,7 @@ db = Database()
 client = Client(api_key=load_config().misc.yandex_api_key)
 job_defaults = dict(coalesce=False, max_instances=3)
 scheduler = AsyncIOScheduler(
-    timezone=load_config().tg_bot.timezone,
-    job_defaults=job_defaults
+    timezone=load_config().tg_bot.timezone, job_defaults=job_defaults
 )
 wallet = YooMoneyWallet(access_token=load_config().misc.yoomoney_key)
 detector = NudeDetector()

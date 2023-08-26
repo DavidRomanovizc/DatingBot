@@ -10,10 +10,11 @@ class SchedulerMiddleware(BaseMiddleware):
         super(SchedulerMiddleware, self).__init__()
         self.scheduler = scheduler
 
-    def __call__(self,
-                 handler: Callable[[TelegramObject, Dict[str, Any]], Awaitable[Any]],
-                 event: TelegramObject,
-                 data: Dict[str, Any],
-                 ) -> Any:
+    def __call__(
+            self,
+            handler: Callable[[TelegramObject, Dict[str, Any]], Awaitable[Any]],
+            event: TelegramObject,
+            data: Dict[str, Any],
+    ) -> Any:
         data["appscheduler"] = self.scheduler
         return handler(event, data)

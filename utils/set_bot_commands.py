@@ -4,11 +4,12 @@ from aiogram import types, Dispatcher
 from data.config import load_config
 
 
-async def set_user_commands(dp: Dispatcher, user_id: int, commands: list[types.BotCommand]):
+async def set_user_commands(
+        dp: Dispatcher, user_id: int, commands: list[types.BotCommand]
+):
     try:
         await dp.bot.set_my_commands(
-            commands=commands,
-            scope=types.BotCommandScopeChat(user_id)
+            commands=commands, scope=types.BotCommandScopeChat(user_id)
         )
     except Exception as ex:
         loguru.logger.error(f"{user_id}: Commands are not installed. {ex}")
@@ -24,7 +25,7 @@ async def set_default_commands(dp: Dispatcher) -> None:
         types.BotCommand("users", "🫂 Пользователи"),
         types.BotCommand("settings", "⚙️ Настройки"),
         types.BotCommand("ad", "📊 Реклама"),
-        types.BotCommand("logs", "🗒 Логи")
+        types.BotCommand("logs", "🗒 Логи"),
     ]
 
     await dp.bot.set_my_commands(default_commands, scope=types.BotCommandScopeDefault())

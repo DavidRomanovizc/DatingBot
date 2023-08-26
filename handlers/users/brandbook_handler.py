@@ -3,14 +3,11 @@ from aiogram.types import CallbackQuery
 from functions.main_app.auxiliary_tools import (
     send_photo_with_caption,
     handle_guide_callback,
-    information_menu
+    information_menu,
 )
 from keyboards.inline.back_inline import only_back_keyboard
 from keyboards.inline.guide_inline import guide_callback
-from loader import (
-    dp,
-    _
-)
+from loader import dp, _
 
 
 @dp.callback_query_handler(text="information")
@@ -25,7 +22,7 @@ async def get_guide(call: CallbackQuery) -> None:
         photo=r"brandbook/1_page.png",
         caption=_("Руководство по боту: \n<b>Страница №1</b>"),
         step=1,
-        total_steps=4
+        total_steps=4,
     )
 
 
@@ -41,5 +38,5 @@ async def contacts_menu(call: CallbackQuery):
             "📧 Добро пожаловать в наш раздел контактной информации платформы:\n\n"
             "Наш сайт: В разработке"
         ),
-        reply_markup=await only_back_keyboard(menu="information")
+        reply_markup=await only_back_keyboard(menu="information"),
     )

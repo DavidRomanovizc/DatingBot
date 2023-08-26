@@ -10,8 +10,10 @@ from utils.db_api import db_commands
 
 @dp.message_handler(IsAdmin(), text="👀 Мониторинг")
 async def admin_monitoring(message: types.Message) -> None:
-    await message.answer(text=_("Чтобы начать мониторинг нажмите на кнопку ниже"),
-                         reply_markup=await start_monitoring_keyboard())
+    await message.answer(
+        text=_("Чтобы начать мониторинг нажмите на кнопку ниже"),
+        reply_markup=await start_monitoring_keyboard(),
+    )
 
 
 @dp.callback_query_handler(text="confirm_send_monitoring")

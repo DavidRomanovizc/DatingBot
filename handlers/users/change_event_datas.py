@@ -14,49 +14,41 @@ async def get_change_data_menu(call: CallbackQuery) -> None:
     await delete_message(call.message)
     await call.message.answer(
         text=_("Вы перешли в меню изменения данных мероприятия"),
-        reply_markup=await change_datas_keyboard()
+        reply_markup=await change_datas_keyboard(),
     )
 
 
 @dp.callback_query_handler(text="change_title")
 async def change_title(call: CallbackQuery, state: FSMContext) -> None:
-    await call.message.edit_text(
-        text=_("Напишите новое название вашего мероприятия")
-    )
+    await call.message.edit_text(text=_("Напишите новое название вашего мероприятия"))
     await state.set_state("change_event_title")
 
 
 @dp.message_handler(state="change_event_title")
 async def save_new_title(message: Message, state: FSMContext) -> None:
     await db_commands.update_user_meetings_data(
-        telegram_id=message.from_user.id,
-        event_name=message.text
+        telegram_id=message.from_user.id, event_name=message.text
     )
     await asyncio.sleep(1)
     await state.reset_state()
     await message.answer(
-        text=_("Данные изменены"),
-        reply_markup=await change_datas_keyboard()
+        text=_("Данные изменены"), reply_markup=await change_datas_keyboard()
     )
 
 
 @dp.callback_query_handler(text="change_description")
 async def change_description(call: CallbackQuery, state: FSMContext) -> None:
-    await call.message.edit_text(
-        text=_("Напишите новое описание вашего мероприятия")
-    )
+    await call.message.edit_text(text=_("Напишите новое описание вашего мероприятия"))
     await state.set_state("change_event_description")
 
 
 @dp.message_handler(state="change_event_description")
 async def save_new_description(message: Message, state: FSMContext) -> None:
     await db_commands.update_user_meetings_data(
-        telegram_id=message.from_user.id,
-        commentary=message.text
+        telegram_id=message.from_user.id, commentary=message.text
     )
     await asyncio.sleep(1)
     await state.reset_state()
     await message.answer(
-        text=_("Данные изменены"),
-        reply_markup=await change_datas_keyboard()
+        text=_("Данные изменены"), reply_markup=await change_datas_keyboard()
     )

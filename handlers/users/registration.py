@@ -7,7 +7,7 @@ from aiogram.types import (
     CallbackQuery,
     ContentType,
     InlineKeyboardButton,
-    InlineKeyboardMarkup
+    InlineKeyboardMarkup,
 )
 from aiogram.utils.markdown import quote_html
 from asyncpg import UniqueViolationError
@@ -16,7 +16,7 @@ from django.db import DataError
 from functions.main_app.auxiliary_tools import (
     choice_gender,
     saving_normal_photo,
-    saving_censored_photo
+    saving_censored_photo,
 )
 from functions.main_app.determin_location import Location, RegistrationStrategy
 from keyboards.default.get_location_default import location_keyboard
@@ -24,22 +24,15 @@ from keyboards.default.get_photo import get_photo_from_profile
 from keyboards.inline.cancel_inline import cancel_registration_keyboard
 from keyboards.inline.change_data_profile_inline import gender_keyboard
 from keyboards.inline.registration_inline import second_registration_keyboard
-from loader import (
-    dp,
-    client,
-    _, logger
-)
+from loader import dp, client, _, logger
 from states.reg_state import RegData
-from utils.NudeNet.predictor import (
-    classification_image,
-    generate_censored_image
-)
+from utils.NudeNet.predictor import classification_image, generate_censored_image
 from utils.YandexMap.exceptions import NothingFound
 from utils.db_api import db_commands
 from utils.misc.profanityFilter import censored_message
 
 
-@dp.callback_query_handler(text='registration')
+@dp.callback_query_handler(text="registration")
 async def registration(call: CallbackQuery) -> None:
     telegram_id = call.from_user.id
     user = await db_commands.select_user(telegram_id=telegram_id)
@@ -50,16 +43,24 @@ async def registration(call: CallbackQuery) -> None:
         await call.message.edit_text(text, reply_markup=markup)
     else:
         markup = InlineKeyboardMarkup()
-        markup.add(InlineKeyboardButton(text="⬆️ Изменить анкету", callback_data="change_profile"))
+        markup.add(
+            InlineKeyboardButton(
+                text="⬆️ Изменить анкету", callback_data="change_profile"
+            )
+        )
         await call.message.edit_text(
-            text=_("Вы уже зарегистрированы, если вам нужно изменить анкету, то нажмите на кнопку ниже"),
-            reply_markup=markup
+            text=_(
+                "Вы уже зарегистрированы, если вам нужно изменить анкету, то нажмите на кнопку ниже"
+            ),
+            reply_markup=markup,
         )
 
 
 @dp.callback_query_handler(text_contains="survey")
 async def survey(call: CallbackQuery) -> None:
-    markup = await gender_keyboard(m_gender=_("👱🏻‍♂️ Мужской"), f_gender=_("👱🏻‍♀️ Женский"))
+    markup = await gender_keyboard(
+        m_gender=_("👱🏻‍♂️ Мужской"), f_gender=_("👱🏻‍♀️ Женский")
+    )
 
     await call.message.edit_text(_("Выберите пол"), reply_markup=markup)
     await RegData.sex.set()
@@ -69,42 +70,49 @@ async def survey(call: CallbackQuery) -> None:
 async def sex_reg(call: CallbackQuery) -> None:
     if call.data == "male":
         try:
-            await db_commands.update_user_data(telegram_id=call.from_user.id, sex="Мужской")
+            await db_commands.update_user_data(
+                telegram_id=call.from_user.id, sex="Мужской"
+            )
         except UniqueViolationError:
             pass
     elif call.data == "female":
         try:
-            await db_commands.update_user_data(telegram_id=call.from_user.id, sex="Женский")
+            await db_commands.update_user_data(
+                telegram_id=call.from_user.id, sex="Женский"
+            )
         except UniqueViolationError:
             pass
 
     await call.message.edit_text(
         text=_("Теперь расскажите о себе:\n"),
-        reply_markup=await cancel_registration_keyboard()
+        reply_markup=await cancel_registration_keyboard(),
     )
     await RegData.commentary.set()
 
 
 @dp.message_handler(content_types=[ContentType.TEXT], state=RegData.commentary)
 async def commentary_reg(message: types.Message) -> None:
-    markup = await gender_keyboard(m_gender=_("👱🏻‍♂️ Парня"), f_gender=_("👱🏻‍♀️ Девушку"))
+    markup = await gender_keyboard(
+        m_gender=_("👱🏻‍♂️ Парня"), f_gender=_("👱🏻‍♀️ Девушку")
+    )
     try:
         censored = censored_message(message.text)
         await db_commands.update_user_data(
-            commentary=quote_html(censored),
-            telegram_id=message.from_user.id
+            commentary=quote_html(censored), telegram_id=message.from_user.id
         )
         await message.answer(
-            text=_('Комментарий принят! Выберите, кого вы хотите найти: '),
-            reply_markup=markup
+            text=_("Комментарий принят! Выберите, кого вы хотите найти: "),
+            reply_markup=markup,
         )
 
     except DataError:
         await message.answer(
-            text=_("Произошла неизвестная ошибка! Попробуйте изменить комментарий позже в разделе "
-                   "\"Меню\"\n\n"
-                   "Выберите, кого вы хотите найти: "),
-            reply_markup=markup
+            text=_(
+                "Произошла неизвестная ошибка! Попробуйте изменить комментарий позже в разделе "
+                '"Меню"\n\n'
+                "Выберите, кого вы хотите найти: "
+            ),
+            reply_markup=markup,
         )
     await RegData.need_partner_sex.set()
 
@@ -113,8 +121,10 @@ async def commentary_reg(message: types.Message) -> None:
 async def sex_reg(call: CallbackQuery) -> None:
     await choice_gender(call)
     await call.message.edit_text(
-        text=_("Отлично! Теперь напишите мне ваше имя, которое будут все видеть в анкете"),
-        reply_markup=await cancel_registration_keyboard()
+        text=_(
+            "Отлично! Теперь напишите мне ваше имя, которое будут все видеть в анкете"
+        ),
+        reply_markup=await cancel_registration_keyboard(),
     )
     await RegData.name.set()
 
@@ -125,15 +135,14 @@ async def get_name(message: types.Message, state: FSMContext) -> None:
     try:
         censored = censored_message(message.text)
         await db_commands.update_user_data(
-            telegram_id=message.from_user.id,
-            varname=quote_html(censored)
+            telegram_id=message.from_user.id, varname=quote_html(censored)
         )
 
     except UniqueViolationError:
         pass
     await message.answer(
         text=_("Введите сколько вам лет:"),
-        reply_markup=await cancel_registration_keyboard()
+        reply_markup=await cancel_registration_keyboard(),
     )
     await RegData.age.set()
 
@@ -146,24 +155,25 @@ async def get_age(message: types.Message, state: FSMContext) -> None:
     try:
         if 10 < int(message.text) < 99:
             await db_commands.update_user_data(
-                telegram_id=message.from_user.id,
-                age=int(message.text)
+                telegram_id=message.from_user.id, age=int(message.text)
             )
         else:
             await message.answer(
                 text=_("Вы ввели недопустимое число, попробуйте еще раз"),
-                reply_markup=await cancel_registration_keyboard()
+                reply_markup=await cancel_registration_keyboard(),
             )
             return
     except ValueError as ex:
         logger.error(ex)
         await message.answer(
             text=_("Вы ввели не число"),
-            reply_markup=await cancel_registration_keyboard()
+            reply_markup=await cancel_registration_keyboard(),
         )
         return
-    await message.answer(text=_("Нажмите на кнопку ниже, чтобы определить ваш местоположение!"),
-                         reply_markup=markup)
+    await message.answer(
+        text=_("Нажмите на кнопку ниже, чтобы определить ваш местоположение!"),
+        reply_markup=markup,
+    )
     await RegData.town.set()
 
 
@@ -175,11 +185,11 @@ async def get_city(message: types.Message) -> None:
     except NothingFound:
         await message.answer(
             text=_("Мы не смогли найти такой город, попробуйте еще раз"),
-            reply_markup=await cancel_registration_keyboard()
+            reply_markup=await cancel_registration_keyboard(),
         )
 
 
-@dp.message_handler(content_types=['location'], state=RegData.town)
+@dp.message_handler(content_types=["location"], state=RegData.town)
 async def fill_form(message: types.Message) -> None:
     x = message.location.longitude
     y = message.location.latitude
@@ -191,7 +201,7 @@ async def fill_form(message: types.Message) -> None:
         city=address,
         longitude=x,
         latitude=y,
-        need_city=address
+        need_city=address,
     )
 
     await asyncio.sleep(1)
@@ -214,7 +224,7 @@ async def get_hobbies(call: CallbackQuery) -> None:
             "И напоследок, Пришлите мне вашу фотографию"
             " (отправлять надо сжатое изображение, а не как документ)"
         ),
-        reply_markup=await get_photo_from_profile()
+        reply_markup=await get_photo_from_profile(),
     )
     await RegData.photo.set()
 
@@ -226,15 +236,12 @@ async def get_photo_profile(message: types.Message, state: FSMContext) -> None:
     try:
         file_id = dict((profile_pictures.photos[0][0])).get("file_id")
         await saving_normal_photo(
-            message=message,
-            telegram_id=telegram_id,
-            file_id=file_id,
-            state=state
+            message=message, telegram_id=telegram_id, file_id=file_id, state=state
         )
     except IndexError:
         await message.answer(
             text=_("Произошла ошибка, проверьте настройки конфиденциальности"),
-            reply_markup=await cancel_registration_keyboard()
+            reply_markup=await cancel_registration_keyboard(),
         )
 
 
@@ -251,22 +258,13 @@ async def get_photo(message: types.Message, state: FSMContext) -> None:
     safe, unsafe = data.get(path).get("safe"), data.get(path).get("unsafe")
     if safe > 0.8 and unsafe < 0.2:
         await saving_normal_photo(
-            message=message,
-            telegram_id=telegram_id,
-            file_id=file_id,
-            state=state
+            message=message, telegram_id=telegram_id, file_id=file_id, state=state
         )
         os.remove(path)
     else:
-        await generate_censored_image(
-            image_path=path,
-            out_path=out_path
-        )
+        await generate_censored_image(image_path=path, out_path=out_path)
         await saving_censored_photo(
-            message=message,
-            telegram_id=telegram_id,
-            state=state,
-            out_path=out_path
+            message=message, telegram_id=telegram_id, state=state, out_path=out_path
         )
         os.remove(path)
         os.remove(out_path)

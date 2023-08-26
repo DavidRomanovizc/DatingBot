@@ -9,6 +9,7 @@ class OperationDetails(BaseModel):
     Детальная информация об операции из истории
     https://yoomoney.ru/docs/wallet/user-account/operation-details
     """
+
     error: str | None
     operation_id: str
     status: str

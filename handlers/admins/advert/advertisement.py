@@ -23,6 +23,6 @@ async def broadcast_get_text(call: CallbackQuery, state: FSMContext) -> None:
             "Пришлите текст для рассылки либо фото с текстом для рассылки! Чтобы отредактировать, "
             "используйте встроенный редактор телеграма!\n"
         ),
-        reply_markup=await cancel_keyboard()
+        reply_markup=await cancel_keyboard(),
     )
     await state.set_state("broadcast_get_content")
