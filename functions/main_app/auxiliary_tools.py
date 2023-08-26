@@ -3,6 +3,7 @@ import datetime
 import os
 import pathlib
 import random
+import re
 import shutil
 from contextlib import suppress
 from typing import Union, Optional
@@ -413,3 +414,15 @@ async def information_menu(call: CallbackQuery):
             text=txt,
             reply_markup=markup
         )
+
+
+async def get_report_reason(call: CallbackQuery):
+    match = re.search(r'report:(.*?):', call.data)
+    reason_key = match.group(1)
+    reason_mapping = {
+        "adults_only": "🔞 Развратный контент",
+        "drugs": "💊 Продажа наркотиков",
+        "scam": "💰 Мошенничество",
+        "another": "🦨 Другая причина"
+    }
+    return reason_mapping.get(reason_key, "Неизвестная причина")
