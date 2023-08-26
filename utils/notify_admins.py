@@ -1,16 +1,17 @@
-import abc
+from abc import ABC, abstractmethod
+
 import aiogram
 import aiogram.utils.exceptions
 from aiogram import Dispatcher
 from aiogram.utils.exceptions import ChatNotFound
-from loader import logger
 
 from data.config import load_config
-from loader import bot
+from loader import bot, _
+from loader import logger
 
 
-class BaseNotification(abc.ABC):
-    @abc.abstractmethod
+class BaseNotification(ABC):
+    @abstractmethod
     def send(self, *args):
         pass
 
@@ -20,11 +21,11 @@ class AdminNotification(BaseNotification):
         self.dp = dp
 
     async def send(self) -> None:
-        logger.info("Оповещение администрации...")
+        logger.info(_("Оповещение администрации..."))
         for admin in load_config().tg_bot.admin_ids:
             try:
                 await bot.send_message(
-                    admin, "Бот был успешно запущен", disable_notification=True
+                    admin, _("Бот был успешно запущен"), disable_notification=True
                 )
             except ChatNotFound:
                 logger.debug("Чат с админом не найден")

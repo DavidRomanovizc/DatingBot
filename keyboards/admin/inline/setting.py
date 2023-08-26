@@ -1,11 +1,13 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
+from loader import _
+
 
 async def add_admins_keyboard() -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup()
-    add = InlineKeyboardButton("*️⃣ Добавить", callback_data="admin:admins:add")
-    delete = InlineKeyboardButton("❌ Удалить", callback_data="admin:admins:delete")
-    back = InlineKeyboardButton("◀️ Назад", callback_data="admin:settings")
+    add = InlineKeyboardButton(_("*️⃣ Добавить"), callback_data="admin:admins:add")
+    delete = InlineKeyboardButton(_("❌ Удалить"), callback_data="admin:admins:delete")
+    back = InlineKeyboardButton(_("◀️ Назад"), callback_data="admin:settings")
     markup.add(add, delete)
     markup.add(back)
     return markup

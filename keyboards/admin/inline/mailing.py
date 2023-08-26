@@ -5,7 +5,7 @@ from loader import _
 
 async def mailing_menu():
     markup = InlineKeyboardMarkup(row_width=1)
-    mailing = InlineKeyboardButton("📧 Рассылка", callback_data="adv:mailing")
+    mailing = InlineKeyboardButton(_("📧 Рассылка"), callback_data="adv:mailing")
     markup.add(mailing)
     return markup
 
