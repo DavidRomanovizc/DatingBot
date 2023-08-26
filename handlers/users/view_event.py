@@ -27,6 +27,7 @@ async def view_poster_handler(call: CallbackQuery, state: FSMContext) -> None:
             _("На данный момент вы просмотрели все существующие анкеты"),
             reply_markup=await poster_keyboard(obj=call))
         await state.reset_state()
+    await state.reset_state()
 
 
 @dp.callback_query_handler(lambda call: call.data.split('_')[0] == 'answer', state="finding_event")
