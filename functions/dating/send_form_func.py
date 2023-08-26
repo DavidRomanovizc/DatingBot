@@ -3,6 +3,7 @@ from typing import Optional
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.utils.exceptions import BadRequest
 
+from keyboards.admin.inline.customers import user_blocking_keyboard
 from keyboards.inline.questionnaires_inline import (
     questionnaires_keyboard,
     reciprocity_keyboard
@@ -107,6 +108,10 @@ async def send_questionnaire(
                 chat_id=chat_id,
                 caption=add_text,
                 photo=user.get("photo_id"),
+                reply_markup=await user_blocking_keyboard(
+                    user_id=owner_id,
+                    is_banned=user['is_banned']
+                )
             )
         else:
             await bot.send_photo(

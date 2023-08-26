@@ -5,7 +5,7 @@ from filters.IsAdminFilter import IsAdmin
 from keyboards.admin.inline.customers import (
     user_manipulation,
     manipulation_callback,
-    search_user_keyboard
+    user_blocking_keyboard
 )
 from keyboards.admin.inline.reply_menu import admin_cancel_keyboard
 from loader import dp
@@ -46,9 +46,7 @@ async def search_handler(message: Message, state: FSMContext):
         await message.answer_photo(
             photo=user['photo_id'],
             caption=text,
-            reply_markup=await search_user_keyboard(
-                user_id=user['telegram_id'], is_banned=user['is_banned']
-            )
+            reply_markup=await user_blocking_keyboard(user_id=user['telegram_id'], is_banned=user['is_banned'])
         )
 
     else:
@@ -64,5 +62,5 @@ async def ban_user_handler(call: CallbackQuery, callback_data: dict):
 
     is_banned = action == "ban"
     await db_commands.update_user_data(telegram_id=user_id, is_banned=is_banned)
-    reply_markup = await search_user_keyboard(user_id=user_id, is_banned=is_banned)
+    reply_markup = await user_blocking_keyboard(user_id=user_id, is_banned=is_banned)
     await call.message.edit_reply_markup(reply_markup=reply_markup)
