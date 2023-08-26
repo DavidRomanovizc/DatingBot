@@ -22,5 +22,7 @@ async def gender_keyboard(m_gender: str, f_gender: str) -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup(row_width=1)
     male = InlineKeyboardButton(text=m_gender, callback_data="male")
     female = InlineKeyboardButton(text=f_gender, callback_data="female")
+    stopped = InlineKeyboardButton(text=_("❌ Остановить"), callback_data="registration:stopped")
     markup.row(male, female)
+    markup.add(stopped)
     return markup

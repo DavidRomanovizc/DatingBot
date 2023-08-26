@@ -18,9 +18,10 @@ from functions.main_app.auxiliary_tools import (
     saving_normal_photo,
     saving_censored_photo
 )
-from functions.main_app.determin_location import Location
+from functions.main_app.determin_location import Location, RegistrationStrategy
 from keyboards.default.get_location_default import location_keyboard
 from keyboards.default.get_photo import get_photo_from_profile
+from keyboards.inline.cancel_inline import cancel_registration_keyboard
 from keyboards.inline.change_data_profile_inline import gender_keyboard
 from keyboards.inline.registration_inline import second_registration_keyboard
 from loader import (
@@ -77,7 +78,10 @@ async def sex_reg(call: CallbackQuery) -> None:
         except UniqueViolationError:
             pass
 
-    await call.message.edit_text(_("Теперь расскажите о себе:\n"))
+    await call.message.edit_text(
+        text=_("Теперь расскажите о себе:\n"),
+        reply_markup=await cancel_registration_keyboard()
+    )
     await RegData.commentary.set()
 
 
@@ -109,7 +113,8 @@ async def commentary_reg(message: types.Message) -> None:
 async def sex_reg(call: CallbackQuery) -> None:
     await choice_gender(call)
     await call.message.edit_text(
-        text=_("Отлично! Теперь напишите мне ваше имя, которое будут все видеть в анкете")
+        text=_("Отлично! Теперь напишите мне ваше имя, которое будут все видеть в анкете"),
+        reply_markup=await cancel_registration_keyboard()
     )
     await RegData.name.set()
 
@@ -126,7 +131,10 @@ async def get_name(message: types.Message, state: FSMContext) -> None:
 
     except UniqueViolationError:
         pass
-    await message.answer(_("Введите сколько вам лет:"))
+    await message.answer(
+        text=_("Введите сколько вам лет:"),
+        reply_markup=await cancel_registration_keyboard()
+    )
     await RegData.age.set()
 
 
@@ -142,11 +150,17 @@ async def get_age(message: types.Message, state: FSMContext) -> None:
                 age=int(message.text)
             )
         else:
-            await message.answer(_("Вы ввели недопустимое число, попробуйте еще раз"))
+            await message.answer(
+                text=_("Вы ввели недопустимое число, попробуйте еще раз"),
+                reply_markup=await cancel_registration_keyboard()
+            )
             return
     except ValueError as ex:
         logger.error(ex)
-        await message.answer(_("Вы ввели не число"))
+        await message.answer(
+            text=_("Вы ввели не число"),
+            reply_markup=await cancel_registration_keyboard()
+        )
         return
     await message.answer(text=_("Нажмите на кнопку ниже, чтобы определить ваш местоположение!"),
                          reply_markup=markup)
@@ -156,10 +170,13 @@ async def get_age(message: types.Message, state: FSMContext) -> None:
 @dp.message_handler(state=RegData.town)
 async def get_city(message: types.Message) -> None:
     try:
-        loc = await Location(message=message)
-        await loc.det_loc_in_registration(message)
+        loc = await Location(message=message, strategy=RegistrationStrategy)
+        await loc.det_loc()
     except NothingFound:
-        await message.answer("Мы не смогли найти такой город, попробуйте еще раз")
+        await message.answer(
+            text=_("Мы не смогли найти такой город, попробуйте еще раз"),
+            reply_markup=await cancel_registration_keyboard()
+        )
 
 
 @dp.message_handler(content_types=['location'], state=RegData.town)
@@ -184,7 +201,7 @@ async def fill_form(message: types.Message) -> None:
             "И напоследок, Пришлите мне вашу фотографию"
             " (отправлять надо сжатое изображение, а не как документ)"
         ),
-        reply_markup=await get_photo_from_profile()
+        reply_markup=await get_photo_from_profile(),
     )
     await RegData.photo.set()
 
@@ -216,7 +233,8 @@ async def get_photo_profile(message: types.Message, state: FSMContext) -> None:
         )
     except IndexError:
         await message.answer(
-            text=_("Произошла ошибка, проверьте настройки конфиденциальности")
+            text=_("Произошла ошибка, проверьте настройки конфиденциальности"),
+            reply_markup=await cancel_registration_keyboard()
         )
 
 
