@@ -50,10 +50,9 @@ async def change_name(message: types.Message, state: FSMContext) -> None:
             varname=quote_html(censored), telegram_id=message.from_user.id
         )
         await message.answer(
-            text=_("Ваше новое имя: <b>{censored}</b>").format(censored=censored)
-        )
-        await message.answer(
-            text=_("Выберите, что вы хотите изменить: "), reply_markup=markup
+            text=_("Ваше новое имя: <b>{censored}</b>\n"
+                   "Выберите, что вы хотите изменить: ").format(censored=censored),
+            reply_markup=markup
         )
         await state.reset_state()
     except DataError as ex:
@@ -84,14 +83,12 @@ async def change_age(message: types.Message, state: FSMContext) -> None:
             await db_commands.update_user_data(
                 age=int(message.text), telegram_id=message.from_user.id
             )
-            await message.answer(
-                text=_("Ваш новый возраст: <b>{messages}</b>").format(
-                    messages=message.text
-                )
-            )
             await asyncio.sleep(1)
             await message.answer(
-                text=_("Выберите, что вы хотите изменить: "), reply_markup=markup
+                text=_("Ваш новый возраст: <b>{messages}</b>\n"
+                       "Выберите, что вы хотите изменить: ").format(
+                    messages=message.text
+                ), reply_markup=markup
             )
             await state.reset_state()
         else:
@@ -151,10 +148,10 @@ async def change_sex(call: CallbackQuery, state: FSMContext) -> None:
     markup = await change_info_keyboard()
     gender = "Мужской" if call.data == "male" else "Женский"
     await db_commands.update_user_data(sex=gender, telegram_id=call.from_user.id)
-    await call.message.edit_text(text=_("Ваш новый пол: <b>{}</b>".format(gender)))
-    await asyncio.sleep(1)
     await call.message.edit_text(
-        text=_("Выберите, что вы хотите изменить: "), reply_markup=markup
+        text=_("Ваш новый пол: <b>{}</b>\n"
+               "Выберите, что вы хотите изменить: ").format(gender),
+        reply_markup=markup
     )
     await state.reset_state()
 
@@ -222,47 +219,14 @@ async def update_photo_complete(message: types.Message, state: FSMContext) -> No
             flag="change_datas",
         )
         os.remove(path)
-        await asyncio.sleep(1)
+        await asyncio.sleep(0.2)
         os.remove(out_path)
 
 
 @dp.callback_query_handler(text="about_me")
 async def new_comment(call: CallbackQuery) -> None:
-    user = await db_commands.select_user(telegram_id=call.from_user.id)
-    voice_id = user.get("voice_id")
-    if voice_id is None:
-        await call.message.edit_text(text=_("Отправьте мне новое описание анкеты:"))
-    else:
-        await call.message.edit_text(text=_("Отправьте голосовое сообщение"))
+    await call.message.edit_text(text=_("Отправьте сообщение о себе"))
     await NewData.commentary.set()
-
-
-@dp.message_handler(content_types=[ContentType.VOICE], state=NewData.commentary)
-async def voice_reg(message: types.Message, state: FSMContext) -> None:
-    markup = await change_info_keyboard()
-    voice_message_id = message.voice.file_id
-    try:
-        await db_commands.update_user_data(
-            voice_id=voice_message_id, telegram_id=message.from_user.id
-        )
-        await message.answer(text=_("Комментарий принят!"))
-        await asyncio.sleep(1)
-        await delete_message(message)
-        await message.answer(
-            text=_("Выберите, что вы хотите изменить: "), reply_markup=markup
-        )
-        await state.reset_state()
-    except DataError:
-        await message.answer(
-            text=_(
-                "Произошла неизвестная ошибка!"
-                " Попробуйте изменить комментарий позже в разделе "
-                '"Меню"\n\n'
-                "Выберите, кого вы хотите найти: "
-            ),
-            reply_markup=markup,
-        )
-    await state.reset_state()
 
 
 @dp.message_handler(state=NewData.commentary)
@@ -273,11 +237,11 @@ async def update_comment_complete(message: types.Message, state: FSMContext) -> 
         await db_commands.update_user_data(
             commentary=quote_html(censored), telegram_id=message.from_user.id
         )
-        await message.answer(text=_("Комментарий принят!"))
-        await asyncio.sleep(1)
+        await asyncio.sleep(0.2)
         await delete_message(message)
         await message.answer(
-            text=_("Выберите, что вы хотите изменить: "), reply_markup=markup
+            text=_("Комментарий принят!\n"
+                   "Выберите, что вы хотите изменить: "), reply_markup=markup
         )
         await state.reset_state()
     except DataError as ex:

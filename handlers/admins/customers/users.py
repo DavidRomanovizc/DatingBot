@@ -39,17 +39,17 @@ async def search_handler(message: Message, state: FSMContext):
 
     if user:
         text = (
-            f"<b>ℹ️ Пользователь: </b><code>{user['telegram_id']}</code>\n\n"
-            f"<b>👤 Полное имя: </b><code>{user['varname']}</code>\n"
-            f"<b>🚹 Юзернейм: </b><code>{user['username']}</code>\n"
-            f"<b>📅 Дата регистрации в боте: </b><code>{user['created_at'].date()}</code>\n"
+            f"<b>ℹ️ Пользователь: </b><code>{user.telegram_id}</code>\n\n"
+            f"<b>👤 Полное имя: </b><code>{user.varname}</code>\n"
+            f"<b>🚹 Юзернейм: </b><code>{user.username}</code>\n"
+            f"<b>📅 Дата регистрации в боте: </b><code>{user.created_at.date()}</code>\n"
         )
 
         await message.answer_photo(
-            photo=user["photo_id"],
+            photo=user.photo_id,
             caption=text,
             reply_markup=await user_blocking_keyboard(
-                user_id=user["telegram_id"], is_banned=user["is_banned"]
+                user_id=user.telegram_id, is_banned=user.is_banned
             ),
         )
 

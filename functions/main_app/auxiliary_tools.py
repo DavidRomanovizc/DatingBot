@@ -33,7 +33,7 @@ from keyboards.inline.main_menu_inline import start_keyboard
 from keyboards.inline.settings_menu import information_keyboard
 from loader import _, bot, scheduler
 from utils.db_api import db_commands
-from utils.db_api.db_commands import check_user_exists, check_user_meetings_exists
+from utils.db_api.db_commands import check_user_meetings_exists
 
 
 async def delete_message(message: Message) -> None:
@@ -66,7 +66,7 @@ async def display_profile(call: CallbackQuery, markup: InlineKeyboardMarkup) -> 
     count_referrals = await db_commands.count_all_users_kwarg(
         referrer_id=call.from_user.id
     )
-    user_verification = "✅" if user["verification"] else ""
+    user_verification = "✅" if user.verification else ""
 
     user_info_template = _(
         "{name}, {age} лет, {city}, {verification}\n\n{commentary}\n\n"
@@ -74,17 +74,17 @@ async def display_profile(call: CallbackQuery, markup: InlineKeyboardMarkup) -> 
     )
     info = await bot.get_me()
     user_info = user_info_template.format(
-        name=user["varname"],
-        age=user["age"],
-        city=user["city"],
+        name=user.varname,
+        age=user.age,
+        city=user.city,
         verification=user_verification,
-        commentary=user["commentary"],
+        commentary=user.commentary,
         reff=count_referrals,
         link=f"https://t.me/{info.username}?start={call.from_user.id}",
     )
 
     await call.message.answer_photo(
-        caption=user_info, photo=user["photo_id"], reply_markup=markup
+        caption=user_info, photo=user.photo_id, reply_markup=markup
     )
 
 
@@ -99,10 +99,10 @@ async def show_dating_filters(obj: Union[CallbackQuery, Message]) -> None:
         "🔞 Возрастной диапазон: {}-{} лет\n\n"
         "🏙️ Город партнера: {}"
     ).format(
-        user.get("need_partner_sex"),
-        user.get("need_partner_age_min"),
-        user.get("need_partner_age_max"),
-        user.get("need_city"),
+        user.need_partner_sex,
+        user.need_partner_age_min,
+        user.need_partner_age_max,
+        user.need_city,
     )
     try:
         await obj.message.edit_text(text, reply_markup=markup)
@@ -127,7 +127,7 @@ async def registration_menu(
         "Если у вас есть предложение о сотрудничестве, пишите агенту поддержки - "
         "@{supports}\n\n"
     ).format(
-        fullname=obj.from_user.full_name, heart=heart, supports=support["username"]
+        fullname=obj.from_user.full_name, heart=heart, supports=support.username
     )
     try:
         await obj.message.edit_text(text=text, reply_markup=markup)
@@ -150,7 +150,7 @@ async def registration_menu(
 
 
 async def check_user_in_db(telegram_id: int, message: Message, username: str) -> None:
-    if not await check_user_exists(
+    if not await db_commands.check_user_exists(
             telegram_id
     ) and not await check_user_meetings_exists(telegram_id):
         user = await db_commands.select_user_object(telegram_id=telegram_id)
@@ -200,13 +200,12 @@ async def finished_registration(
         "{}\n\n"
         "<b>О себе</b> - {}"
     ).format(
-        user.get("varname"), user.get("age"), user.get("city"), user.get("commentary")
+        user.varname, user.age, user.city, user.commentary
     )
 
     await message.answer_photo(
-        caption=text, photo=user.get("photo_id"), reply_markup=ReplyKeyboardRemove()
+        caption=text, photo=user.photo_id, reply_markup=markup
     )
-    await message.answer("Меню: ", reply_markup=markup)
 
 
 async def saving_normal_photo(
@@ -218,7 +217,7 @@ async def saving_normal_photo(
     try:
         await db_commands.update_user_data(telegram_id=telegram_id, photo_id=file_id)
 
-        await message.answer(text=_("Фото принято!"))
+        await message.answer(text=_("Фото принято!"), reply_markup=ReplyKeyboardRemove())
     except:
         await message.answer(
             text=_(
@@ -264,11 +263,8 @@ async def saving_censored_photo(
         )
     if flag == "change_datas":
         await message.answer(
-            text=_("Фото принято!"), reply_markup=ReplyKeyboardRemove()
-        )
-        await asyncio.sleep(3)
-        await message.answer(
-            text=_("Выберите, что вы хотите изменить: "), reply_markup=markup
+            text=_("<u>Фото принято!</u>\n"
+                   "Выберите, что вы хотите изменить: "), reply_markup=markup
         )
         await state.reset_state()
     elif flag == "registration":
@@ -351,7 +347,7 @@ async def handle_guide_callback(
     )
 
 
-async def information_menu(call: CallbackQuery):
+async def information_menu(call: CallbackQuery) -> None:
     start_date = datetime.datetime(2021, 8, 10, 14, 0)
     now_date = datetime.datetime.now()
     delta = now_date - start_date
@@ -370,7 +366,7 @@ async def information_menu(call: CallbackQuery):
         await call.message.answer(text=txt, reply_markup=markup)
 
 
-async def get_report_reason(call: CallbackQuery):
+async def get_report_reason(call: CallbackQuery) -> None:
     match = re.search(r"report:(.*?):", call.data)
     reason_key = match.group(1)
     reason_mapping = {

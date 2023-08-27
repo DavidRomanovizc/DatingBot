@@ -9,7 +9,7 @@ from utils.db_api import db_commands
 
 async def get_lang(user_id) -> Optional[str]:
     user = await db_commands.select_user(telegram_id=user_id)
-    return user.get("language") if user else None
+    return user.language if user else None
 
 
 class ACLMiddleware(I18nMiddleware):

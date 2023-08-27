@@ -36,7 +36,7 @@ from utils.misc.profanityFilter import censored_message
 async def registration(call: CallbackQuery) -> None:
     telegram_id = call.from_user.id
     user = await db_commands.select_user(telegram_id=telegram_id)
-    user_status = user.get("status")
+    user_status = user.status
     if not user_status:
         markup = await second_registration_keyboard()
         text = _("Пройдите опрос, чтобы зарегистрироваться")
@@ -50,7 +50,8 @@ async def registration(call: CallbackQuery) -> None:
         )
         await call.message.edit_text(
             text=_(
-                "Вы уже зарегистрированы, если вам нужно изменить анкету, то нажмите на кнопку ниже"
+                "Вы уже зарегистрированы, если вам нужно изменить анкету,"
+                " то нажмите на кнопку ниже"
             ),
             reply_markup=markup,
         )

@@ -20,7 +20,7 @@ async def start_keyboard(
         user_db = await db_commands.select_user(telegram_id=obj.from_user.id)
     except AttributeError:
         user_db = await db_commands.select_user(telegram_id=obj)
-    status = user_db["status"]
+    status = user_db.status
     support_ids = load_config().tg_bot.support_ids[0]
     registration = InlineKeyboardButton(
         text=_("➕ Регистрация"), callback_data="registration"

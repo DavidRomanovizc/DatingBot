@@ -40,7 +40,7 @@ async def view_meetings_handler(call: CallbackQuery) -> None:
 @dp.callback_query_handler(text="create_poster")
 async def registrate_poster_name(call: CallbackQuery, state: FSMContext) -> None:
     user = await db_commands.select_user_meetings(telegram_id=call.from_user.id)
-    moderation_process = user.get("moderation_process")
+    moderation_process = user.moderation_process
     markup = await poster_keyboard(obj=call)
 
     if not moderation_process:
@@ -181,10 +181,10 @@ async def finish_registration(message: Message, state: FSMContext) -> None:
 
     document = {
         "telegram_id": message.from_user.id,
-        "title": user.get("event_name"),
-        "date": user.get("time_event"),
-        "place": user.get("venue"),
-        "description": user.get("commentary"),
+        "title": user.event_name,
+        "date": user.time_event,
+        "place": user.venue,
+        "description": user.commentary,
         "photo_id": photo_id,
     }
     await db_commands.update_user_meetings_data(
@@ -206,11 +206,11 @@ async def view_own_event(call: CallbackQuery) -> None:
     user = await db_commands.select_user_meetings(telegram_id=call.from_user.id)
 
     document = {
-        "title": user.get("event_name"),
-        "date": user.get("time_event"),
-        "place": user.get("venue"),
-        "description": user.get("commentary"),
-        "photo_id": user.get("photo_id"),
+        "title": user.event_name,
+        "date": user.time_event,
+        "place": user.venue,
+        "description": user.commentary,
+        "photo_id": user.photo_id,
     }
     await ME.send_event_message(
         text=document, bot=bot, chat_id=call.from_user.id, moderate=False, call=call

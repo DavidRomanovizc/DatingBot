@@ -13,6 +13,13 @@ class BanMiddleware(BaseMiddleware):
     def __init__(self):
         super(BanMiddleware, self).__init__()
 
+    @staticmethod
+    async def is_banned(user):
+        try:
+            return user.is_banned
+        except AttributeError:
+            return False
+
     async def on_process_message(self, message: types.Message, data: dict) -> None:
         await self.check_ban_user(obj=message)
 
@@ -20,8 +27,7 @@ class BanMiddleware(BaseMiddleware):
             self, call: types.CallbackQuery, data: dict
     ) -> None:
         user = await db_commands.select_user(telegram_id=call.from_user.id)
-        is_banned = user.get("is_banned", False)
-        if (user is not None and is_banned) and (
+        if (user is not None and await self.is_banned(user=user)) and (
                 call.data != "unban"
                 and call.data != "unban_menu"
                 and call.data != "yoomoney:check_payment"
@@ -34,10 +40,10 @@ class BanMiddleware(BaseMiddleware):
             self, obj: Union[types.CallbackQuery, types.Message]
     ) -> NoReturn:
         user = await db_commands.select_user(telegram_id=obj.from_user.id)
-        is_banned = user.get("is_banned", False)
+
         text = _("😢 Вы заблокированы!")
         markup = await unban_user_keyboard()
-        if is_banned:
+        if await self.is_banned(user=user):
             try:
                 await obj.answer(text=text, reply_markup=markup)
             except TypeError:

@@ -6,7 +6,7 @@ from utils.db_api import db_commands
 
 async def get_statistics(message: Message):
     user = await db_commands.select_user(telegram_id=message.from_user.id)
-    user_city = user.get("city")
+    user_city = user.city
     users_gender_m = await db_commands.count_all_users_kwarg(sex="Мужской")
     users_gender_f = await db_commands.count_all_users_kwarg(sex="Женский")
     users_city = await db_commands.count_all_users_kwarg(city=user_city)

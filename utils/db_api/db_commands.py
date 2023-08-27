@@ -31,13 +31,21 @@ def select_all_links():
 
 @sync_to_async
 def select_user(telegram_id: int):
-    user = User.objects.get(telegram_id=telegram_id)
+    try:
+        user = User.objects.get(telegram_id=telegram_id)
+    except Exception as ex:
+        user = User.objects.filter(telegram_id=telegram_id).values().first()
+        print(f"Error in select_user {ex}")
     return user
 
 
 @sync_to_async
 def select_user_object(telegram_id: int):
-    user = User.objects.get(telegram_id=telegram_id)
+    try:
+        user = User.objects.get(telegram_id=telegram_id)
+    except Exception as ex:
+        user = User.objects.filter(telegram_id=telegram_id).values().first()
+        print(f"Error in select_user_object {ex}")
     return user
 
 
@@ -94,7 +102,7 @@ def select_all_user_meetings():
 
 @sync_to_async
 def select_user_meetings(telegram_id: int):
-    user = UserMeetings.objects.filter(telegram_id=telegram_id).values().first()
+    user = UserMeetings.objects.get(telegram_id=telegram_id)
     return user
 
 
@@ -147,7 +155,11 @@ def remove_events_from_user(telegram_id: int, events_id: int):
 
 @sync_to_async
 def select_user_username(username: str):
-    user = User.objects.get(username=username)
+    try:
+        user = User.objects.get(username=username)
+    except Exception as ex:
+        user = User.objects.filter(username=username).values().first()
+        print(f"Error in select_user_username {ex}")
     return user
 
 
@@ -201,7 +213,11 @@ def update_setting(telegram_id: int, **kwargs):
 
 @sync_to_async
 def select_setting(telegram_id):
-    return SettingModel.objects.get(telegram_id=telegram_id)
+    try:
+        return SettingModel.objects.get(telegram_id=telegram_id)
+    except Exception as ex:
+        print(f"Error in select_setting {ex}")
+        return SettingModel.objects.filter(telegram_id=telegram_id).values().first()
 
 
 @sync_to_async

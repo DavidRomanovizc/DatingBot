@@ -32,7 +32,7 @@ async def handle_start_finding(call: CallbackQuery, state: FSMContext) -> None:
     telegram_id = call.from_user.id
     user_list = await get_next_user(telegram_id=telegram_id)
     user = await db_commands.select_user(telegram_id=telegram_id)
-    limit = user.get("limit_of_views")
+    limit = user.limit_of_views
     strategy_mapping = {
         "success": StartFindingSuccess(),
         "failure": StartFindingFailure(),

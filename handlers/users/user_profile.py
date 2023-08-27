@@ -12,7 +12,7 @@ async def my_profile_menu(call: CallbackQuery) -> None:
     telegram_id = call.from_user.id
     await delete_message(call.message)
     user_db = await db_commands.select_user(telegram_id=telegram_id)
-    markup = await get_profile_keyboard(verification=user_db["verification"])
+    markup = await get_profile_keyboard(verification=user_db.verification)
     await display_profile(call, markup)
 
 

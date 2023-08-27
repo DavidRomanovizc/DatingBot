@@ -14,7 +14,7 @@ async def add_events_to_user(call: CallbackQuery, event_id: int) -> None:
     Функция, сохраняющая id мероприятий, которые лайкнул пользователь
     """
     user = await db_commands.select_user(telegram_id=call.from_user.id)
-    event_list = user.get("events", [])
+    event_list = user.events
 
     if str(event_id) not in event_list:
         await db_commands.update_user_events(
@@ -34,7 +34,7 @@ async def check_event_date(telegram_id: int) -> None:
     Функция, которая проверяет - прошло мероприятие или нет
     """
     event = await db_commands.select_user_meetings(telegram_id)
-    event_time = event.get("time_event")
+    event_time = event.time_event
     if event_time is None:
         return
     event_datetime, now_datetime = (
@@ -66,11 +66,11 @@ async def create_form(
     try:
         owner = await db_commands.select_user_meetings(telegram_id=form_owner)
         document = {
-            "title": owner.get("event_name"),
-            "date": owner.get("time_event"),
-            "place": owner.get("venue"),
-            "description": owner.get("commentary"),
-            "photo_id": owner.get("photo_id"),
+            "title": owner.event_name,
+            "date": owner.time_event,
+            "place": owner.venue,
+            "description": owner.commentary,
+            "photo_id": owner.photo_id,
             "telegram_id": form_owner,
         }
         if view:
@@ -113,5 +113,5 @@ async def get_next_random_event_id(telegram_id: int) -> Optional[int]:
 
 async def get_next_registration(telegram_id: int) -> List[int]:
     user = await db_commands.select_user(telegram_id=telegram_id)
-    events: list = user.get("events")
+    events: list = user.events
     return events

@@ -13,9 +13,9 @@ from utils.db_api import db_commands
 
 async def poster_keyboard(obj: Union[Message, CallbackQuery]) -> InlineKeyboardMarkup:
     user = await db_commands.select_user_meetings(telegram_id=obj.from_user.id)
-    is_admin = user.get("is_admin")
-    is_verification = user.get("verification_status")
-    moderation_process = user.get("moderation_process")
+    is_admin = user.is_admin
+    is_verification = user.verification_status
+    moderation_process = user.moderation_process
     markup = InlineKeyboardMarkup(row_width=1)
     create_poster = InlineKeyboardButton(
         text=_("✍️Создать афишу"), callback_data="create_poster"
