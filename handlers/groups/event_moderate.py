@@ -3,20 +3,22 @@ import asyncio
 from aiogram.types import CallbackQuery
 
 from data.config import load_config
+from filters.IsAdminFilter import IsAdmin
 from keyboards.inline.main_menu_inline import start_keyboard
 from keyboards.inline.poster_inline import poster_keyboard
 from loader import dp, bot, _
 from utils.db_api import db_commands
 
 
+# FIXME: Broken handler
 @dp.callback_query_handler(
+    IsAdmin(),
     lambda call: str(call.message.chat.id) == load_config().tg_bot.moderate_chat
 )
 async def order_answer(call: CallbackQuery) -> None:
     call_data = call.data.split("-")
     telegram_id = call_data[1]
     markup = await start_keyboard(obj=int(telegram_id))
-
     if call_data[0] == "moderate_accept":
         await call.message.delete()
         await call.message.answer(_("Принято!"))
@@ -31,7 +33,7 @@ async def order_answer(call: CallbackQuery) -> None:
             text=_("Ваше мероприятие прошло модерацию"),
             reply_markup=markup,
         )
-        await asyncio.sleep(3)
+        await asyncio.sleep(1)
 
     elif call_data[0] == "moderate_decline":
         await call.message.delete()
