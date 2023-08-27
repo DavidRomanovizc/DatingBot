@@ -31,13 +31,13 @@ def select_all_links():
 
 @sync_to_async
 def select_user(telegram_id: int):
-    user = User.objects.filter(telegram_id=telegram_id).values().first()
+    user = User.objects.get(telegram_id=telegram_id)
     return user
 
 
 @sync_to_async
 def select_user_object(telegram_id: int):
-    user = User.objects.filter(telegram_id=telegram_id).first()
+    user = User.objects.get(telegram_id=telegram_id)
     return user
 
 
@@ -147,7 +147,7 @@ def remove_events_from_user(telegram_id: int, events_id: int):
 
 @sync_to_async
 def select_user_username(username: str):
-    user = User.objects.filter(username=username).values().first()
+    user = User.objects.get(username=username)
     return user
 
 
@@ -201,7 +201,7 @@ def update_setting(telegram_id: int, **kwargs):
 
 @sync_to_async
 def select_setting(telegram_id):
-    return SettingModel.objects.filter(telegram_id=telegram_id).values().first()
+    return SettingModel.objects.get(telegram_id=telegram_id)
 
 
 @sync_to_async
