@@ -102,5 +102,6 @@ def load_config() -> Config:
     )
 
 
+# TODO: Переместить в dataclass
 BASE_DIR = Path(__file__).parent.parent
 LOCALES_DIR = BASE_DIR / "locales"
