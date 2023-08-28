@@ -23,3 +23,7 @@ testresources
 pydantic~=1.10.2
 redis~=4.6.0
 async-lru==2.0.4
+betterlogging~=0.2.1
+numpy~=1.25.2
+flake8==6.1.0
+black==23.7.0
