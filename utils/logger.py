@@ -1,5 +1,6 @@
 import logging
 
+import betterlogging as bl
 import loguru
 
 log_format = "{time:MMMM D, YYYY > HH:mm:ss} | {level} | {message}"
@@ -15,27 +16,11 @@ for l_level in log_levels:
     )
 
 
-class InterceptHandler(logging.Handler):
-    def emit(self, record):
-        try:
-            level = loguru.logger.level(record.levelname).name
-        except ValueError:
-            level = record.levelno
-
-        frame, depth = logging.currentframe(), 2
-        while frame.f_code.co_filename == logging.__file__:
-            frame = frame.f_back
-            depth += 1
-
-        loguru.logger.opt(depth=depth, exception=record.exc_info).log(
-            level, record.getMessage()
-        )
-
-
-def setup_logger(level="", ignored=""):
+def setup_logger(level=logging.INFO, ignored=""):
+    bl.basic_colorized_config(level=level)
     logging.basicConfig(
-        handlers=[InterceptHandler()], level=logging.getLevelName(level)
+        level=logging.INFO,
+        format="%(filename)s:%(lineno)d #%(levelname)-8s [%(asctime)s] - %(name)s - %(message)s",
     )
-
     for ignore in ignored:
         loguru.logger.disable(ignore)
