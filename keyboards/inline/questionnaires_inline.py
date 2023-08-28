@@ -27,7 +27,7 @@ async def questionnaires_keyboard(
         callback_data=action_keyboard.new(action="report", target_id=target_id),
     )
     go_back = InlineKeyboardButton(
-        text=_("⏪️ Остановить"),
+        text=_("💤 Остановить"),
         callback_data=action_keyboard.new(action="stopped", target_id=target_id),
     )
     ban = InlineKeyboardButton(
@@ -81,11 +81,15 @@ async def user_link_keyboard(telegram_id: int) -> InlineKeyboardMarkup:
     open_chat = InlineKeyboardButton(
         text=_("👉 Перейти в чат"), url=f"tg://user?id={telegram_id}"
     )
+    report = InlineKeyboardButton(
+        text="🔞 Пожаловаться",
+        callback_data=action_keyboard.new(action="report", target_id=telegram_id),
+    )
     back = InlineKeyboardButton(
         text=_("⏪️ Вернуться к просмотру анкет"),
         callback_data="go_back_to_viewing_ques",
     )
-    markup.add(open_chat, back)
+    markup.add(open_chat, report, back)
     return markup
 
 
