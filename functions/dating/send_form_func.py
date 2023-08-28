@@ -94,8 +94,7 @@ async def send_questionnaire(
             await bot.send_photo(
                 chat_id=chat_id, caption=add_text_with_inst, photo=user.photo_id
             )
-
-        elif user.instagram is None:
+        elif user.instagram is None and not report_system:
             await bot.send_photo(
                 chat_id=chat_id,
                 caption=caption_with_add_text,

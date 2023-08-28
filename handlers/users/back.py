@@ -89,6 +89,8 @@ async def handle_menu_action(call: CallbackQuery, state: FSMContext) -> None:
     command = menu_commands[menu_action]
     await state.reset_state()
     try:
-        await command.execute(call, )
+        await command.execute(
+            call,
+        )
     except TypeError:
         await command.execute(call, state)

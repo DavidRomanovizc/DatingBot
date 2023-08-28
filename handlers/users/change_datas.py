@@ -50,9 +50,11 @@ async def change_name(message: types.Message, state: FSMContext) -> None:
             varname=quote_html(censored), telegram_id=message.from_user.id
         )
         await message.answer(
-            text=_("Ваше новое имя: <b>{censored}</b>\n"
-                   "Выберите, что вы хотите изменить: ").format(censored=censored),
-            reply_markup=markup
+            text=_(
+                "Ваше новое имя: <b>{censored}</b>\n"
+                "Выберите, что вы хотите изменить: "
+            ).format(censored=censored),
+            reply_markup=markup,
         )
         await state.reset_state()
     except DataError as ex:
@@ -85,10 +87,11 @@ async def change_age(message: types.Message, state: FSMContext) -> None:
             )
             await asyncio.sleep(1)
             await message.answer(
-                text=_("Ваш новый возраст: <b>{messages}</b>\n"
-                       "Выберите, что вы хотите изменить: ").format(
-                    messages=message.text
-                ), reply_markup=markup
+                text=_(
+                    "Ваш новый возраст: <b>{messages}</b>\n"
+                    "Выберите, что вы хотите изменить: "
+                ).format(messages=message.text),
+                reply_markup=markup,
             )
             await state.reset_state()
         else:
@@ -149,9 +152,10 @@ async def change_sex(call: CallbackQuery, state: FSMContext) -> None:
     gender = "Мужской" if call.data == "male" else "Женский"
     await db_commands.update_user_data(sex=gender, telegram_id=call.from_user.id)
     await call.message.edit_text(
-        text=_("Ваш новый пол: <b>{}</b>\n"
-               "Выберите, что вы хотите изменить: ").format(gender),
-        reply_markup=markup
+        text=_(
+            "Ваш новый пол: <b>{}</b>\n" "Выберите, что вы хотите изменить: "
+        ).format(gender),
+        reply_markup=markup,
     )
     await state.reset_state()
 
@@ -240,8 +244,8 @@ async def update_comment_complete(message: types.Message, state: FSMContext) -> 
         await asyncio.sleep(0.2)
         await delete_message(message)
         await message.answer(
-            text=_("Комментарий принят!\n"
-                   "Выберите, что вы хотите изменить: "), reply_markup=markup
+            text=_("Комментарий принят!\n" "Выберите, что вы хотите изменить: "),
+            reply_markup=markup,
         )
         await state.reset_state()
     except DataError as ex:

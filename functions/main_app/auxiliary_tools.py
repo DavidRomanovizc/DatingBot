@@ -126,9 +126,7 @@ async def registration_menu(
         "<b>🤝 Сотрудничество: </b>\n"
         "Если у вас есть предложение о сотрудничестве, пишите агенту поддержки - "
         "@{supports}\n\n"
-    ).format(
-        fullname=obj.from_user.full_name, heart=heart, supports=support.username
-    )
+    ).format(fullname=obj.from_user.full_name, heart=heart, supports=support.username)
     try:
         await obj.message.edit_text(text=text, reply_markup=markup)
         scheduler.add_job(
@@ -199,13 +197,9 @@ async def finished_registration(
         "{} лет, "
         "{}\n\n"
         "<b>О себе</b> - {}"
-    ).format(
-        user.varname, user.age, user.city, user.commentary
-    )
+    ).format(user.varname, user.age, user.city, user.commentary)
 
-    await message.answer_photo(
-        caption=text, photo=user.photo_id, reply_markup=markup
-    )
+    await message.answer_photo(caption=text, photo=user.photo_id, reply_markup=markup)
 
 
 async def saving_normal_photo(
@@ -217,7 +211,9 @@ async def saving_normal_photo(
     try:
         await db_commands.update_user_data(telegram_id=telegram_id, photo_id=file_id)
 
-        await message.answer(text=_("Фото принято!"), reply_markup=ReplyKeyboardRemove())
+        await message.answer(
+            text=_("Фото принято!"), reply_markup=ReplyKeyboardRemove()
+        )
     except:
         await message.answer(
             text=_(
@@ -263,8 +259,8 @@ async def saving_censored_photo(
         )
     if flag == "change_datas":
         await message.answer(
-            text=_("<u>Фото принято!</u>\n"
-                   "Выберите, что вы хотите изменить: "), reply_markup=markup
+            text=_("<u>Фото принято!</u>\n" "Выберите, что вы хотите изменить: "),
+            reply_markup=markup,
         )
         await state.reset_state()
     elif flag == "registration":
