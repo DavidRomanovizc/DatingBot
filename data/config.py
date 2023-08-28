@@ -40,6 +40,7 @@ class Miscellaneous:
     client_id: str
     redirect_url: URL
     yoomoney_key: str
+    production: bool
 
 
 @dataclass(frozen=True)
@@ -98,10 +99,11 @@ def load_config() -> Config:
             client_id=env.str("CLIENT_ID"),
             redirect_url=env.str("REDIRECT_URI"),
             yoomoney_key=env.str("YOOMONEY_KEY"),
+            production=env.bool("PRODUCTION"),
         ),
     )
 
 
-# TODO: Переместить в dataclass
+# TODO: Move to dataclass
 BASE_DIR = Path(__file__).parent.parent
 LOCALES_DIR = BASE_DIR / "locales"

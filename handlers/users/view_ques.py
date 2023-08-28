@@ -2,6 +2,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery
 from django.db import IntegrityError
 
+from data.config import load_config
 from functions.dating import (
     StartFindingSuccess,
     StartFindingFailure,
@@ -50,8 +51,8 @@ async def handle_start_finding(call: CallbackQuery, state: FSMContext) -> None:
 
 @dp.callback_query_handler(
     action_report_keyboard.filter(
-        action=["adults_only", "drugs", "scam", "another", "cancel_report"]
-    )
+        action=["adults_only", "drugs", "scam", "another", "cancel_report"],
+    ),
 )
 async def handle_report(
         call: CallbackQuery, state: FSMContext, callback_data: dict[str, str]
@@ -65,16 +66,18 @@ async def handle_report(
         "cancel_report": GoBackToViewing(),
     }
     strategy = strategy_mapping.get(action)
+
     await strategy.execute(call, state, callback_data)
 
-    await call.message.answer(text=_("Жалоба успешно отправлена"))
-    strategy = GoBackToViewing()
-    await strategy.execute(call, state, callback_data)
+    if action != "cancel_report":
+        await call.message.answer(text=_("Жалоба успешно отправлена"))
+        strategy = GoBackToViewing()
+        await strategy.execute(call, state, callback_data)
 
 
 @dp.callback_query_handler(
     action_keyboard.filter(action=["like", "dislike", "stopped", "report"]),
-    state="finding",
+    state="*",
 )
 async def handle_action(
         call: CallbackQuery, state: FSMContext, callback_data: dict[str, str]
@@ -83,13 +86,15 @@ async def handle_action(
     profile_id = callback_data["target_id"]
     user = await db_commands.select_user_object(telegram_id=call.from_user.id)
     viewed_profile = await db_commands.select_user_object(telegram_id=profile_id)
-    try:
-        await db_commands.add_profile_to_viewed(
-            user=user, viewed_profile=viewed_profile
-        )
-    except IntegrityError:
-        logger.error("Дубликаты профилей")
-
+    if load_config().misc.production:
+        try:
+            await db_commands.add_profile_to_viewed(
+                user=user, viewed_profile=viewed_profile
+            )
+        except IntegrityError:
+            logger.error("Дубликаты профилей")
+    else:
+        pass
     strategy_mapping = {
         "like": LikeAction(),
         "dislike": DislikeAction(),

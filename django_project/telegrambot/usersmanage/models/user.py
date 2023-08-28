@@ -76,6 +76,8 @@ class User(TimeBasedModel):
         "self", through="ViewedProfile", symmetrical=False
     )
     limit_of_views = models.PositiveIntegerField(default=10, null=True)
+    counter_of_report = models.PositiveIntegerField(default=0, null=True)
+    on_check_by_admin = models.BooleanField(default=False, null=True)
 
     def __str__(self):
         return f"№{self.id} ({self.telegram_id}) - {self.name}"

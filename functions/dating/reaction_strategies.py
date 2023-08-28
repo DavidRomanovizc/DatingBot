@@ -194,21 +194,39 @@ class SendReport(ActionStrategy):
             self, call: CallbackQuery, state: FSMContext, callback_data: dict[str, str]
     ):
         target_id = int(callback_data["target_id"])
+        target_user = await db_commands.select_user(telegram_id=target_id)
+
+        counter_of_report = target_user.counter_of_report
+        username = call.from_user.username
+        user_id = call.from_user.id
+        report_reason = await get_report_reason(call)
+
         text = _(
             "Жалоба от пользователя: <code>[@{username}</code> | <code>{tg_id}</code>]\n\n"
             "На пользователя: <code>[{owner_id}]</code>\n"
-            "Причина жалобы: <code>{reason}</code>"
+            "Причина жалобы: <code>{reason}</code>\n"
+            "Количество жалоб на пользователя: <code>{counter_of_report}</code>"
         ).format(
-            username=call.from_user.username,
-            tg_id=call.from_user.id,
+            username=username,
+            tg_id=user_id,
             owner_id=target_id,
-            reason=await get_report_reason(call),
+            reason=report_reason,
+            counter_of_report=counter_of_report,
         )
 
-        await create_questionnaire(
-            form_owner=target_id,
-            chat_id=load_config().tg_bot.moderate_chat,
-            report_system=True,
-            add_text=text,
+        await db_commands.update_user_data(
+            telegram_id=target_id, counter_of_report=counter_of_report + 1
         )
-        await asyncio.sleep(1)
+
+        moderate_chat = load_config().tg_bot.moderate_chat
+        if counter_of_report >= 5 and not target_user.on_check_by_admin:
+            await db_commands.update_user_data(
+                telegram_id=target_id, on_check_by_admin=True
+            )
+            await create_questionnaire(
+                form_owner=target_id,
+                chat_id=moderate_chat,
+                report_system=True,
+                add_text=text,
+            )
+        await asyncio.sleep(0.5)
