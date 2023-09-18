@@ -93,17 +93,6 @@ async def user_city_filter(call: CallbackQuery, state: FSMContext) -> None:
     await state.set_state("city")
 
 
-@dp.message_handler(state="city")
-async def user_city_filter_state(message: types.Message) -> None:
-    try:
-        loc = await Location(message=message, strategy=FiltersStrategy)
-        await loc.det_loc()
-
-    except NothingFound:
-        await message.answer(_("Произошла ошибка, попробуйте еще раз"))
-        return
-
-
 @dp.callback_query_handler(text="yes_all_good", state="set_city_event")
 @dp.callback_query_handler(text="yes_all_good", state="city")
 async def get_hobbies(call: CallbackQuery, state: FSMContext) -> None:
@@ -134,7 +123,7 @@ async def set_city_by_filter(call: CallbackQuery, state: FSMContext) -> None:
     await state.set_state("set_city_event")
 
 
-@dp.message_handler(state="set_city_event")
+@dp.message_handler(state="city")
 async def user_city_filter_state(message: types.Message) -> None:
     try:
         loc = await Location(message=message, strategy=FiltersStrategy)

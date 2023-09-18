@@ -31,7 +31,7 @@ from keyboards.inline.filters_inline import dating_filters_keyboard
 from keyboards.inline.guide_inline import create_pagination_keyboard
 from keyboards.inline.main_menu_inline import start_keyboard
 from keyboards.inline.settings_menu import information_keyboard
-from loader import _, bot, scheduler
+from loader import _, bot, scheduler, logger
 from utils.db_api import db_commands
 from utils.db_api.db_commands import check_user_meetings_exists
 
@@ -214,7 +214,8 @@ async def saving_normal_photo(
         await message.answer(
             text=_("Фото принято!"), reply_markup=ReplyKeyboardRemove()
         )
-    except:
+    except Exception as err:
+        logger.info(f"Ошибка в saving_normal_photo | err: {err}")
         await message.answer(
             text=_(
                 "Произошла ошибка! Попробуйте еще раз либо отправьте другую фотографию. \n"
@@ -250,6 +251,7 @@ async def saving_censored_photo(
         await db_commands.update_user_data(telegram_id=telegram_id, photo_id=file_id)
 
     except Exception as err:
+        logger.info(f"Ошибка в saving_censored_photo | err: {err}")
         await message.answer(
             text=_(
                 "Произошла ошибка!"
@@ -285,7 +287,8 @@ async def update_normal_photo(
             text=_("Выберите, что вы хотите изменить: "), reply_markup=markup
         )
         await state.reset_state()
-    except:
+    except Exception as err:
+        logger.info(f"Ошибка в update_normal_photo | err: {err}")
         await message.answer(
             text=_(
                 "Произошла ошибка! Попробуйте еще раз либо отправьте другую фотографию. \n"

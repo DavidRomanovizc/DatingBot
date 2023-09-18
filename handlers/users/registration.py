@@ -119,7 +119,7 @@ async def commentary_reg(message: types.Message) -> None:
 
 
 @dp.callback_query_handler(state=RegData.need_partner_sex)
-async def sex_reg(call: CallbackQuery) -> None:
+async def handle_gender_choice(call: CallbackQuery) -> None:
     await choice_gender(call)
     await call.message.edit_text(
         text=_(

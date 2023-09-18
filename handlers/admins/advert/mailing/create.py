@@ -216,12 +216,11 @@ async def get_button_name_photo(message: types.Message, state: FSMContext) -> No
 
 
 @dp.message_handler(IsAdmin(), state="get_button_url_photo")
-async def get_button_url(message: types.Message, state: FSMContext) -> None:
+async def get_button_url_photo(message: types.Message, state: FSMContext) -> None:
     button_url = message.text
     await state.update_data(button_url=button_url)
     async with state.proxy() as data:
         text = data["text"]
-        photo = data["photo"]
         button_name = data["button_name"]
 
     markup = InlineKeyboardMarkup(row_width=1)
@@ -251,7 +250,7 @@ async def get_button_url(message: types.Message, state: FSMContext) -> None:
 
 
 @dp.callback_query_handler(state="confirm_with_button_photo")
-async def confirm_with_button_no_photo(call: CallbackQuery, state: FSMContext) -> None:
+async def confirm_with_button_photo(call: CallbackQuery, state: FSMContext) -> None:
     chats = await db_commands.select_all_users()
     count = 0
 

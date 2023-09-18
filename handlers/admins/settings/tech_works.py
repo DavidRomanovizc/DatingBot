@@ -37,7 +37,7 @@ async def set_up_tech_works(call: CallbackQuery) -> None:
 
 
 @dp.callback_query_handler(text="disable_tech_work")
-async def set_up_tech_works(call: CallbackQuery) -> None:
+async def turn_off_tech_works(call: CallbackQuery) -> None:
     await db_commands.update_setting(
         telegram_id=call.from_user.id, technical_works=False
     )

@@ -13,7 +13,7 @@ from utils.db_api import db_commands
 
 class LinkCheckMiddleware(BaseMiddleware):
     async def on_process_message(self, message: types.Message, data: dict) -> None:
-        if message.chat.type == types.ChatType.PRIVATE:
+        if isinstance(message.chat.type, types.ChatType):
             await self._check_links_and_handle(message.from_user.id, obj=message)
 
     async def on_process_callback_query(

@@ -36,13 +36,13 @@ async def start_change_data(call: CallbackQuery) -> None:
 
 
 @dp.callback_query_handler(text="name")
-async def change_name(call: CallbackQuery) -> None:
+async def change_name_request(call: CallbackQuery) -> None:
     await call.message.edit_text(text=_("Введите новое имя"))
     await NewData.name.set()
 
 
 @dp.message_handler(state=NewData.name)
-async def change_name(message: types.Message, state: FSMContext) -> None:
+async def update_name(message: types.Message, state: FSMContext) -> None:
     markup = await change_info_keyboard()
     try:
         censored = censored_message(message.text)
@@ -78,7 +78,7 @@ async def change_age(call: CallbackQuery) -> None:
 
 
 @dp.message_handler(state=NewData.age)
-async def change_age(message: types.Message, state: FSMContext) -> None:
+async def update_age(message: types.Message, state: FSMContext) -> None:
     markup = await change_info_keyboard()
     try:
         if int(message.text) and 10 < int(message.text) < 90:
@@ -114,7 +114,7 @@ async def change_city(call: CallbackQuery) -> None:
 
 
 @dp.message_handler(state=NewData.city)
-async def change_city(message: types.Message) -> None:
+async def update_city(message: types.Message) -> None:
     try:
         loc = await Location(message=message, strategy=RegistrationStrategy())
         await loc.det_loc()
@@ -147,7 +147,7 @@ async def change_sex(call: CallbackQuery) -> None:
 
 
 @dp.callback_query_handler(state=NewData.sex)
-async def change_sex(call: CallbackQuery, state: FSMContext) -> None:
+async def update_sex(call: CallbackQuery, state: FSMContext) -> None:
     markup = await change_info_keyboard()
     gender = "Мужской" if call.data == "male" else "Женский"
     await db_commands.update_user_data(sex=gender, telegram_id=call.from_user.id)

@@ -149,7 +149,7 @@ async def registrate_poster_commentary(call: CallbackQuery, state: FSMContext) -
 
 
 @dp.message_handler(state="register_handler_commentary")
-async def registrate_poster_commentary(message: Message, state: FSMContext) -> None:
+async def registrate_poster(message: Message, state: FSMContext) -> None:
     try:
         await db_commands.update_user_meetings_data(
             telegram_id=message.from_user.id, commentary=message.text
