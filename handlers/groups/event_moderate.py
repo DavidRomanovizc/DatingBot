@@ -13,7 +13,7 @@ from utils.db_api import db_commands
 # FIXME: Broken handler
 @dp.callback_query_handler(
     IsAdmin(),
-    lambda call: str(call.message.chat.id) == load_config().tg_bot.moderate_chat
+    lambda call: str(call.message.chat.id) == load_config().tg_bot.moderate_chat,
 )
 async def order_answer(call: CallbackQuery) -> None:
     call_data = call.data.split("-")

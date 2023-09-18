@@ -10,5 +10,5 @@ def setup(dp: Dispatcher):
         dp.message_handlers,
         dp.edited_message_handlers,
     ]
-
+    logger.info(text_messages)
     dp.filters_factory.bind(IsPrivate)
