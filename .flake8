@@ -9,4 +9,4 @@ exclude =
     migrations,
 
 max-line-length = 99
-extend-ignore = F401, E402
+extend-ignore = F401, E402, D10

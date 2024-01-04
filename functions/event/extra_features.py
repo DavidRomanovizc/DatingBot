@@ -10,9 +10,7 @@ from utils.db_api import db_commands
 
 
 async def add_events_to_user(call: CallbackQuery, event_id: int) -> None:
-    """
-    Функция, сохраняющая id мероприятий, которые лайкнул пользователь
-    """
+    """Функция, сохраняющая id мероприятий, которые лайкнул пользователь."""
     user = await db_commands.select_user(telegram_id=call.from_user.id)
     event_list = user.events
 
@@ -23,16 +21,12 @@ async def add_events_to_user(call: CallbackQuery, event_id: int) -> None:
 
 
 async def check_availability_on_event() -> bool:
-    """
-    Функция, которая проверяет наличие свободных мест на мероприятие
-    """
+    """Функция, которая проверяет наличие свободных мест на мероприятие."""
     ...
 
 
 async def check_event_date(telegram_id: int) -> None:
-    """
-    Функция, которая проверяет - прошло мероприятие или нет
-    """
+    """Функция, которая проверяет - прошло мероприятие или нет."""
     event = await db_commands.select_user_meetings(telegram_id)
     event_time = event.time_event
     if event_time is None:
@@ -60,9 +54,7 @@ async def check_event_date(telegram_id: int) -> None:
 async def create_form(
         form_owner: int, chat_id: int, call: CallbackQuery, view: Union[bool, None] = True
 ) -> None:
-    """
-    Функция, которая заполняет анкету текстом
-    """
+    """Функция, которая заполняет анкету текстом."""
     try:
         owner = await db_commands.select_user_meetings(telegram_id=form_owner)
         document = {
@@ -89,9 +81,7 @@ async def create_form(
 
 
 async def get_next_random_event_id(telegram_id: int) -> Optional[int]:
-    """
-    Функция, возвращающая случайный id мероприятия, созданного другим пользователем
-    """
+    """Функция, возвращающая случайный id мероприятия, созданного другим пользователем."""
     event_ids = await db_commands.search_event_forms()
 
     other_events_ids = []

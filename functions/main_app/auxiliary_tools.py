@@ -42,9 +42,7 @@ async def delete_message(message: Message) -> None:
 
 
 async def choice_gender(call: CallbackQuery) -> None:
-    """
-    Функция, сохраняющая в базу пол, который выбрал пользователь
-    """
+    """Функция, сохраняющая в базу пол, который выбрал пользователь."""
     sex_mapping = {"male": "Мужской", "female": "Женский"}
 
     selected_sex = sex_mapping.get(call.data)
@@ -59,9 +57,7 @@ async def choice_gender(call: CallbackQuery) -> None:
 
 
 async def display_profile(call: CallbackQuery, markup: InlineKeyboardMarkup) -> None:
-    """
-    Функция для отображения профиля пользователя
-    """
+    """Функция для отображения профиля пользователя."""
     user = await db_commands.select_user(telegram_id=call.from_user.id)
     count_referrals = await db_commands.count_all_users_kwarg(
         referrer_id=call.from_user.id
@@ -205,9 +201,7 @@ async def finished_registration(
 async def saving_normal_photo(
         message: Message, telegram_id: int, file_id: int, state: FSMContext
 ) -> None:
-    """
-    Функция, сохраняющая фотографию пользователя без цензуры
-    """
+    """Функция, сохраняющая фотографию пользователя без цензуры."""
     try:
         await db_commands.update_user_data(telegram_id=telegram_id, photo_id=file_id)
 
@@ -233,9 +227,7 @@ async def saving_censored_photo(
         flag: Optional[str] = "registration",
         markup: Union[InlineKeyboardMarkup, None] = None,
 ) -> None:
-    """
-    Функция, сохраняющая фотографию пользователя с цензурой
-    """
+    """.Функция, сохраняющая фотографию пользователя с цензурой."""
     photo = InputFile(out_path)
     id_photo = await bot.send_photo(
         chat_id=telegram_id,
@@ -274,9 +266,7 @@ async def saving_censored_photo(
 async def update_normal_photo(
         message: Message, telegram_id: int, file_id: int, state: FSMContext, markup
 ) -> None:
-    """
-    Функция, которая обновляет фотографию пользователя
-    """
+    """Функция, которая обновляет фотографию пользователя."""
     try:
         await db_commands.update_user_data(telegram_id=telegram_id, photo_id=file_id)
         await message.answer(

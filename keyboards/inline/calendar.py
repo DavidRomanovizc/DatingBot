@@ -41,7 +41,8 @@ class SimpleCalendar:
             self, year: int = datetime.now().year, month: int = datetime.now().month
     ) -> InlineKeyboardMarkup:
         """
-        Creates an inline keyboard with the provided year and month
+        Create an inline keyboard with the provided year and month.
+
         :param int year: Year to use in the calendar, if None the current year is used.
         :param int month: Month to use in the calendar, if None the current month is used.
         :return: Returns InlineKeyboardMarkup object with the calendar.
@@ -119,8 +120,11 @@ class SimpleCalendar:
             self, query: CallbackQuery, data: CallbackData
     ) -> tuple:
         """
-        Process the callback_query. This method generates a new calendar if forward or
-        backward is pressed. This method should be called inside a CallbackQueryHandler.
+        Process the callback_query.
+
+        This method generates a new calendar if forward or backward is pressed.
+        This method should be called inside a CallbackQueryHandler.
+
         :param query: callback_query, as provided by the CallbackQueryHandler
         :param data: callback_data, dictionary, set by calendar_callback
         :return: Returns a tuple (Boolean,datetime), indicating if a date is selected

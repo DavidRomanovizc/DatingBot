@@ -18,10 +18,7 @@ class UserDataUpdateStrategy(ABC):
 
 
 class Location(AsyncObj):
-    """
-    Класс для определения и сохранения локации пользователя
-    в различных сценариях.
-    """
+    """Класс для определения и сохранения локации пользователя в различных сценариях."""
 
     async def __ainit__(
             self, message: Message, strategy: Type[UserDataUpdateStrategy]

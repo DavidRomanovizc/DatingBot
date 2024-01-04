@@ -6,7 +6,8 @@ from pydantic import BaseModel, Field
 
 class Operation(BaseModel):
     """
-    Описание платежной операции
+    Описание платежной операции.
+
     https://yoomoney.ru/docs/wallet/user-account/operation-history#response-operation
     """
 

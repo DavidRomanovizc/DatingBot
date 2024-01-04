@@ -232,9 +232,7 @@ def select_setting_tech_work():
 
 @sync_to_async
 def check_returned_event_id(telegram_id: int, id_of_events_seen: int) -> bool:
-    """
-    Функция, проверяющая, был ли ранее возвращен данный event_id для данного telegram_id
-    """
+    """Функция, проверяющая, был ли ранее возвращен данный event_id для данного telegram_id."""
     returned_event = User.objects.filter(telegram_id=telegram_id).first()
     event_list = returned_event.id_of_events_seen
 
@@ -243,9 +241,7 @@ def check_returned_event_id(telegram_id: int, id_of_events_seen: int) -> bool:
 
 @sync_to_async
 def add_returned_event_id(telegram_id: int, id_of_events_seen: int):
-    """
-    Функция, добавляющая возвращенный event_id для данного telegram_id в базу данных
-    """
+    """Функция, добавляющая возвращенный event_id для данного telegram_id в базу данных."""
     returned_event, created = User.objects.get_or_create(telegram_id=telegram_id)
     returned_event.id_of_events_seen.append(id_of_events_seen)
     returned_event.save()
