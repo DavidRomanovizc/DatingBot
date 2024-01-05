@@ -57,7 +57,7 @@ async def choice_gender(call: CallbackQuery) -> None:
 
 
 async def display_profile(call: CallbackQuery, markup: InlineKeyboardMarkup) -> None:
-    """Функция для отображения профиля пользователя."""
+    """Function for displaying the user profile."""
     user = await db_commands.select_user(telegram_id=call.from_user.id)
     count_referrals = await db_commands.count_all_users_kwarg(
         referrer_id=call.from_user.id
