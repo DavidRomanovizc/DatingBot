@@ -54,7 +54,7 @@ async def check_event_date(telegram_id: int) -> None:
 async def create_form(
         form_owner: int, chat_id: int, call: CallbackQuery, view: Union[bool, None] = True
 ) -> None:
-    """Функция, которая заполняет анкету текстом."""
+    """ Function that fills the form with text."""
     try:
         owner = await db_commands.select_user_meetings(telegram_id=form_owner)
         document = {
