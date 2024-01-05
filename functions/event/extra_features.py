@@ -21,7 +21,7 @@ async def add_events_to_user(call: CallbackQuery, event_id: int) -> None:
 
 
 async def check_availability_on_event() -> bool:
-    """Функция, которая проверяет наличие свободных мест на мероприятие."""
+    """Function that checks the availability of seats for an event."""
     ...
 
 
