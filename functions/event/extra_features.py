@@ -26,7 +26,7 @@ async def check_availability_on_event() -> bool:
 
 
 async def check_event_date(telegram_id: int) -> None:
-    """Функция, которая проверяет - прошло мероприятие или нет."""
+    """Function that checks whether an event has passed or not."""
     event = await db_commands.select_user_meetings(telegram_id)
     event_time = event.time_event
     if event_time is None:
