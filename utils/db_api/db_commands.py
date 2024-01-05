@@ -241,7 +241,7 @@ def check_returned_event_id(telegram_id: int, id_of_events_seen: int) -> bool:
 
 @sync_to_async
 def add_returned_event_id(telegram_id: int, id_of_events_seen: int):
-    """Функция, добавляющая возвращенный event_id для данного telegram_id в базу данных."""
+    """Function that adds the returned event_id for the given telegram_id to the database."""
     returned_event, created = User.objects.get_or_create(telegram_id=telegram_id)
     returned_event.id_of_events_seen.append(id_of_events_seen)
     returned_event.save()
