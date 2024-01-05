@@ -81,7 +81,7 @@ async def create_form(
 
 
 async def get_next_random_event_id(telegram_id: int) -> Optional[int]:
-    """Функция, возвращающая случайный id мероприятия, созданного другим пользователем."""
+    """Function that returns a random id of an event created by another user."""
     event_ids = await db_commands.search_event_forms()
 
     other_events_ids = []
