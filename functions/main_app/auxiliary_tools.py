@@ -42,7 +42,7 @@ async def delete_message(message: Message) -> None:
 
 
 async def choice_gender(call: CallbackQuery) -> None:
-    """Функция, сохраняющая в базу пол, который выбрал пользователь."""
+    """Function that saves to the database the gender that the user has selected."""
     sex_mapping = {"male": "Мужской", "female": "Женский"}
 
     selected_sex = sex_mapping.get(call.data)
