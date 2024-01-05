@@ -10,7 +10,7 @@ from utils.db_api import db_commands
 
 
 async def add_events_to_user(call: CallbackQuery, event_id: int) -> None:
-    """Функция, сохраняющая id мероприятий, которые лайкнул пользователь."""
+    """Function that stores id's of events liked by a user."""
     user = await db_commands.select_user(telegram_id=call.from_user.id)
     event_list = user.events
 
