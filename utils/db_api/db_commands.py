@@ -232,7 +232,7 @@ def select_setting_tech_work():
 
 @sync_to_async
 def check_returned_event_id(telegram_id: int, id_of_events_seen: int) -> bool:
-    """Функция, проверяющая, был ли ранее возвращен данный event_id для данного telegram_id."""
+    """Function that checks if the given event_id was previously returned for the given telegram_id."""
     returned_event = User.objects.filter(telegram_id=telegram_id).first()
     event_list = returned_event.id_of_events_seen
 
