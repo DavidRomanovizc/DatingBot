@@ -1,5 +1,7 @@
 def rate_limit(limit: int, key=None):
     """
+    Rate limit decorator.
+
     Decorator for configuring rate limit and key in different functions.
 
     :param limit:

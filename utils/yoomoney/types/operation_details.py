@@ -6,7 +6,8 @@ from pydantic import BaseModel, Field
 
 class OperationDetails(BaseModel):
     """
-    Детальная информация об операции из истории
+    Детальная информация об операции из истории.
+
     https://yoomoney.ru/docs/wallet/user-account/operation-details
     """
 

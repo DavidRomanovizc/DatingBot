@@ -31,6 +31,7 @@ class YooMoneyWallet:
     ) -> list[Operation, ...]:
         """
         Получение последних 30 операций.
+
         На 10.03.2023 API yoomoney напросто игнорирует указанные в документации параметры
 
         https://yoomoney.ru/docs/payment-buttons/using-api/forms?lang=ru#parameters
