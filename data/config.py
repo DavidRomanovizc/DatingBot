@@ -91,7 +91,7 @@ def load_config() -> Config:
             password=env.str("DB_PASS"),
             host=env.str("DB_HOST"),
             database=env.str("DB_NAME"),
-            port=env.str("PORT"),
+            port=env.str("DB_PORT"),
         ),
         misc=Miscellaneous(
             secret_key=env.str("SECRET_KEY"),
