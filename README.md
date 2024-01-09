@@ -83,8 +83,8 @@ After that, you need to fill it with data.
 | DB_USER       | str  | True       | username of the database owner                                              |
 | DB_PASS       | str  | True       | password from the database                                                  |
 | DB_HOST       | str  | True       | IP address of the database                                                  |
+| DB_PORT       | str  | True       | the database port. Usually the db running on port `5432`                    |
 | DB_NAME       | str  | True       | database name                                                               |
-| PORT          | str  | True       | the database port. Usually the db running on port `5432`                    |
 | SECRET_KEY    | str  | True       | secret key for django                                                       |
 | API_KEY       | str  | True       | yandex api key for yandex map                                               |
 | QIWI_KEY      | str  | True       | qiwi api key for receiving payments                                         |
