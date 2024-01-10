@@ -2,7 +2,7 @@
 name: Bug report
 about: Create a report to help us improve
 title: ''
-labels: 'Priority: Low, Status: Accepted, Type: Bug'
+labels: 'Priority: Low, Status: Available, Type: Bug'
 assignees: ''
 
 ---
