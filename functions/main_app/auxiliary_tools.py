@@ -1,39 +1,71 @@
 import asyncio
+from contextlib import (
+    suppress,
+)
 import datetime
 import os
 import pathlib
 import random
 import re
 import shutil
-from contextlib import suppress
-from typing import Union, Optional
+from typing import (
+    Optional,
+    Union,
+)
 
 import aiofiles
-from aiogram import types
-from aiogram.dispatcher import FSMContext
+from aiogram import (
+    types,
+)
+from aiogram.dispatcher import (
+    FSMContext,
+)
 from aiogram.types import (
     CallbackQuery,
-    ReplyKeyboardRemove,
-    InputFile,
     InlineKeyboardMarkup,
+    InputFile,
     Message,
+    ReplyKeyboardRemove,
 )
 from aiogram.utils.exceptions import (
     BadRequest,
     MessageCantBeDeleted,
     MessageToDeleteNotFound,
 )
-from asyncpg import UniqueViolationError
+from asyncpg import (
+    UniqueViolationError,
+)
 
-from data.config import load_config
-from functions.main_app.app_scheduler import send_message_week
-from keyboards.inline.filters_inline import dating_filters_keyboard
-from keyboards.inline.guide_inline import create_pagination_keyboard
-from keyboards.inline.main_menu_inline import start_keyboard
-from keyboards.inline.settings_menu import information_keyboard
-from loader import _, bot, scheduler, logger
-from utils.db_api import db_commands
-from utils.db_api.db_commands import check_user_meetings_exists
+from data.config import (
+    load_config,
+)
+from functions.main_app.app_scheduler import (
+    send_message_week,
+)
+from keyboards.inline.filters_inline import (
+    dating_filters_keyboard,
+)
+from keyboards.inline.guide_inline import (
+    create_pagination_keyboard,
+)
+from keyboards.inline.main_menu_inline import (
+    start_keyboard,
+)
+from keyboards.inline.settings_menu import (
+    information_keyboard,
+)
+from loader import (
+    _,
+    bot,
+    logger,
+    scheduler,
+)
+from utils.db_api import (
+    db_commands,
+)
+from utils.db_api.db_commands import (
+    check_user_meetings_exists,
+)
 
 
 async def delete_message(message: Message) -> None:
@@ -107,7 +139,7 @@ async def show_dating_filters(obj: Union[CallbackQuery, Message]) -> None:
 
 
 async def registration_menu(
-        obj: Union[CallbackQuery, Message],
+    obj: Union[CallbackQuery, Message],
 ) -> None:
     support = await db_commands.select_user(
         telegram_id=load_config().tg_bot.support_ids[0]
@@ -116,9 +148,9 @@ async def registration_menu(
     heart = random.choice(["💙", "💚", "💛", "🧡", "💜", "🖤", "❤", "🤍", "💖", "💝"])
     text = _(
         "Приветствую вас, {fullname}!!\n\n"
-        "{heart} <b> QueDateBot </b> - платформа для поиска новых знакомств.\n\n"
+        "{heart} <b> Querendo </b> - платформа для поиска новых знакомств.\n\n"
         "🪧 Новости о проекте вы можете прочитать в нашем канале - "
-        "https://t.me/QueDateGroup \n\n"
+        "https://t.me/que_group \n\n"
         "<b>🤝 Сотрудничество: </b>\n"
         "Если у вас есть предложение о сотрудничестве, пишите агенту поддержки - "
         "@{supports}\n\n"
@@ -145,7 +177,7 @@ async def registration_menu(
 
 async def check_user_in_db(telegram_id: int, message: Message, username: str) -> None:
     if not await db_commands.check_user_exists(
-            telegram_id
+        telegram_id
     ) and not await check_user_meetings_exists(telegram_id):
         user = await db_commands.select_user_object(telegram_id=telegram_id)
         referrer_id = message.text[7:]
@@ -178,7 +210,7 @@ async def check_user_in_db(telegram_id: int, message: Message, username: str) ->
 
 
 async def finished_registration(
-        state: FSMContext, telegram_id: int, message: Message
+    state: FSMContext, telegram_id: int, message: Message
 ) -> None:
     await state.finish()
     await db_commands.update_user_data(telegram_id=telegram_id, status=True)
@@ -199,7 +231,7 @@ async def finished_registration(
 
 
 async def saving_normal_photo(
-        message: Message, telegram_id: int, file_id: int, state: FSMContext
+    message: Message, telegram_id: int, file_id: str, state: FSMContext
 ) -> None:
     """Функция, сохраняющая фотографию пользователя без цензуры."""
     try:
@@ -264,7 +296,11 @@ async def saving_censored_photo(
 
 
 async def update_normal_photo(
-        message: Message, telegram_id: int, file_id: int, state: FSMContext, markup
+        message: Message,
+        telegram_id: int,
+        file_id: str,
+        state: FSMContext,
+        markup
 ) -> None:
     """Функция, которая обновляет фотографию пользователя."""
     try:
@@ -355,7 +391,7 @@ async def information_menu(call: CallbackQuery) -> None:
         await call.message.answer(text=txt, reply_markup=markup)
 
 
-async def get_report_reason(call: CallbackQuery) -> None:
+async def get_report_reason(call: CallbackQuery) -> str:
     match = re.search(r"report:(.*?):", call.data)
     reason_key = match.group(1)
     reason_mapping = {
