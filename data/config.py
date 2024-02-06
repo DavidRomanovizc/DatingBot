@@ -1,18 +1,30 @@
+from dataclasses import (
+    dataclass,
+)
+from functools import (
+    lru_cache,
+)
 import inspect
-from dataclasses import dataclass
-from functools import lru_cache
-from pathlib import Path
-from typing import List
+from pathlib import (
+    Path,
+)
+from typing import (
+    List,
+)
 
-from environs import Env
-from yarl import URL
+from environs import (
+    Env,
+)
+from yarl import (
+    URL,
+)
 
 env = Env()
 env.read_env()
 
 
 # The frozen=True arg protects instances of the class from accidental modification
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class DataBaseConfig:
     user: str
     password: str
@@ -21,7 +33,7 @@ class DataBaseConfig:
     port: str
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class TgBot:
     token: str
     admin_ids: List[int]
@@ -33,7 +45,7 @@ class TgBot:
     use_redis: bool
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class Miscellaneous:
     secret_key: str
     yandex_api_key: str
@@ -43,7 +55,7 @@ class Miscellaneous:
     production: bool
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class Config:
     tg_bot: TgBot
     db: DataBaseConfig
@@ -58,7 +70,7 @@ def search_env() -> Path:
     return start
 
 
-def change_env(section: str, value: str):
+def change_env(section: str, value: str) -> None:
     dumped_env = env.dump()
     text = ""
     start = search_env()
@@ -87,10 +99,10 @@ def load_config() -> Config:
             use_redis=env.bool("USE_REDIS"),
         ),
         db=DataBaseConfig(
-            user=env.str("DB_USER"),
-            password=env.str("DB_PASS"),
+            user=env.str("POSTGRES_USER"),
+            password=env.str("POSTGRES_PASSWORD"),
             host=env.str("DB_HOST"),
-            database=env.str("DB_NAME"),
+            database=env.str("POSTGRES_DB"),
             port=env.str("DB_PORT"),
         ),
         misc=Miscellaneous(
