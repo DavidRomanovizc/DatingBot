@@ -1,18 +1,13 @@
-FROM python:3.9.2-alpine3.13
+FROM python:3.11-slim
 
-RUN addgroup -S telegrambot && adduser -S telegrambot -G telegrambot
+RUN apt-get update && apt-get install -y locales locales-all
+ENV LANG ru_RU.UTF-8
+ENV LANGUAGE ru_RU.UTF-8
+ENV LC_ALL ru_RU.UTF-8
 
-RUN apk add --no-cache gcc musl-dev libffi-dev openssl-dev postgresql-dev
 WORKDIR /src
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+COPY requirements.txt /src
+RUN pip install -r /src/requirements.txt
+COPY . /src
 
-ENV PYTHONUNBUFFERED=1
-ENV DJANGO_SETTINGS_MODULE=django_project.telegrambot.telegrambot.settings
-
-USER telegrambot
-
-CMD ["python", "django_app.py", "runserver", "0.0.0.0:8000"]
-CMD ["python", "app.py"]
