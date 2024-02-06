@@ -1,35 +1,74 @@
 import asyncio
 import os
 
-from aiogram import types
-from aiogram.dispatcher import FSMContext
+from aiogram import (
+    types,
+)
+from aiogram.dispatcher import (
+    FSMContext,
+)
 from aiogram.types import (
     CallbackQuery,
     ContentType,
     InlineKeyboardButton,
     InlineKeyboardMarkup,
 )
-from aiogram.utils.markdown import quote_html
-from asyncpg import UniqueViolationError
-from django.db import DataError
+from aiogram.utils.markdown import (
+    quote_html,
+)
+from asyncpg import (
+    UniqueViolationError,
+)
+from django.db import (
+    DataError,
+)
 
 from functions.main_app.auxiliary_tools import (
     choice_gender,
-    saving_normal_photo,
     saving_censored_photo,
+    saving_normal_photo,
 )
-from functions.main_app.determin_location import Location, RegistrationStrategy
-from keyboards.default.get_location_default import location_keyboard
-from keyboards.default.get_photo import get_photo_from_profile
-from keyboards.inline.cancel_inline import cancel_registration_keyboard
-from keyboards.inline.change_data_profile_inline import gender_keyboard
-from keyboards.inline.registration_inline import second_registration_keyboard
-from loader import dp, client, _, logger
-from states.reg_state import RegData
-from utils.NudeNet.predictor import classification_image, generate_censored_image
-from utils.YandexMap.exceptions import NothingFound
-from utils.db_api import db_commands
-from utils.misc.profanityFilter import censored_message
+from functions.main_app.determin_location import (
+    Location,
+    RegistrationStrategy,
+)
+from keyboards.default.get_location_default import (
+    location_keyboard,
+)
+from keyboards.default.get_photo import (
+    get_photo_from_profile,
+)
+from keyboards.inline.cancel_inline import (
+    cancel_registration_keyboard,
+)
+from keyboards.inline.change_data_profile_inline import (
+    gender_keyboard,
+)
+from keyboards.inline.registration_inline import (
+    second_registration_keyboard,
+)
+from loader import (
+    _,
+    client,
+    dp,
+    logger,
+)
+from states.reg_state import (
+    RegData,
+)
+from utils.NudeNet.predictor import (
+    classification_image,
+    generate_censored_image,
+)
+from utils.YandexMap.exceptions import (
+    NothingFound,
+)
+from utils.db_api import (
+    db_commands,
+)
+from utils.misc.profanityFilter import (
+    censored_message,
+)
 
 
 @dp.callback_query_handler(text="registration")
@@ -256,16 +295,21 @@ async def get_photo(message: types.Message, state: FSMContext) -> None:
     out_path = f"photos/{censored_file_name}"
     await message.photo[-1].download(path)
     data = await classification_image(path)
-    safe, unsafe = data.get(path).get("safe"), data.get(path).get("unsafe")
-    if safe > 0.8 and unsafe < 0.2:
-        await saving_normal_photo(
-            message=message, telegram_id=telegram_id, file_id=file_id, state=state
-        )
-        os.remove(path)
-    else:
+
+    exposed_labels = [
+        "FEMALE_GENITALIA_EXPOSED",
+        "MALE_GENITALIA_EXPOSED",
+        "FEMALE_BREAST_EXPOSED",
+    ]
+    if any(item["class"] in exposed_labels for item in data):
         await generate_censored_image(image_path=path, out_path=out_path)
         await saving_censored_photo(
             message=message, telegram_id=telegram_id, state=state, out_path=out_path
         )
         os.remove(path)
         os.remove(out_path)
+    else:
+        await saving_normal_photo(
+            message=message, telegram_id=telegram_id, file_id=file_id, state=state
+        )
+        os.remove(path)

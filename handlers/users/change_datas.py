@@ -2,30 +2,65 @@ import asyncio
 import os
 import re
 
-from aiogram import types
-from aiogram.dispatcher import FSMContext
-from aiogram.types import CallbackQuery, ContentType
-from aiogram.utils.markdown import quote_html
-from django.db import DataError
+from aiogram import (
+    types,
+)
+from aiogram.dispatcher import (
+    FSMContext,
+)
+from aiogram.types import (
+    CallbackQuery,
+    ContentType,
+)
+from aiogram.utils.markdown import (
+    quote_html,
+)
+from django.db import (
+    DataError,
+)
 
 from functions.main_app.auxiliary_tools import (
-    update_normal_photo,
     saving_censored_photo,
+    update_normal_photo,
 )
-from functions.main_app.determin_location import Location, RegistrationStrategy
-from handlers.users.back import delete_message
-from keyboards.default.get_photo import get_photo_from_profile
+from functions.main_app.determin_location import (
+    Location,
+    RegistrationStrategy,
+)
+from handlers.users.back import (
+    delete_message,
+)
+from keyboards.default.get_photo import (
+    get_photo_from_profile,
+)
 from keyboards.inline.change_data_profile_inline import (
     change_info_keyboard,
     gender_keyboard,
 )
-from keyboards.inline.main_menu_inline import start_keyboard
-from loader import dp, _, logger
-from states.new_data_state import NewData
-from utils.NudeNet.predictor import classification_image, generate_censored_image
-from utils.YandexMap.exceptions import NothingFound
-from utils.db_api import db_commands
-from utils.misc.profanityFilter import censored_message
+from keyboards.inline.main_menu_inline import (
+    start_keyboard,
+)
+from loader import (
+    _,
+    dp,
+    logger,
+)
+from states.new_data_state import (
+    NewData,
+)
+from utils.NudeNet.predictor import (
+    classification_image,
+    generate_censored_image,
+)
+from utils.YandexMap.exceptions import (
+    NothingFound,
+)
+from utils.db_api import (
+    db_commands,
+)
+from utils.misc.profanityFilter import (
+    censored_message,
+)
 
 
 @dp.callback_query_handler(text="change_profile")
@@ -200,19 +235,15 @@ async def update_photo_complete(message: types.Message, state: FSMContext) -> No
     file_id = message.photo[-1].file_id
     censored_file_name = f"{str(message.from_user.id)}_censored.jpg"
     path, out_path = f"photos/{file_name}", f"photos/{censored_file_name}"
+
     await message.photo[-1].download(path)
     data = await classification_image(path)
-    safe, unsafe = data.get(path).get("safe"), data.get(path).get("unsafe")
-    if safe > 0.6 or unsafe < 0.2:
-        await update_normal_photo(
-            message=message,
-            telegram_id=telegram_id,
-            file_id=file_id,
-            state=state,
-            markup=markup,
-        )
-        os.remove(path)
-    else:
+    exposed_labels = [
+        "FEMALE_GENITALIA_EXPOSED",
+        "MALE_GENITALIA_EXPOSED",
+        "FEMALE_BREAST_EXPOSED",
+    ]
+    if any(item["class"] in exposed_labels for item in data):
         await generate_censored_image(image_path=path, out_path=out_path)
         await saving_censored_photo(
             message=message,
@@ -225,6 +256,15 @@ async def update_photo_complete(message: types.Message, state: FSMContext) -> No
         os.remove(path)
         await asyncio.sleep(0.2)
         os.remove(out_path)
+    else:
+        await update_normal_photo(
+            message=message,
+            telegram_id=telegram_id,
+            file_id=file_id,
+            state=state,
+            markup=markup,
+        )
+        os.remove(path)
 
 
 @dp.callback_query_handler(text="about_me")
