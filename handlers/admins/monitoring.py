@@ -1,11 +1,26 @@
-from aiogram import types
+from aiogram import (
+    types,
+)
 
-from filters.IsAdminFilter import IsAdmin
-from functions.dating.create_forms_funcs import monitoring_questionnaire
-from keyboards.inline.admin_inline import start_monitoring_keyboard
-from keyboards.inline.questionnaires_inline import action_keyboard_monitoring
-from loader import dp, _
-from utils.db_api import db_commands
+from filters.IsAdminFilter import (
+    IsAdmin,
+)
+from functions.dating.create_forms_funcs import (
+    monitoring_questionnaire,
+)
+from keyboards.inline.admin_inline import (
+    start_monitoring_keyboard,
+)
+from keyboards.inline.questionnaires_inline import (
+    action_keyboard_monitoring,
+)
+from loader import (
+    _,
+    dp,
+)
+from utils.db_api import (
+    db_commands,
+)
 
 
 @dp.message_handler(IsAdmin(), text="👀 Мониторинг")
@@ -24,7 +39,7 @@ async def confirm_send_monitoring(call: types.CallbackQuery) -> None:
         pass
 
 
-# TODO: мониторинг: IndexError
+# FIXME: мониторинг: IndexError
 @dp.callback_query_handler(action_keyboard_monitoring.filter(action="ban"))
 async def ban_form_owner(call: types.CallbackQuery) -> None:
     target_id = call.data.split(":")[2]
