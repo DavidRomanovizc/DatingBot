@@ -1,15 +1,28 @@
-from aiogram.dispatcher import FSMContext
-from aiogram.types import Message, CallbackQuery
+from aiogram.dispatcher import (
+    FSMContext,
+)
+from aiogram.types import (
+    CallbackQuery,
+    Message,
+)
 
-from filters.IsAdminFilter import IsAdmin
+from filters.IsAdminFilter import (
+    IsAdmin,
+)
 from keyboards.admin.inline.customers import (
-    user_manipulation,
     manipulation_callback,
     user_blocking_keyboard,
+    user_manipulation,
 )
-from keyboards.admin.inline.reply_menu import admin_cancel_keyboard
-from loader import dp
-from utils.db_api import db_commands
+from keyboards.admin.inline.reply_menu import (
+    admin_cancel_keyboard,
+)
+from loader import (
+    dp,
+)
+from utils.db_api import (
+    db_commands,
+)
 
 
 @dp.message_handler(IsAdmin(), commands="users", state="*")

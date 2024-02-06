@@ -1,13 +1,29 @@
 import asyncio
 
-from aiogram import types
-from aiogram.types import CallbackQuery, ReplyKeyboardRemove
+from aiogram import (
+    types,
+)
+from aiogram.types import (
+    CallbackQuery,
+    ReplyKeyboardRemove,
+)
 
-from handlers.users.back import delete_message
-from keyboards.default.get_contact_default import contact_keyboard
-from keyboards.inline.main_menu_inline import start_keyboard
-from loader import dp, _
-from utils.db_api import db_commands
+from handlers.users.back import (
+    delete_message,
+)
+from keyboards.default.get_contact_default import (
+    contact_keyboard,
+)
+from keyboards.inline.main_menu_inline import (
+    start_keyboard,
+)
+from loader import (
+    _,
+    dp,
+)
+from utils.db_api import (
+    db_commands,
+)
 
 
 @dp.callback_query_handler(text="verification")

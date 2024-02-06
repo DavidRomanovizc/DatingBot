@@ -1,2 +1,4 @@
-from . import mailing
-from . import advertisement
+from . import (
+    advertisement,
+    mailing,
+)

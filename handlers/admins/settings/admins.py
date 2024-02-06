@@ -1,13 +1,34 @@
-from aiogram.dispatcher import FSMContext
-from aiogram.types import CallbackQuery, Message
+from aiogram.dispatcher import (
+    FSMContext,
+)
+from aiogram.types import (
+    CallbackQuery,
+    Message,
+)
 
-from data.config import load_config, change_env
-from filters.IsAdminFilter import IsAdmin
-from keyboards.admin.inline.reply_menu import settings_keyboard, admin_cancel_keyboard
-from keyboards.admin.inline.setting import add_admins_keyboard
-from loader import dp
-from states.admins import AdminsActions
-from utils.set_bot_commands import set_default_commands
+from data.config import (
+    change_env,
+    load_config,
+)
+from filters.IsAdminFilter import (
+    IsAdmin,
+)
+from keyboards.admin.inline.reply_menu import (
+    admin_cancel_keyboard,
+    settings_keyboard,
+)
+from keyboards.admin.inline.setting import (
+    add_admins_keyboard,
+)
+from loader import (
+    dp,
+)
+from states.admins import (
+    AdminsActions,
+)
+from utils.set_bot_commands import (
+    set_default_commands,
+)
 
 
 @dp.callback_query_handler(IsAdmin(), text="admin:admins")

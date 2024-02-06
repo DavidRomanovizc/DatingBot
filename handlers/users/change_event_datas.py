@@ -1,12 +1,26 @@
 import asyncio
 
-from aiogram.dispatcher import FSMContext
-from aiogram.types import CallbackQuery, Message
+from aiogram.dispatcher import (
+    FSMContext,
+)
+from aiogram.types import (
+    CallbackQuery,
+    Message,
+)
 
-from handlers.users.back import delete_message
-from keyboards.inline.poster_inline import change_datas_keyboard
-from loader import dp, _
-from utils.db_api import db_commands
+from handlers.users.back import (
+    delete_message,
+)
+from keyboards.inline.poster_inline import (
+    change_datas_keyboard,
+)
+from loader import (
+    _,
+    dp,
+)
+from utils.db_api import (
+    db_commands,
+)
 
 
 @dp.callback_query_handler(text="change_event_data")

@@ -1,10 +1,24 @@
-from aiogram.dispatcher import FSMContext
-from aiogram.types import Message, CallbackQuery
+from aiogram.dispatcher import (
+    FSMContext,
+)
+from aiogram.types import (
+    CallbackQuery,
+    Message,
+)
 
-from filters.IsAdminFilter import IsAdmin
-from keyboards.admin.inline.mailing import mailing_menu
-from keyboards.inline.cancel_inline import cancel_keyboard
-from loader import dp, _
+from filters.IsAdminFilter import (
+    IsAdmin,
+)
+from keyboards.admin.inline.mailing import (
+    mailing_menu,
+)
+from keyboards.inline.cancel_inline import (
+    cancel_keyboard,
+)
+from loader import (
+    _,
+    dp,
+)
 
 
 @dp.message_handler(IsAdmin(), commands="ad", state="*")

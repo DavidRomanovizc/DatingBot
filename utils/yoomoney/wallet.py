@@ -1,10 +1,12 @@
-from utils.yoomoney.request import send_request
+from utils.yoomoney.request import (
+    send_request,
+)
 from utils.yoomoney.types import (
     AccountInfo,
-    OperationDetails,
     Operation,
-    PaymentSource,
+    OperationDetails,
     PaymentForm,
+    PaymentSource,
 )
 
 

@@ -1,9 +1,15 @@
-from unittest.mock import AsyncMock
+from unittest.mock import (
+    AsyncMock,
+)
 
+from aiogram.utils.markdown import (
+    hcode,
+)
 import pytest
-from aiogram.utils.markdown import hcode
 
-from handlers.echo_handler import bot_echo
+from handlers.echo_handler import (
+    bot_echo,
+)
 
 
 @pytest.mark.asyncio

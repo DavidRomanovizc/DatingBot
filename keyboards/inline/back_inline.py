@@ -1,6 +1,11 @@
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+)
 
-from loader import _
+from loader import (
+    _,
+)
 
 
 async def only_back_keyboard(menu: str = "start_menu") -> InlineKeyboardMarkup:

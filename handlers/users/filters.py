@@ -1,19 +1,47 @@
 import asyncio
 import re
 
-from aiogram import types
-from aiogram.dispatcher import FSMContext
-from aiogram.types import CallbackQuery
-from aiogram.utils.exceptions import BadRequest
+from aiogram import (
+    types,
+)
+from aiogram.dispatcher import (
+    FSMContext,
+)
+from aiogram.types import (
+    CallbackQuery,
+)
+from aiogram.utils.exceptions import (
+    BadRequest,
+)
 
-from functions.main_app.auxiliary_tools import choice_gender, show_dating_filters
-from functions.main_app.determin_location import Location, FiltersStrategy
-from handlers.users.back import delete_message
-from keyboards.inline.change_data_profile_inline import gender_keyboard
-from keyboards.inline.filters_inline import filters_keyboard, event_filters_keyboard
-from loader import dp, _
-from utils.YandexMap.exceptions import NothingFound
-from utils.db_api import db_commands
+from functions.main_app.auxiliary_tools import (
+    choice_gender,
+    show_dating_filters,
+)
+from functions.main_app.determin_location import (
+    FiltersStrategy,
+    Location,
+)
+from handlers.users.back import (
+    delete_message,
+)
+from keyboards.inline.change_data_profile_inline import (
+    gender_keyboard,
+)
+from keyboards.inline.filters_inline import (
+    event_filters_keyboard,
+    filters_keyboard,
+)
+from loader import (
+    _,
+    dp,
+)
+from utils.YandexMap.exceptions import (
+    NothingFound,
+)
+from utils.db_api import (
+    db_commands,
+)
 
 
 @dp.callback_query_handler(text="filters")

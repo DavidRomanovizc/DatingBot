@@ -1,4 +1,6 @@
-from utils.yoomoney.request import send_request
+from utils.yoomoney.request import (
+    send_request,
+)
 
 AUTH_APP_URL = (
     "https://yoomoney.ru/oauth/authorize?client_id={client_id}&response_type=code"

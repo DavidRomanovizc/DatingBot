@@ -1,8 +1,14 @@
-from typing import List
+from typing import (
+    List,
+)
 
-from async_lru import alru_cache
+from async_lru import (
+    alru_cache,
+)
 
-from utils.db_api import db_commands
+from utils.db_api import (
+    db_commands,
+)
 
 
 @alru_cache

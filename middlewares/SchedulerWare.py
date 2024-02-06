@@ -1,8 +1,19 @@
-from typing import Callable, Dict, Any, Awaitable
+from typing import (
+    Any,
+    Awaitable,
+    Callable,
+    Dict,
+)
 
-from aiogram.dispatcher.middlewares import BaseMiddleware
-from aiogram.types.base import TelegramObject
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from aiogram.dispatcher.middlewares import (
+    BaseMiddleware,
+)
+from aiogram.types.base import (
+    TelegramObject,
+)
+from apscheduler.schedulers.asyncio import (
+    AsyncIOScheduler,
+)
 
 
 class SchedulerMiddleware(BaseMiddleware):

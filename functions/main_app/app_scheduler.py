@@ -1,8 +1,17 @@
-from aiogram.types import Message
+from aiogram.types import (
+    Message,
+)
 
-from keyboards.inline.questionnaires_inline import viewing_ques_keyboard
-from loader import bot, _
-from utils.db_api import db_commands
+from keyboards.inline.questionnaires_inline import (
+    viewing_ques_keyboard,
+)
+from loader import (
+    _,
+    bot,
+)
+from utils.db_api import (
+    db_commands,
+)
 
 
 async def send_message_week(message: Message) -> None:

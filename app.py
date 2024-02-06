@@ -3,18 +3,34 @@ import logging
 import os
 
 import django
-from aiogram import executor
+from aiogram import (
+    executor,
+)
 
 # noinspection PyUnresolvedReferences
 import filters
+
 # noinspection PyUnresolvedReferences
-from django_project.telegrambot.telegrambot import settings
-# noinspection PyUnresolvedReferences
-from loader import dp, db, scheduler
-from utils.db_api.db_commands import reset_view_limit
-from utils.logger import setup_logger
-from utils.notify_admins import AdminNotification
-from utils.set_bot_commands import set_default_commands
+from django_project.telegrambot.telegrambot import (
+    settings,
+)
+
+from loader import (
+    dp,
+    scheduler,
+)
+from utils.db_api.db_commands import (
+    reset_view_limit,
+)
+from utils.logger import (
+    setup_logger,
+)
+from utils.notify_admins import (
+    AdminNotification,
+)
+from utils.set_bot_commands import (
+    set_default_commands,
+)
 
 
 async def on_startup(dispatcher) -> None:

@@ -1,31 +1,49 @@
-from aiogram.dispatcher import FSMContext
-from aiogram.types import CallbackQuery
-from django.db import IntegrityError
+from aiogram.dispatcher import (
+    FSMContext,
+)
+from aiogram.types import (
+    CallbackQuery,
+)
+from django.db import (
+    IntegrityError,
+)
 
-from data.config import load_config
+from data.config import (
+    load_config,
+)
 from functions.dating import (
-    StartFindingSuccess,
-    StartFindingFailure,
-    StartFindingReachLimit,
-    SendReport,
+    ChooseReportReason,
+    DislikeAction,
+    DislikeReciprocity,
     GoBackToViewing,
     LikeAction,
-    DislikeAction,
-    StoppedAction,
-    ChooseReportReason,
     LikeReciprocity,
-    DislikeReciprocity,
+    SendReport,
+    StartFindingFailure,
+    StartFindingReachLimit,
+    StartFindingSuccess,
+    StoppedAction,
 )
-from functions.dating.get_next_user_func import get_next_user
-from functions.main_app.auxiliary_tools import delete_message
+from functions.dating.get_next_user_func import (
+    get_next_user,
+)
+from functions.main_app.auxiliary_tools import (
+    delete_message,
+)
 from keyboards.inline.questionnaires_inline import (
     action_keyboard,
     action_reciprocity_keyboard,
     action_report_keyboard,
 )
-from loader import bot, _, dp
-from loader import logger
-from utils.db_api import db_commands
+from loader import (
+    _,
+    bot,
+    dp,
+    logger,
+)
+from utils.db_api import (
+    db_commands,
+)
 
 
 @dp.callback_query_handler(text="find_ques")

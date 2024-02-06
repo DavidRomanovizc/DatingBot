@@ -1,6 +1,10 @@
-from django.db import models
+from django.db import (
+    models,
+)
 
-from django_project.telegrambot.usersmanage.models.user import User
+from django_project.telegrambot.usersmanage.models.user import (
+    User,
+)
 
 
 class ViewedProfile(models.Model):

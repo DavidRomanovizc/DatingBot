@@ -1,18 +1,37 @@
 import asyncio
 
-from aiogram import types
-from aiogram.dispatcher import FSMContext
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
-from aiogram.utils.markdown import escape_md, quote_html
-
-from filters.IsAdminFilter import IsAdmin
-from keyboards.admin.inline.mailing import (
-    confirm_with_button_keyboard,
-    add_buttons_keyboard,
+from aiogram import (
+    types,
 )
-from loader import bot, _, dp
-from loader import logger
-from utils.db_api import db_commands
+from aiogram.dispatcher import (
+    FSMContext,
+)
+from aiogram.types import (
+    CallbackQuery,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+)
+from aiogram.utils.markdown import (
+    escape_md,
+    quote_html,
+)
+
+from filters.IsAdminFilter import (
+    IsAdmin,
+)
+from keyboards.admin.inline.mailing import (
+    add_buttons_keyboard,
+    confirm_with_button_keyboard,
+)
+from loader import (
+    _,
+    bot,
+    dp,
+    logger,
+)
+from utils.db_api import (
+    db_commands,
+)
 
 
 @dp.message_handler(IsAdmin(), content_types=["text"], state="broadcast_get_content")

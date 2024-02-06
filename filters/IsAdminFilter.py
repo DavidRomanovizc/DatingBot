@@ -1,7 +1,13 @@
-from aiogram import types
-from aiogram.dispatcher.filters import BoundFilter
+from aiogram import (
+    types,
+)
+from aiogram.dispatcher.filters import (
+    BoundFilter,
+)
 
-from data.config import load_config
+from data.config import (
+    load_config,
+)
 
 
 class IsAdmin(BoundFilter):

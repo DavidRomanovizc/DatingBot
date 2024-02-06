@@ -1,14 +1,33 @@
 import uuid
 
-from aiogram.dispatcher import FSMContext
-from aiogram.types import CallbackQuery
+from aiogram.dispatcher import (
+    FSMContext,
+)
+from aiogram.types import (
+    CallbackQuery,
+)
 
-from data.config import load_config
-from keyboards.inline.main_menu_inline import start_keyboard
-from keyboards.inline.payments_inline import yoomoney_keyboard, payment_menu_keyboard
-from loader import dp, _, wallet
-from utils.db_api import db_commands
-from utils.yoomoney.types import PaymentSource
+from data.config import (
+    load_config,
+)
+from keyboards.inline.main_menu_inline import (
+    start_keyboard,
+)
+from keyboards.inline.payments_inline import (
+    payment_menu_keyboard,
+    yoomoney_keyboard,
+)
+from loader import (
+    _,
+    dp,
+    wallet,
+)
+from utils.db_api import (
+    db_commands,
+)
+from utils.yoomoney.types import (
+    PaymentSource,
+)
 
 
 @dp.callback_query_handler(text="unban")

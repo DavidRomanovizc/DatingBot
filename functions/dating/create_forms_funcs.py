@@ -1,15 +1,28 @@
 import random
 import secrets
-from typing import Optional
+from typing import (
+    Optional,
+)
 
-import numpy as np
-from aiogram.types import CallbackQuery
-from aiogram.utils.exceptions import BadRequest
+from aiogram.types import (
+    CallbackQuery,
+)
+from aiogram.utils.exceptions import (
+    BadRequest,
+)
 
-from functions.dating.get_next_user_func import get_next_user
-from functions.dating.send_form_func import send_questionnaire
-from keyboards.inline.questionnaires_inline import questionnaires_keyboard
-from loader import bot
+from functions.dating.get_next_user_func import (
+    get_next_user,
+)
+from functions.dating.send_form_func import (
+    send_questionnaire,
+)
+from keyboards.inline.questionnaires_inline import (
+    questionnaires_keyboard,
+)
+from loader import (
+    bot,
+)
 
 
 async def create_questionnaire(
@@ -55,6 +68,6 @@ async def monitoring_questionnaire(call: CallbackQuery) -> None:
 
 async def rand_user_list(call: CallbackQuery) -> int:
     user_list = await get_next_user(call.from_user.id)
-    random_user_list = [np.random.choice(user_list) for _ in range(len(user_list))]
+    random_user_list = [random.choice(user_list) for _ in range(len(user_list))]
     random_user = secrets.choice(random_user_list)
     return random_user

@@ -1,15 +1,17 @@
-from . import start_handler
-from . import verification
-from . import registration
-from . import change_datas
-from . import change_event_datas
-from . import user_profile
-from . import brandbook_handler
-from . import buy_unban
-from . import view_ques
-from . import view_event
-from . import event_list
-from . import event_handler
-from . import support_handler
-from . import filters
-from . import back
+from . import (
+    back,
+    brandbook,
+    buy_unban,
+    change_datas,
+    change_event_datas,
+    event,
+    event_list,
+    filters,
+    registration,
+    start,
+    support,
+    user_profile,
+    verification,
+    view_event,
+    view_ques,
+)

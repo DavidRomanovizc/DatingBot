@@ -1,14 +1,20 @@
-from typing import Union
-
-from aiogram.types import (
-    InlineKeyboardMarkup,
-    InlineKeyboardButton,
-    Message,
-    CallbackQuery,
+from typing import (
+    Union,
 )
 
-from loader import _
-from utils.db_api import db_commands
+from aiogram.types import (
+    CallbackQuery,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    Message,
+)
+
+from loader import (
+    _,
+)
+from utils.db_api import (
+    db_commands,
+)
 
 
 async def poster_keyboard(obj: Union[Message, CallbackQuery]) -> InlineKeyboardMarkup:

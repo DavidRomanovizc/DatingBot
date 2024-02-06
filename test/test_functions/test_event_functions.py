@@ -1,13 +1,27 @@
-from datetime import datetime, timedelta
-from typing import NoReturn
-from unittest import mock
-from unittest.mock import AsyncMock
-from unittest.mock import Mock, patch
+from datetime import (
+    datetime,
+    timedelta,
+)
+from typing import (
+    NoReturn,
+)
+from unittest import (
+    mock,
+)
+from unittest.mock import (
+    AsyncMock,
+    Mock,
+    patch,
+)
 
 import pytest
 
-from functions.event import extra_features
-from utils.db_api import db_commands
+from functions.event import (
+    extra_features,
+)
+from utils.db_api import (
+    db_commands,
+)
 
 
 @pytest.mark.asyncio

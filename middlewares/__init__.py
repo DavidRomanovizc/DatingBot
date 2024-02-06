@@ -1,11 +1,29 @@
-from loader import dp, scheduler
-from .LinkCheck import LinkCheckMiddleware
-from .SchedulerWare import SchedulerMiddleware
-from .AgentSupport import SupportMiddleware
-from .BanCheck import BanMiddleware
-from .IsMaintenanceCheck import IsMaintenance
-from .Throttling import ThrottlingMiddleware
-from .Log import LogMiddleware
+from loader import (
+    dp,
+    scheduler,
+)
+
+from .AgentSupport import (
+    SupportMiddleware,
+)
+from .BanCheck import (
+    BanMiddleware,
+)
+from .IsMaintenanceCheck import (
+    IsMaintenance,
+)
+from .LinkCheck import (
+    LinkCheckMiddleware,
+)
+from .Log import (
+    LogMiddleware,
+)
+from .SchedulerWare import (
+    SchedulerMiddleware,
+)
+from .Throttling import (
+    ThrottlingMiddleware,
+)
 
 if __name__ == "middlewares":
     dp.middleware.setup(ThrottlingMiddleware())

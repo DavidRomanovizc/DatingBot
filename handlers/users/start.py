@@ -1,18 +1,35 @@
 import aiogram
-from aiogram import types
-from aiogram.dispatcher.filters.builtin import CommandStart
-from aiogram.types import CallbackQuery
-from aiogram.utils.exceptions import BadRequest
+from aiogram import (
+    types,
+)
+from aiogram.dispatcher.filters.builtin import (
+    CommandStart,
+)
+from aiogram.types import (
+    CallbackQuery,
+)
+from aiogram.utils.exceptions import (
+    BadRequest,
+)
 
-from filters import IsPrivate
+from filters import (
+    IsPrivate,
+)
 from functions.main_app.auxiliary_tools import (
-    registration_menu,
     check_user_in_db,
     delete_message,
+    registration_menu,
 )
-from keyboards.inline.language_inline import language_keyboard
-from loader import dp, _
-from utils.db_api import db_commands
+from keyboards.inline.language_inline import (
+    language_keyboard,
+)
+from loader import (
+    _,
+    dp,
+)
+from utils.db_api import (
+    db_commands,
+)
 
 
 @dp.message_handler(IsPrivate(), CommandStart())
@@ -77,6 +94,7 @@ language_menus = {
 }
 
 
+# noinspection PyUnresolvedReferences,PyUnboundLocalVariable,PyShadowingNames
 def register_callbacks(callback_dict, callback_function):
     for callback_text, value in callback_dict.items():
         dp.callback_query_handler(text=callback_text)(

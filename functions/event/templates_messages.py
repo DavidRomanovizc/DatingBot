@@ -1,15 +1,24 @@
-from typing import Union, Optional
+from typing import (
+    Optional,
+    Union,
+)
 
-from aiogram import Bot
-from aiogram.types import CallbackQuery
+from aiogram import (
+    Bot,
+)
+from aiogram.types import (
+    CallbackQuery,
+)
 
 from keyboards.inline.poster_inline import (
+    cancel_event_keyboard,
     create_moderate_ik,
     event_settings_keyboard,
     view_event_keyboard,
-    cancel_event_keyboard,
 )
-from loader import _
+from loader import (
+    _,
+)
 
 
 class TemplateEvent:

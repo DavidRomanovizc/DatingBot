@@ -1,12 +1,24 @@
 import calendar
+from contextlib import (
+    suppress,
+)
+from datetime import (
+    datetime,
+    timedelta,
+)
 import locale
-from contextlib import suppress
-from datetime import datetime, timedelta
 
-from aiogram.types import CallbackQuery
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from aiogram.utils.callback_data import CallbackData
-from aiogram.utils.exceptions import MessageNotModified
+from aiogram.types import (
+    CallbackQuery,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+)
+from aiogram.utils.callback_data import (
+    CallbackData,
+)
+from aiogram.utils.exceptions import (
+    MessageNotModified,
+)
 
 locale.setlocale(locale.LC_TIME, "ru_RU.UTF-8")
 

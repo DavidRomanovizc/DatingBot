@@ -1,14 +1,32 @@
 import asyncio
-from typing import Union, NoReturn
+from typing import (
+    NoReturn,
+    Union,
+)
 
-from aiogram import types
-from aiogram.dispatcher.handler import CancelHandler
-from aiogram.dispatcher.middlewares import BaseMiddleware
+from aiogram import (
+    types,
+)
+from aiogram.dispatcher.handler import (
+    CancelHandler,
+)
+from aiogram.dispatcher.middlewares import (
+    BaseMiddleware,
+)
 
-from data.config import load_config
-from keyboards.inline.necessary_links_inline import necessary_links_keyboard
-from loader import bot, _
-from utils.db_api import db_commands
+from data.config import (
+    load_config,
+)
+from keyboards.inline.necessary_links_inline import (
+    necessary_links_keyboard,
+)
+from loader import (
+    _,
+    bot,
+)
+from utils.db_api import (
+    db_commands,
+)
 
 
 class LinkCheckMiddleware(BaseMiddleware):

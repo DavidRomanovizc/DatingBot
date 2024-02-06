@@ -1,9 +1,20 @@
-from aiogram.dispatcher.filters import Command
-from aiogram.types import Message
+from aiogram.dispatcher.filters import (
+    Command,
+)
+from aiogram.types import (
+    Message,
+)
 
-from filters.FiltersChat import IsGroup
-from filters.IsAdminFilter import IsAdmin
-from loader import dp, _
+from filters.FiltersChat import (
+    IsGroup,
+)
+from filters.IsAdminFilter import (
+    IsAdmin,
+)
+from loader import (
+    _,
+    dp,
+)
 
 
 @dp.message_handler(IsGroup(), IsAdmin(), Command("start"))

@@ -1,13 +1,29 @@
 import asyncio
 
-from aiogram.types import CallbackQuery
+from aiogram.types import (
+    CallbackQuery,
+)
 
-from data.config import load_config
-from filters.IsAdminFilter import IsAdmin
-from keyboards.inline.main_menu_inline import start_keyboard
-from keyboards.inline.poster_inline import poster_keyboard
-from loader import dp, bot, _
-from utils.db_api import db_commands
+from data.config import (
+    load_config,
+)
+from filters.IsAdminFilter import (
+    IsAdmin,
+)
+from keyboards.inline.main_menu_inline import (
+    start_keyboard,
+)
+from keyboards.inline.poster_inline import (
+    poster_keyboard,
+)
+from loader import (
+    _,
+    bot,
+    dp,
+)
+from utils.db_api import (
+    db_commands,
+)
 
 
 # FIXME: Broken handler

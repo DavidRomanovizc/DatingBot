@@ -1,7 +1,15 @@
-from aiohttp import ClientSession, ClientResponse
-from aiohttp.client_exceptions import ContentTypeError
+from aiohttp import (
+    ClientResponse,
+    ClientSession,
+)
+from aiohttp.client_exceptions import (
+    ContentTypeError,
+)
 
-from utils.yoomoney.exceptions import UnresolvedRequestMethod, BadResponse
+from utils.yoomoney.exceptions import (
+    BadResponse,
+    UnresolvedRequestMethod,
+)
 
 ALLOWED_METHODS = ("post", "get")
 

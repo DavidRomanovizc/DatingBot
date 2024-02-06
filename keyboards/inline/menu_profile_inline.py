@@ -1,6 +1,11 @@
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+)
 
-from loader import _
+from loader import (
+    _,
+)
 
 
 async def get_profile_keyboard(verification) -> InlineKeyboardMarkup:
@@ -10,8 +15,6 @@ async def get_profile_keyboard(verification) -> InlineKeyboardMarkup:
             text=_("✅ Верификация"), callback_data="verification"
         )
         markup.row(verification_btn)
-    # sub_manage = InlineKeyboardButton("🔒 Управление подпиской", callback_data="sub_manage")
-    # refill_balance = InlineKeyboardButton("💰 Пополнить", callback_data="refill_balance")
     edit_profile = InlineKeyboardButton(
         text=_("🖊️ Изменить"), callback_data="change_profile"
     )

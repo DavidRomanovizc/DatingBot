@@ -1,7 +1,9 @@
-from better_profanity import profanity
+from better_profanity import (
+    profanity,
+)
 
 
-def censored_message(message) -> str:
+def censored_message(message: str) -> str:
     """
     Get censored message.
 

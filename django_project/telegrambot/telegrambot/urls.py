@@ -1,7 +1,13 @@
-from django.contrib import admin
-from django.urls import path
+from django.contrib import (
+    admin,
+)
+from django.urls import (
+    path,
+)
 
-from django_project.telegrambot.usersmanage import views
+from django_project.telegrambot.usersmanage import (
+    views,
+)
 
 urlpatterns = [
     path("admin/", admin.site.urls),

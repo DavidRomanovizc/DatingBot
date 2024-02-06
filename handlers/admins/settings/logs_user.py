@@ -1,11 +1,28 @@
-from aiofiles import os
-from aiogram.types import Message, CallbackQuery, InputFile
+from aiofiles import (
+    os,
+)
+from aiogram.types import (
+    CallbackQuery,
+    InputFile,
+    Message,
+)
 
-from filters.IsAdminFilter import IsAdmin
-from functions.main_app.auxiliary_tools import dump_users_to_file, backup_configs
-from handlers.users.back import delete_message
-from keyboards.admin.inline.reply_menu import logs_keyboard
-from loader import dp
+from filters.IsAdminFilter import (
+    IsAdmin,
+)
+from functions.main_app.auxiliary_tools import (
+    backup_configs,
+    dump_users_to_file,
+)
+from handlers.users.back import (
+    delete_message,
+)
+from keyboards.admin.inline.reply_menu import (
+    logs_keyboard,
+)
+from loader import (
+    dp,
+)
 
 
 @dp.message_handler(IsAdmin(), commands="logs", state="*")

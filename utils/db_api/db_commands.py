@@ -1,25 +1,31 @@
 import os
 
-from asgiref.sync import sync_to_async
-
-os.environ.setdefault(
-    "DJANGO_SETTINGS_MODULE", "django_project.telegrambot.telegrambot.settings"
-)
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "django_project.telegrambot.telegrambot.settings")
 import django
 
 django.setup()
+from asgiref.sync import (
+    sync_to_async,
+)
 from django.db.models import (
     F,
     Q,
 )
-from django.db.models.expressions import CombinedExpression, Value
+
+
+
+
+from django.db.models.expressions import (
+    CombinedExpression,
+    Value,
+)
 
 from django_project.telegrambot.usersmanage.models import (
-    UserMeetings,
-    SettingModel,
-    ViewedProfile,
-    User,
     NecessaryLink,
+    SettingModel,
+    User,
+    UserMeetings,
+    ViewedProfile,
 )
 
 
@@ -232,7 +238,9 @@ def select_setting_tech_work():
 
 @sync_to_async
 def check_returned_event_id(telegram_id: int, id_of_events_seen: int) -> bool:
-    """Function that checks if the given event_id was previously returned for the given telegram_id."""
+    """
+    Function that checks if the given event_id was previously returned for the given telegram_id.
+    """
     returned_event = User.objects.filter(telegram_id=telegram_id).first()
     event_list = returned_event.id_of_events_seen
 

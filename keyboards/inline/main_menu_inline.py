@@ -1,15 +1,23 @@
-from typing import Union
+from typing import (
+    Union,
+)
 
 from aiogram.types import (
-    InlineKeyboardMarkup,
-    InlineKeyboardButton,
     CallbackQuery,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
     Message,
 )
 
-from data.config import load_config
-from loader import _
-from utils.db_api import db_commands
+from data.config import (
+    load_config,
+)
+from loader import (
+    _,
+)
+from utils.db_api import (
+    db_commands,
+)
 
 
 async def start_keyboard(

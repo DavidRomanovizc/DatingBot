@@ -1,8 +1,15 @@
-from typing import Tuple, Any
+from typing import (
+    Any,
+    Tuple,
+)
 
 import aiohttp
 
-from utils.YandexMap.exceptions import UnexpectedResponse, InvalidKey, NothingFound
+from utils.YandexMap.exceptions import (
+    InvalidKey,
+    NothingFound,
+    UnexpectedResponse,
+)
 
 
 class Client:

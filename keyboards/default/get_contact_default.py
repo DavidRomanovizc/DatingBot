@@ -1,6 +1,11 @@
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import (
+    KeyboardButton,
+    ReplyKeyboardMarkup,
+)
 
-from loader import _
+from loader import (
+    _,
+)
 
 
 async def contact_keyboard() -> ReplyKeyboardMarkup:

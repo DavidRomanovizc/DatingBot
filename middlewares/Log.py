@@ -1,7 +1,13 @@
-from aiogram import types
-from aiogram.dispatcher.middlewares import BaseMiddleware
+from aiogram import (
+    types,
+)
+from aiogram.dispatcher.middlewares import (
+    BaseMiddleware,
+)
 
-from loader import logger
+from loader import (
+    logger,
+)
 
 
 class LogMiddleware(BaseMiddleware):

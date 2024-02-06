@@ -1,7 +1,12 @@
 import csv
-from django.http import HttpResponse
 
-from django_project.telegrambot.usersmanage.models.user import User
+from django.http import (
+    HttpResponse,
+)
+
+from django_project.telegrambot.usersmanage.models.user import (
+    User,
+)
 
 
 def export_users_csv(request):

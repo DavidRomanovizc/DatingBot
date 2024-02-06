@@ -1,7 +1,14 @@
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from aiogram.utils.callback_data import CallbackData
+from aiogram.types import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+)
+from aiogram.utils.callback_data import (
+    CallbackData,
+)
 
-from loader import _
+from loader import (
+    _,
+)
 
 action_keyboard = CallbackData("questionnaire", "action", "target_id")
 action_keyboard_monitoring = CallbackData(

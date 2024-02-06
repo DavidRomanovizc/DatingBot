@@ -1,9 +1,14 @@
+from datetime import (
+    datetime,
+    timedelta,
+)
 import random
-from datetime import timedelta, datetime
 
 import psycopg2
 
-from data.config import load_config
+from data.config import (
+    load_config,
+)
 
 db_params = {
     "host": load_config().db.host,

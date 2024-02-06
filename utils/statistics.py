@@ -1,7 +1,13 @@
-from aiogram.types import Message
+from aiogram.types import (
+    Message,
+)
 
-from loader import _
-from utils.db_api import db_commands
+from loader import (
+    _,
+)
+from utils.db_api import (
+    db_commands,
+)
 
 
 async def get_statistics(message: Message):

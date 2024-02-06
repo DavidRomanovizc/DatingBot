@@ -1,10 +1,11 @@
 import os
-import sys
-from pathlib import Path
+from pathlib import (
+    Path,
+)
 
-from data.config import load_config
-
-sys.path.append("D:\\Code\\DatingBot")
+from data.config import (
+    load_config,
+)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 

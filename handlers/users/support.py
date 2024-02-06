@@ -1,18 +1,32 @@
-from aiogram import types
-from aiogram.dispatcher import FSMContext
-from aiogram.utils.exceptions import BadRequest
+from aiogram import (
+    types,
+)
+from aiogram.dispatcher import (
+    FSMContext,
+)
+from aiogram.utils.exceptions import (
+    BadRequest,
+)
 
-from handlers.users.back import delete_message
-from keyboards.inline.main_menu_inline import start_keyboard
+from handlers.users.back import (
+    delete_message,
+)
+from keyboards.inline.main_menu_inline import (
+    start_keyboard,
+)
 from keyboards.inline.support_inline import (
-    support_keyboard,
-    support_callback,
-    check_support_available,
-    get_support_manager,
     cancel_support,
     cancel_support_callback,
+    check_support_available,
+    get_support_manager,
+    support_callback,
+    support_keyboard,
 )
-from loader import dp, bot, _
+from loader import (
+    _,
+    bot,
+    dp,
+)
 
 
 @dp.callback_query_handler(text="support")

@@ -1,11 +1,24 @@
-from aiogram import types
-from aiogram.dispatcher import FSMContext
-from aiogram.types import CallbackQuery
-from aiogram.utils.markdown import hcode
-from loader import logger
+from aiogram import (
+    types,
+)
+from aiogram.dispatcher import (
+    FSMContext,
+)
+from aiogram.types import (
+    CallbackQuery,
+)
+from aiogram.utils.markdown import (
+    hcode,
+)
 
-from keyboards.inline.main_menu_inline import start_keyboard
-from loader import dp, _
+from keyboards.inline.main_menu_inline import (
+    start_keyboard,
+)
+from loader import (
+    _,
+    dp,
+    logger,
+)
 
 
 @dp.message_handler(state=None)

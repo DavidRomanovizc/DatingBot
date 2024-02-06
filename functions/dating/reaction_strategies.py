@@ -1,26 +1,46 @@
+from abc import (
+    ABC,
+    abstractmethod,
+)
 import asyncio
 import random
 import secrets
-from abc import ABC, abstractmethod
 
-from aiogram.dispatcher import FSMContext
-from aiogram.types import CallbackQuery
+from aiogram.dispatcher import (
+    FSMContext,
+)
+from aiogram.types import (
+    CallbackQuery,
+)
 
-from data.config import load_config
+from data.config import (
+    load_config,
+)
 from functions.dating.create_forms_funcs import (
     create_questionnaire,
-    rand_user_list,
     create_questionnaire_reciprocity,
+    rand_user_list,
 )
-from functions.dating.get_next_user_func import get_next_user
-from functions.main_app.auxiliary_tools import get_report_reason
-from keyboards.inline.main_menu_inline import start_keyboard
+from functions.dating.get_next_user_func import (
+    get_next_user,
+)
+from functions.main_app.auxiliary_tools import (
+    get_report_reason,
+)
+from keyboards.inline.main_menu_inline import (
+    start_keyboard,
+)
 from keyboards.inline.questionnaires_inline import (
-    user_link_keyboard,
     report_menu_keyboard,
+    user_link_keyboard,
 )
-from loader import bot, _
-from utils.db_api import db_commands
+from loader import (
+    _,
+    bot,
+)
+from utils.db_api import (
+    db_commands,
+)
 
 
 class ActionStrategy(ABC):

@@ -1,16 +1,29 @@
-from typing import Optional
+from typing import (
+    Optional,
+)
 
-from aiogram.types import InlineKeyboardMarkup
-from aiogram.utils.exceptions import BadRequest
+from aiogram.types import (
+    InlineKeyboardMarkup,
+)
+from aiogram.utils.exceptions import (
+    BadRequest,
+)
 
-from keyboards.admin.inline.customers import user_blocking_keyboard
+from keyboards.admin.inline.customers import (
+    user_blocking_keyboard,
+)
 from keyboards.inline.questionnaires_inline import (
     questionnaires_keyboard,
     reciprocity_keyboard,
 )
-from loader import bot, _
-from loader import logger
-from utils.db_api import db_commands
+from loader import (
+    _,
+    bot,
+    logger,
+)
+from utils.db_api import (
+    db_commands,
+)
 
 
 async def send_questionnaire(

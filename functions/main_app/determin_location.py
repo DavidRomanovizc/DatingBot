@@ -1,14 +1,32 @@
-from abc import ABC, abstractmethod
-from typing import Type
+from abc import (
+    ABC,
+    abstractmethod,
+)
+from typing import (
+    Type,
+)
 
-from aiogram.types import Message
+from aiogram.types import (
+    Message,
+)
 
-from keyboards.inline.registration_inline import confirm_keyboard
-from loader import _, logger
-from loader import client
-from utils.YandexMap.exceptions import NothingFound
-from utils.db_api import db_commands
-from utils.misc.AsyncObj import AsyncObj
+from keyboards.inline.registration_inline import (
+    confirm_keyboard,
+)
+from loader import (
+    _,
+    client,
+    logger,
+)
+from utils.YandexMap.exceptions import (
+    NothingFound,
+)
+from utils.db_api import (
+    db_commands,
+)
+from utils.misc.AsyncObj import (
+    AsyncObj,
+)
 
 
 class UserDataUpdateStrategy(ABC):

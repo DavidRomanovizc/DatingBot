@@ -1,12 +1,29 @@
-from datetime import datetime
-from typing import Union, Optional, List
+from datetime import (
+    datetime,
+)
+from typing import (
+    List,
+    Optional,
+    Union,
+)
 
-from aiogram.types import CallbackQuery
-from aiogram.utils.exceptions import BadRequest
+from aiogram.types import (
+    CallbackQuery,
+)
+from aiogram.utils.exceptions import (
+    BadRequest,
+)
 
-from functions.event.templates_messages import ME
-from loader import bot, _
-from utils.db_api import db_commands
+from functions.event.templates_messages import (
+    ME,
+)
+from loader import (
+    _,
+    bot,
+)
+from utils.db_api import (
+    db_commands,
+)
 
 
 async def add_events_to_user(call: CallbackQuery, event_id: int) -> None:
@@ -54,7 +71,7 @@ async def check_event_date(telegram_id: int) -> None:
 async def create_form(
         form_owner: int, chat_id: int, call: CallbackQuery, view: Union[bool, None] = True
 ) -> None:
-    """ Function that fills the form with text."""
+    """Function that fills the form with text."""
     try:
         owner = await db_commands.select_user_meetings(telegram_id=form_owner)
         document = {

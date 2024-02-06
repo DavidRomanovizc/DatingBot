@@ -1,7 +1,11 @@
 import asyncio
 
-from data.config import load_config
-from utils.yoomoney import authorize_app
+from data.config import (
+    load_config,
+)
+from utils.yoomoney import (
+    authorize_app,
+)
 
 
 async def main():

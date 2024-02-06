@@ -1,4 +1,6 @@
-from . import setting
-from . import admins
-from . import logs_user
-from . import tech_works
+from . import (
+    admins,
+    logs_user,
+    setting,
+    tech_works,
+)

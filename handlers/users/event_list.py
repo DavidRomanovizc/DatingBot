@@ -1,11 +1,23 @@
 import random
 
-from aiogram.dispatcher import FSMContext
-from aiogram.types import CallbackQuery
+from aiogram.dispatcher import (
+    FSMContext,
+)
+from aiogram.types import (
+    CallbackQuery,
+)
 
-from functions.event.extra_features import create_form, get_next_registration
-from loader import dp, _
-from utils.db_api import db_commands
+from functions.event.extra_features import (
+    create_form,
+    get_next_registration,
+)
+from loader import (
+    _,
+    dp,
+)
+from utils.db_api import (
+    db_commands,
+)
 
 
 @dp.callback_query_handler(text="my_appointment")

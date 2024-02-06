@@ -1,24 +1,59 @@
 import datetime
 
-from aiogram import types
-from aiogram.dispatcher import FSMContext
-from aiogram.types import CallbackQuery, Message, ContentType
+from aiogram import (
+    types,
+)
+from aiogram.dispatcher import (
+    FSMContext,
+)
+from aiogram.types import (
+    CallbackQuery,
+    ContentType,
+    Message,
+)
 from aiogram.utils.exceptions import (
-    MessageToEditNotFound,
     BadRequest,
     MessageNotModified,
+    MessageToEditNotFound,
 )
-from django.db import DataError
+from django.db import (
+    DataError,
+)
 
-from data.config import load_config
-from functions.event.extra_features import check_event_date
-from functions.event.templates_messages import ME
-from functions.main_app.determin_location import Location, EventStrategy
-from keyboards.inline.calendar import calendar_callback, SimpleCalendar, search_cb
-from keyboards.inline.poster_inline import poster_keyboard, cancel_registration_keyboard
-from loader import dp, _, bot, logger
-from utils.YandexMap.exceptions import NothingFound
-from utils.db_api import db_commands
+from data.config import (
+    load_config,
+)
+from functions.event.extra_features import (
+    check_event_date,
+)
+from functions.event.templates_messages import (
+    ME,
+)
+from functions.main_app.determin_location import (
+    EventStrategy,
+    Location,
+)
+from keyboards.inline.calendar import (
+    SimpleCalendar,
+    calendar_callback,
+    search_cb,
+)
+from keyboards.inline.poster_inline import (
+    cancel_registration_keyboard,
+    poster_keyboard,
+)
+from loader import (
+    _,
+    bot,
+    dp,
+    logger,
+)
+from utils.YandexMap.exceptions import (
+    NothingFound,
+)
+from utils.db_api import (
+    db_commands,
+)
 
 
 @dp.callback_query_handler(text="meetings")

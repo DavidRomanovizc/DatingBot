@@ -1,12 +1,25 @@
-from typing import Tuple, NoReturn
+from typing import (
+    NoReturn,
+    Tuple,
+)
 
 import aiohttp
 import pytest
 
-from data.config import load_config
-from loader import client
-from utils.YandexMap.api import Client
-from utils.YandexMap.exceptions import UnexpectedResponse, InvalidKey, NothingFound
+from data.config import (
+    load_config,
+)
+from loader import (
+    client,
+)
+from utils.YandexMap.api import (
+    Client,
+)
+from utils.YandexMap.exceptions import (
+    InvalidKey,
+    NothingFound,
+    UnexpectedResponse,
+)
 
 
 @pytest.mark.asyncio

@@ -1,9 +1,19 @@
-from django.contrib import admin
+from django.contrib import (
+    admin,
+)
 
-from django_project.telegrambot.usersmanage.models.meetings import UserMeetings
-from django_project.telegrambot.usersmanage.models.necessary_link import NecessaryLink
-from django_project.telegrambot.usersmanage.models.settings_models import SettingModel
-from django_project.telegrambot.usersmanage.models.user import User
+from django_project.telegrambot.usersmanage.models.meetings import (
+    UserMeetings,
+)
+from django_project.telegrambot.usersmanage.models.necessary_link import (
+    NecessaryLink,
+)
+from django_project.telegrambot.usersmanage.models.settings_models import (
+    SettingModel,
+)
+from django_project.telegrambot.usersmanage.models.user import (
+    User,
+)
 
 
 @admin.register(User)

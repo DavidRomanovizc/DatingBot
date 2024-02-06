@@ -1,13 +1,22 @@
-from aiogram.types import CallbackQuery
+from aiogram.types import (
+    CallbackQuery,
+)
 
 from functions.main_app.auxiliary_tools import (
-    send_photo_with_caption,
     handle_guide_callback,
     information_menu,
+    send_photo_with_caption,
 )
-from keyboards.inline.back_inline import only_back_keyboard
-from keyboards.inline.guide_inline import guide_callback
-from loader import dp, _
+from keyboards.inline.back_inline import (
+    only_back_keyboard,
+)
+from keyboards.inline.guide_inline import (
+    guide_callback,
+)
+from loader import (
+    _,
+    dp,
+)
 
 
 @dp.callback_query_handler(text="information")

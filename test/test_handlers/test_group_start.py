@@ -1,9 +1,15 @@
-from unittest.mock import AsyncMock
+from unittest.mock import (
+    AsyncMock,
+)
 
 import pytest
 
-from handlers.groups.start import start_group_handler
-from loader import _
+from handlers.groups.start import (
+    start_group_handler,
+)
+from loader import (
+    _,
+)
 
 
 @pytest.mark.asyncio

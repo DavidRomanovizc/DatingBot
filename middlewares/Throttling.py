@@ -1,11 +1,25 @@
 import asyncio
-from typing import NoReturn
+from typing import (
+    NoReturn,
+)
 
-from aiogram import types, Dispatcher
-from aiogram.dispatcher import DEFAULT_RATE_LIMIT
-from aiogram.dispatcher.handler import CancelHandler, current_handler
-from aiogram.dispatcher.middlewares import BaseMiddleware
-from aiogram.utils.exceptions import Throttled
+from aiogram import (
+    Dispatcher,
+    types,
+)
+from aiogram.dispatcher import (
+    DEFAULT_RATE_LIMIT,
+)
+from aiogram.dispatcher.handler import (
+    CancelHandler,
+    current_handler,
+)
+from aiogram.dispatcher.middlewares import (
+    BaseMiddleware,
+)
+from aiogram.utils.exceptions import (
+    Throttled,
+)
 
 
 class ThrottlingMiddleware(BaseMiddleware):

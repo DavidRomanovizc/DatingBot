@@ -1,7 +1,13 @@
-from aiogram import Dispatcher
+from aiogram import (
+    Dispatcher,
+)
 
-from filters.FiltersChat import IsPrivate
-from loader import logger
+from filters.FiltersChat import (
+    IsPrivate,
+)
+from loader import (
+    logger,
+)
 
 
 def setup(dp: Dispatcher):

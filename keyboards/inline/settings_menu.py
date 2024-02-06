@@ -1,6 +1,11 @@
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.types import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+)
 
-from loader import _
+from loader import (
+    _,
+)
 
 
 async def information_keyboard() -> InlineKeyboardMarkup:

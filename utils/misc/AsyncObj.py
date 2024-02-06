@@ -1,5 +1,7 @@
 import asyncio
-from typing import NoReturn
+from typing import (
+    NoReturn,
+)
 
 
 class AsyncObj:

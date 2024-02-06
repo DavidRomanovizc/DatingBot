@@ -1,12 +1,27 @@
-from typing import Union, NoReturn
+from typing import (
+    NoReturn,
+    Union,
+)
 
-from aiogram import types
-from aiogram.dispatcher.handler import CancelHandler
-from aiogram.dispatcher.middlewares import BaseMiddleware
+from aiogram import (
+    types,
+)
+from aiogram.dispatcher.handler import (
+    CancelHandler,
+)
+from aiogram.dispatcher.middlewares import (
+    BaseMiddleware,
+)
 
-from keyboards.inline.admin_inline import unban_user_keyboard
-from loader import _
-from utils.db_api import db_commands
+from keyboards.inline.admin_inline import (
+    unban_user_keyboard,
+)
+from loader import (
+    _,
+)
+from utils.db_api import (
+    db_commands,
+)
 
 
 class BanMiddleware(BaseMiddleware):

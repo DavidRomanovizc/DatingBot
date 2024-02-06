@@ -1,17 +1,19 @@
 from aiogram.utils.exceptions import (
-    Unauthorized,
-    InvalidQueryID,
-    TelegramAPIError,
     CantDemoteChatCreator,
-    MessageNotModified,
-    MessageToDeleteNotFound,
-    MessageTextIsEmpty,
-    RetryAfter,
     CantParseEntities,
+    InvalidQueryID,
     MessageCantBeDeleted,
+    MessageNotModified,
+    MessageTextIsEmpty,
+    MessageToDeleteNotFound,
+    RetryAfter,
+    TelegramAPIError,
+    Unauthorized,
 )
 
-from loader import dp
+from loader import (
+    dp,
+)
 
 
 @dp.errors_handler()

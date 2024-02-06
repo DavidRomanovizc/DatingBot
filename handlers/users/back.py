@@ -1,20 +1,41 @@
-from abc import abstractmethod, ABC
+from abc import (
+    ABC,
+    abstractmethod,
+)
 
-from aiogram.dispatcher import FSMContext
-from aiogram.types import CallbackQuery
+from aiogram.dispatcher import (
+    FSMContext,
+)
+from aiogram.types import (
+    CallbackQuery,
+)
 
 from functions.main_app.auxiliary_tools import (
-    registration_menu,
-    display_profile,
     delete_message,
+    display_profile,
     information_menu,
+    registration_menu,
 )
-from handlers.users.event_handler import view_own_event, view_meetings_handler
-from keyboards.inline.admin_inline import unban_user_keyboard
-from keyboards.inline.filters_inline import filters_keyboard
-from keyboards.inline.menu_profile_inline import get_profile_keyboard
-from loader import _, dp
-from utils.db_api import db_commands
+from handlers.users.event import (
+    view_meetings_handler,
+    view_own_event,
+)
+from keyboards.inline.admin_inline import (
+    unban_user_keyboard,
+)
+from keyboards.inline.filters_inline import (
+    filters_keyboard,
+)
+from keyboards.inline.menu_profile_inline import (
+    get_profile_keyboard,
+)
+from loader import (
+    _,
+    dp,
+)
+from utils.db_api import (
+    db_commands,
+)
 
 
 class Command(ABC):
@@ -33,7 +54,7 @@ class BackToProfileMenuCommand(Command):
         telegram_id = call.from_user.id
         await delete_message(call.message)
         user_db = await db_commands.select_user(telegram_id=telegram_id)
-        markup = await get_profile_keyboard(verification=user_db["verification"])
+        markup = await get_profile_keyboard(verification=user_db.verification)
         await display_profile(call, markup)
 
 

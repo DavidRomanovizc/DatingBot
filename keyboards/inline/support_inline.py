@@ -1,11 +1,24 @@
 import random
-from typing import Optional, Union
+from typing import (
+    Optional,
+    Union,
+)
 
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from aiogram.utils.callback_data import CallbackData
+from aiogram.types import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+)
+from aiogram.utils.callback_data import (
+    CallbackData,
+)
 
-from data.config import load_config
-from loader import dp, _
+from data.config import (
+    load_config,
+)
+from loader import (
+    _,
+    dp,
+)
 
 support_callback = CallbackData("ask_support", "messages", "user_id", "as_user")
 cancel_support_callback = CallbackData("cancel_support", "user_id")

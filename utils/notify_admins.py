@@ -1,13 +1,25 @@
-from abc import ABC, abstractmethod
+from abc import (
+    ABC,
+    abstractmethod,
+)
 
 import aiogram
+from aiogram import (
+    Dispatcher,
+)
 import aiogram.utils.exceptions
-from aiogram import Dispatcher
-from aiogram.utils.exceptions import ChatNotFound
+from aiogram.utils.exceptions import (
+    ChatNotFound,
+)
 
-from data.config import load_config
-from loader import bot, _
-from loader import logger
+from data.config import (
+    load_config,
+)
+from loader import (
+    _,
+    bot,
+    logger,
+)
 
 
 class BaseNotification(ABC):

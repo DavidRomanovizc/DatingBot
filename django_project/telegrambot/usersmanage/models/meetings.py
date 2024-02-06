@@ -1,6 +1,10 @@
-from django.db import models
+from django.db import (
+    models,
+)
 
-from django_project.telegrambot.usersmanage.models.base import TimeBasedModel
+from django_project.telegrambot.usersmanage.models.base import (
+    TimeBasedModel,
+)
 
 
 class UserMeetings(TimeBasedModel):

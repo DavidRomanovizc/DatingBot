@@ -1,8 +1,16 @@
-from aiogram.types import Message
+from aiogram.types import (
+    Message,
+)
 
-from filters.IsAdminFilter import IsAdmin
-from keyboards.admin.inline.reply_menu import settings_keyboard
-from loader import dp
+from filters.IsAdminFilter import (
+    IsAdmin,
+)
+from keyboards.admin.inline.reply_menu import (
+    settings_keyboard,
+)
+from loader import (
+    dp,
+)
 
 
 @dp.message_handler(IsAdmin(), commands="settings", state="*")
