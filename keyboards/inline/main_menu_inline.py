@@ -35,7 +35,7 @@ async def start_keyboard(
     )
     language = InlineKeyboardButton(text=_("🌐 Язык"), callback_data="language_reg")
     my_profile = InlineKeyboardButton(
-        text=_("👤 Моя анекта"), callback_data="my_profile"
+        text=_("👤 Моя анкета"), callback_data="my_profile"
     )
     filters = InlineKeyboardButton(text=_("⚙️ Фильтры"), callback_data="filters")
     view_ques = InlineKeyboardButton(text=_("💌 Найти пару"), callback_data="find_ques")
