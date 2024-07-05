@@ -56,7 +56,7 @@ async def monitoring_questionnaire(call: CallbackQuery, state: FSMContext) -> No
     user_offsets = storage.get("user_offsets", dict())
     user_limits = storage.get("user_limits", dict())
     offset = user_offsets.get(telegram_id, 0)
-    limit = user_limits.get(telegram_id, 10000)
+    limit = user_limits.get(telegram_id, 100)
     user_list = await get_next_user(telegram_id, monitoring=True, offset=offset, limit=limit)
 
     if user_list:
