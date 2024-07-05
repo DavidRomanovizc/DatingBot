@@ -4,6 +4,7 @@ from typing import (
     Optional,
 )
 
+from aiogram.dispatcher import FSMContext
 from aiogram.types import (
     CallbackQuery,
 )
@@ -49,9 +50,19 @@ async def create_questionnaire_reciprocity(
     await send_questionnaire(chat_id=chat_id, add_text=add_text, owner_id=liker)
 
 
-async def monitoring_questionnaire(call: CallbackQuery) -> None:
+async def monitoring_questionnaire(call: CallbackQuery, state: FSMContext) -> None:
     telegram_id = call.from_user.id
-    user_list = await get_next_user(telegram_id, monitoring=True)
+    storage = await state.get_data()
+    user_offsets = storage.get("user_offsets", dict())
+    user_limits = storage.get("user_limits", dict())
+    offset = user_offsets.get(telegram_id, 0)
+    limit = user_limits.get(telegram_id, 10000)
+    user_list = await get_next_user(telegram_id, monitoring=True, offset=offset, limit=limit)
+
+    if user_list:
+        user_offsets[telegram_id] = offset + len(user_list)
+    user_limits[telegram_id] = limit + 100
+    await state.update_data(user_offsets=user_offsets)
     random_user = random.choice(user_list)
     await bot.edit_message_reply_markup(
         chat_id=call.from_user.id, message_id=call.message.message_id
