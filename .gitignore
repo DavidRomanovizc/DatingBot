@@ -133,5 +133,4 @@ dmypy.json
 
 # Django Settings with Secret key
 /django_project/django_project/settings.py
-/django_project/telegrambot/usersmanage/migrations/
 photos/

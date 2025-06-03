@@ -1,25 +1,88 @@
 import os
 
-from asgiref.sync import sync_to_async
-from django.db.models import F, Q
-from django.db.models.expressions import CombinedExpression, Value
-
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_project.telegrambot.telegrambot.settings')
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "django_project.telegrambot.telegrambot.settings")
 import django
 
 django.setup()
-from django_project.telegrambot.usersmanage.models import User, UserMeetings, SettingModel
+from asgiref.sync import (
+    sync_to_async,
+)
+from django.db.models import (
+    F,
+    Q,
+)
+
+
+
+
+from django.db.models.expressions import (
+    CombinedExpression,
+    Value,
+)
+
+from django_project.telegrambot.usersmanage.models import (
+    NecessaryLink,
+    SettingModel,
+    User,
+    UserMeetings,
+    ViewedProfile,
+)
+
+
+@sync_to_async
+def select_all_links():
+    links = NecessaryLink.objects.all().values()
+    return links
 
 
 @sync_to_async
 def select_user(telegram_id: int):
-    user = User.objects.filter(telegram_id=telegram_id).values().first()
+    try:
+        user = User.objects.get(telegram_id=telegram_id)
+    except Exception as ex:
+        user = User.objects.filter(telegram_id=telegram_id).values().first()
+        print(f"Error in select_user {ex}")
     return user
 
 
 @sync_to_async
-def add_user(telegram_id, name, username):
-    return User(telegram_id=int(telegram_id), name=name, username=username).save()
+def select_user_object(telegram_id: int):
+    try:
+        user = User.objects.get(telegram_id=telegram_id)
+    except Exception as ex:
+        user = User.objects.filter(telegram_id=telegram_id).values().first()
+        print(f"Error in select_user_object {ex}")
+    return user
+
+
+@sync_to_async
+def add_profile_to_viewed(user, viewed_profile):
+    return ViewedProfile.objects.create(viewer=user, profile=viewed_profile)
+
+
+@sync_to_async
+def check_user_exists(telegram_id: int):
+    user_exists = User.objects.filter(telegram_id=telegram_id).exists()
+    return user_exists
+
+
+@sync_to_async
+def check_user_meetings_exists(telegram_id: int):
+    user_exists = UserMeetings.objects.filter(telegram_id=telegram_id).exists()
+    return user_exists
+
+
+@sync_to_async
+def add_user(telegram_id, name, username, referrer_id=None):
+    if referrer_id:
+        return User(
+            telegram_id=int(telegram_id),
+            name=name,
+            username=username,
+            referrer_id=referrer_id,
+        ).save()
+    else:
+        return User(telegram_id=int(telegram_id), name=name, username=username).save()
 
 
 @sync_to_async
@@ -45,7 +108,7 @@ def select_all_user_meetings():
 
 @sync_to_async
 def select_user_meetings(telegram_id: int):
-    user = UserMeetings.objects.filter(telegram_id=telegram_id).values().first()
+    user = UserMeetings.objects.get(telegram_id=telegram_id)
     return user
 
 
@@ -86,7 +149,8 @@ def select_meetings_user(telegram_id: int):
 @sync_to_async
 def update_user_events(telegram_id: int, events_id: int):
     return User.objects.filter(telegram_id=telegram_id).update(
-        events=CombinedExpression(F('events'), '||', Value([f'{events_id}'])))
+        events=CombinedExpression(F("events"), "||", Value([f"{events_id}"]))
+    )
 
 
 @sync_to_async
@@ -97,24 +161,35 @@ def remove_events_from_user(telegram_id: int, events_id: int):
 
 @sync_to_async
 def select_user_username(username: str):
-    user = User.objects.filter(username=username).values().first()
+    try:
+        user = User.objects.get(username=username)
+    except Exception as ex:
+        user = User.objects.filter(username=username).values().first()
+        print(f"Error in select_user_username {ex}")
     return user
 
 
 # https://stackoverflow.com/questions/10040143/and-dont-work-with-filter-in-django
 @sync_to_async
-def search_users(need_partner_sex, need_age_min, need_age_max, user_need_city):
+def search_users(
+        need_partner_sex,
+        need_age_min,
+        need_age_max,
+        user_need_city,
+        offset: int,
+        limit: int,
+):
     query = (
-            Q(is_banned=False) &
-            Q(sex=need_partner_sex) &
-            (
-                    (Q(age__gte=need_age_min) & Q(age__lte=need_age_max)) |
-                    (Q(age__gte=need_age_min + 1) & Q(age__lte=need_age_max + 1))
-            ) &
-            Q(city=user_need_city) &
-            Q(status=True)
+            Q(is_banned=False)
+            & Q(sex=need_partner_sex)
+            & (
+                    (Q(age__gte=need_age_min) & Q(age__lte=need_age_max))
+                    | (Q(age__gte=need_age_min + 1) & Q(age__lte=need_age_max + 1))
+            )
+            & Q(city=user_need_city)
+            & Q(status=True)
     )
-    users = User.objects.filter(query).values()
+    users = User.objects.filter(query).values()[offset: offset + limit]
     return users
 
 
@@ -124,8 +199,12 @@ def search_event_forms():
 
 
 @sync_to_async
-def search_users_all():
-    return User.objects.filter(Q(is_banned=False) & Q(status=True)).all().values()
+def search_users_all(offset: int, limit: int):
+    return (
+        User.objects.filter(Q(is_banned=False) & Q(status=True))
+        .all()
+        .values()[offset: offset + limit]
+    )
 
 
 @sync_to_async
@@ -140,7 +219,11 @@ def update_setting(telegram_id: int, **kwargs):
 
 @sync_to_async
 def select_setting(telegram_id):
-    return SettingModel.objects.filter(telegram_id=telegram_id).values().first()
+    try:
+        return SettingModel.objects.get(telegram_id=telegram_id)
+    except Exception as ex:
+        print(f"Error in select_setting {ex}")
+        return SettingModel.objects.filter(telegram_id=telegram_id).values().first()
 
 
 @sync_to_async
@@ -156,7 +239,7 @@ def select_setting_tech_work():
 @sync_to_async
 def check_returned_event_id(telegram_id: int, id_of_events_seen: int) -> bool:
     """
-    Функция, проверяющая, был ли ранее возвращен данный event_id для данного telegram_id
+    Function that checks if the given event_id was previously returned for the given telegram_id.
     """
     returned_event = User.objects.filter(telegram_id=telegram_id).first()
     event_list = returned_event.id_of_events_seen
@@ -166,9 +249,12 @@ def check_returned_event_id(telegram_id: int, id_of_events_seen: int) -> bool:
 
 @sync_to_async
 def add_returned_event_id(telegram_id: int, id_of_events_seen: int):
-    """
-    Функция, добавляющая возвращенный event_id для данного telegram_id в базу данных
-    """
+    """Function that adds the returned event_id for the given telegram_id to the database."""
     returned_event, created = User.objects.get_or_create(telegram_id=telegram_id)
     returned_event.id_of_events_seen.append(id_of_events_seen)
     returned_event.save()
+
+
+@sync_to_async
+def reset_view_limit():
+    return User.objects.filter(limit_of_views__lt=10).update(limit_of_views=10)

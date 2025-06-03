@@ -1,41 +1,52 @@
-from typing import Union
+from typing import (
+    NoReturn,
+    Union,
+)
 
-from aiogram import types
-from aiogram.dispatcher.handler import CancelHandler
-from aiogram.dispatcher.middlewares import BaseMiddleware
+from aiogram import (
+    types,
+)
+from aiogram.dispatcher.handler import (
+    CancelHandler,
+)
+from aiogram.dispatcher.middlewares import (
+    BaseMiddleware,
+)
 
-from data.config import load_config
-from utils.db_api import db_commands
+from data.config import (
+    load_config,
+)
+from loader import (
+    _,
+)
+from utils.db_api import (
+    db_commands,
+)
 
 
 class IsMaintenance(BaseMiddleware):
-
     def __init__(self):
         super(IsMaintenance, self).__init__()
 
     async def on_process_message(self, message: types.Message, data: dict):
-        try:
-
-            await self.check_tech_works(message)
-        except AttributeError:
-            pass
+        await self.check_tech_works(obj=message)
 
     async def on_process_callback_query(self, call: types.CallbackQuery, data: dict):
+        await self.check_tech_works(obj=call)
+
+    @staticmethod
+    async def check_tech_works(
+            obj: Union[types.CallbackQuery, types.Message]
+    ) -> NoReturn:
+        text = _("Ведутся технические работы")
         try:
-            await self.check_tech_works(call)
+            setting = await db_commands.select_setting_tech_work()
+            tech_works = setting.get("technical_works", False)
+            if tech_works and obj.from_user.id not in load_config().tg_bot.admin_ids:
+                try:
+                    await obj.answer(text=text, show_alert=True)
+                except TypeError:
+                    await obj.answer(text=text)
+                raise CancelHandler()
         except AttributeError:
             pass
-
-    async def check_tech_works(self, message: Union[None, types.Message] = None,
-                               call: Union[None, types.CallbackQuery] = None):
-        setting = await db_commands.select_setting_tech_work()
-
-        if call and setting.get("technical_works") and call.from_user.id not in load_config().tg_bot.admin_ids:
-            await call.answer("Ведутся технические работы!!!", show_alert=True)
-            raise CancelHandler()
-        else:
-            pass
-        if message:
-            if setting.get("technical_works") and message.from_user.id not in load_config().tg_bot.admin_ids:
-                await message.answer("Ведутся технические работы!!!")
-                raise CancelHandler()

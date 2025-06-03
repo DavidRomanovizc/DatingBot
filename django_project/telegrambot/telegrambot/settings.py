@@ -1,9 +1,11 @@
 import os
-import sys
-from pathlib import Path
+from pathlib import (
+    Path,
+)
 
-sys.path.append("D:\\Code\\DatingBot")
-from data.config import load_config
+from data.config import (
+    load_config,
+)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -15,7 +17,6 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'jazzmin',
-    'django_project.telegrambot.usersmanage',
     'django_project.telegrambot.common',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -23,6 +24,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "django_project.telegrambot.usersmanage",
 ]
 
 MIDDLEWARE = [

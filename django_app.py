@@ -1,3 +1,5 @@
-from django_project.telegrambot.manage import main
+from django_project.telegrambot.manage import (
+    main,
+)
 
 main()

@@ -1,16 +1,26 @@
-from typing import NoReturn
+from typing import (
+    NoReturn,
+)
 
-from aiogram import types, Dispatcher
-from aiogram.dispatcher.handler import CancelHandler
-from aiogram.dispatcher.middlewares import BaseMiddleware
+from aiogram import (
+    Dispatcher,
+    types,
+)
+from aiogram.dispatcher.handler import (
+    CancelHandler,
+)
+from aiogram.dispatcher.middlewares import (
+    BaseMiddleware,
+)
 
 
 class SupportMiddleware(BaseMiddleware):
-
     @staticmethod
     async def on_pre_process_message(message: types.Message, data: dict) -> NoReturn:
         dispatcher = Dispatcher.get_current()
-        state = dispatcher.current_state(chat=message.from_user.id, user=message.from_user.id)
+        state = dispatcher.current_state(
+            chat=message.from_user.id, user=message.from_user.id
+        )
 
         state_str = str(await state.get_state())
         if state_str == "in_support":

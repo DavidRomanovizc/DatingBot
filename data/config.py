@@ -1,13 +1,30 @@
-from dataclasses import dataclass
-from functools import lru_cache
-from pathlib import Path
-from typing import List
+from dataclasses import (
+    dataclass,
+)
+from functools import (
+    lru_cache,
+)
+import inspect
+from pathlib import (
+    Path,
+)
+from typing import (
+    List,
+)
 
-from environs import Env
+from environs import (
+    Env,
+)
+from yarl import (
+    URL,
+)
+
+env = Env()
+env.read_env()
 
 
 # The frozen=True arg protects instances of the class from accidental modification
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class DataBaseConfig:
     user: str
     password: str
@@ -16,7 +33,7 @@ class DataBaseConfig:
     port: str
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class TgBot:
     token: str
     admin_ids: List[int]
@@ -24,31 +41,52 @@ class TgBot:
     timezone: str
     ip: str
     I18N_DOMAIN: str
-    moderate_chat: str
+    moderate_chat: int
     use_redis: bool
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class Miscellaneous:
     secret_key: str
     yandex_api_key: str
-    qiwi_key: str
-    phone_number: str
-    secret_p2p_key: str
+    client_id: str
+    redirect_url: URL
+    yoomoney_key: str
+    production: bool
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class Config:
     tg_bot: TgBot
     db: DataBaseConfig
     misc: Miscellaneous
 
 
+def search_env() -> Path:
+    current_frame = inspect.currentframe()
+    frame = current_frame.f_back
+    caller_dir = Path(frame.f_code.co_filename).parent.resolve()
+    start = caller_dir / ".env"
+    return start
+
+
+def change_env(section: str, value: str) -> None:
+    dumped_env = env.dump()
+    text = ""
+    start = search_env()
+
+    with open(start, "w", encoding="utf-8") as file:
+        for v in dumped_env:
+            if v:
+                e = dumped_env[v]
+                if v == section:
+                    e = value
+                text += f"{v}={e}\n"
+        file.write(text)
+
+
 @lru_cache
 def load_config() -> Config:
-    env = Env()
-    env.read_env()
-
     return Config(
         tg_bot=TgBot(
             token=env.str("BOT_TOKEN"),
@@ -56,26 +94,28 @@ def load_config() -> Config:
             support_ids=list(map(int, env.list("SUPPORTS"))),
             ip=env.str("IP"),
             timezone=env.str("TIMEZONE"),
-            I18N_DOMAIN='dating',
-            moderate_chat=env.str("MODERATE_CHAT"),
-            use_redis=env.bool("USE_REDIS")
+            I18N_DOMAIN="dating",
+            moderate_chat=env.int("MODERATE_CHAT"),
+            use_redis=env.bool("USE_REDIS"),
         ),
         db=DataBaseConfig(
-            user=env.str('DB_USER'),
-            password=env.str('DB_PASS'),
-            host=env.str('DB_HOST'),
-            database=env.str('DB_NAME'),
-            port=env.str('PORT')
+            user=env.str("POSTGRES_USER"),
+            password=env.str("POSTGRES_PASSWORD"),
+            host=env.str("DB_HOST"),
+            database=env.str("POSTGRES_DB"),
+            port=env.str("DB_PORT"),
         ),
         misc=Miscellaneous(
             secret_key=env.str("SECRET_KEY"),
-            yandex_api_key=env.str('API_KEY'),
-            qiwi_key=env.str("QIWI_KEY"),
-            phone_number=env.str("PHONE_NUMBER"),
-            secret_p2p_key=env.str("SECRET_P2"),
-        )
+            yandex_api_key=env.str("API_KEY"),
+            client_id=env.str("CLIENT_ID"),
+            redirect_url=env.str("REDIRECT_URI"),
+            yoomoney_key=env.str("YOOMONEY_KEY"),
+            production=env.bool("PRODUCTION"),
+        ),
     )
 
 
+# TODO: Move to dataclass
 BASE_DIR = Path(__file__).parent.parent
-LOCALES_DIR = BASE_DIR / 'locales'
+LOCALES_DIR = BASE_DIR / "locales"

@@ -1,20 +1,38 @@
-from typing import Tuple, NoReturn
+from typing import (
+    NoReturn,
+    Tuple,
+)
 
 import aiohttp
 import pytest
 
-from data.config import load_config
-from loader import client
-from utils.YandexMap.api import Client
-from utils.YandexMap.exceptions import UnexpectedResponse, InvalidKey, NothingFound
+from data.config import (
+    load_config,
+)
+from loader import (
+    client,
+)
+from utils.YandexMap.api import (
+    Client,
+)
+from utils.YandexMap.exceptions import (
+    InvalidKey,
+    NothingFound,
+    UnexpectedResponse,
+)
 
 
 @pytest.mark.asyncio
 async def test_request_success() -> NoReturn:
     async with aiohttp.ClientSession() as session:
-        async with session.get(url="https://geocode-maps.yandex.ru/1.x/",
-                               params=dict(format="json",
-                                           apikey=load_config().misc.yandex_api_key, geocode="Detroit")) as response:
+        async with session.get(
+                url="https://geocode-maps.yandex.ru/1.x/",
+                params=dict(
+                    format="json",
+                    apikey=load_config().misc.yandex_api_key,
+                    geocode="Detroit",
+                ),
+        ) as response:
             assert response.status == 200
             data = await response.json()
             assert isinstance(data, dict)

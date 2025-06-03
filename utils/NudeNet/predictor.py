@@ -1,16 +1,21 @@
 import pathlib
-from typing import NoReturn, Union
+from typing import (
+    Union,
+)
 
-from loader import detector, classifier
+from loader import (
+    detector,
+)
 
 
-async def classification_image(image_path: Union[str, pathlib.Path]) -> classifier:
-    return classifier.classify(image_path)
+async def classification_image(image_path: Union[str, pathlib.Path]) -> list[dict]:
+    return detector.detect(image_path)
 
 
-async def generate_censored_image(image_path: Union[str, pathlib.Path], out_path: Union[str, pathlib.Path]) -> NoReturn:
+async def generate_censored_image(
+        image_path: Union[str, pathlib.Path], out_path: Union[str, pathlib.Path]
+) -> None:
     detector.censor(
-        img_path=image_path,
-        out_path=out_path,
-        visualize=False
+        image_path=image_path,
+        output_path=out_path,
     )

@@ -1,15 +1,28 @@
-from typing import Tuple, Any, Optional
+from typing import (
+    Any,
+    Optional,
+    Tuple,
+)
 
-from aiogram import types
-from aiogram.contrib.middlewares.i18n import I18nMiddleware
+from aiogram import (
+    types,
+)
+from aiogram.contrib.middlewares.i18n import (
+    I18nMiddleware,
+)
 
-from data.config import load_config, LOCALES_DIR
-from utils.db_api import db_commands
+from data.config import (
+    LOCALES_DIR,
+    load_config,
+)
+from utils.db_api import (
+    db_commands,
+)
 
 
 async def get_lang(user_id) -> Optional[str]:
     user = await db_commands.select_user(telegram_id=user_id)
-    return user.get("language") if user else None
+    return user.language if user else None
 
 
 class ACLMiddleware(I18nMiddleware):

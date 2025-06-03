@@ -1,34 +1,28 @@
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from loader import _
+from aiogram.types import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+)
+from yarl import (
+    URL,
+)
+
+from loader import (
+    _,
+)
 
 
-async def payments_keyboard(menu: str) -> InlineKeyboardMarkup:
-    markup = InlineKeyboardMarkup(row_width=4)
-    pay_qiwi = InlineKeyboardButton(text=_("💳 Qiwi"), callback_data="pay_qiwi")
-    check_prices = InlineKeyboardButton(text=_("🔄 Проверить цены"), callback_data="check_price")
-    markup.add(pay_qiwi, check_prices)
-    if menu == "unban":
-        back = InlineKeyboardButton(text=_("⏪️ Вернуться в меню"), callback_data="unban_menu")
-        markup.add(back)
-    else:
-        back = InlineKeyboardButton(text=_("⏪️ Вернуться в меню"), callback_data="start_menu")
-        markup.add(back)
+async def payment_menu_keyboard() -> InlineKeyboardMarkup:
+    markup = InlineKeyboardMarkup()
+    yoomoney = InlineKeyboardButton(text=_("💳 ЮMoney"), callback_data="yoomoney")
+    markup.add(yoomoney)
     return markup
 
 
-async def making_payment(bill) -> InlineKeyboardMarkup:
-    markup = InlineKeyboardMarkup()
-    settle_bill = InlineKeyboardButton(text=_("Оплатить"), url=bill.pay_url)
-    check_payment = InlineKeyboardButton(text=_("Проверить оплату"), callback_data='check_payment')
-    cancel = InlineKeyboardButton(text=_("Отмена"), callback_data='cancel_payment')
-    markup.add(settle_bill)
-    markup.add(check_payment)
-    markup.add(cancel)
-    return markup
-
-
-async def check_payment_keyboard() -> InlineKeyboardMarkup:
-    markup = InlineKeyboardMarkup()
-    check_payment = InlineKeyboardButton(text=_("Проверить оплату"), callback_data='check_payment')
-    markup.add(check_payment)
+async def yoomoney_keyboard(url: str | URL = None) -> InlineKeyboardMarkup:
+    markup = InlineKeyboardMarkup(row_width=1)
+    pay_yoomoney = InlineKeyboardButton(text=_("💳 Оплатить"), url=url)
+    check_prices = InlineKeyboardButton(
+        text=_("🔄 Проверить оплату"), callback_data="yoomoney:check_payment"
+    )
+    markup.add(pay_yoomoney, check_prices)
     return markup

@@ -1,39 +1,65 @@
+# noinspection PyUnresolvedReferences
 import logging
 import os
+
 import django
-from django_project.telegrambot.telegrambot import settings
-from aiogram import executor
+from aiogram import (
+    executor,
+)
 
-from loader import dp, db, scheduler
+# noinspection PyUnresolvedReferences
 import filters
-from utils.notify_admins import AdminNotification
 
-from utils.set_bot_commands import set_default_commands
+# noinspection PyUnresolvedReferences
+from django_project.telegrambot.telegrambot import (
+    settings,
+)
+
+from loader import (
+    dp,
+    scheduler,
+)
+from utils.db_api.db_commands import (
+    reset_view_limit,
+)
+from utils.logger import (
+    setup_logger,
+)
+from utils.notify_admins import (
+    AdminNotification,
+)
+from utils.set_bot_commands import (
+    set_default_commands,
+)
 
 
 async def on_startup(dispatcher) -> None:
-    # Устанавливаем дефолтные команды
     await set_default_commands(dispatcher)
-    # Уведомляет о запуске
+    scheduler.add_job(
+        func=reset_view_limit,
+        trigger="cron",
+        hour=0,
+        id="reset_view_limit",
+        replace_existing=True,
+    )
     await AdminNotification.send(dispatcher)
-    logging.info(f'Создаем подключение...')
-    await db.create()
-    logging.info(f'Подключение успешно!')
-    logging.info(f'База загружена успешно!')
 
 
 def setup_django():
     os.environ.setdefault(
-        "DJANGO_SETTINGS_MODULE",
-        "django_project.telegrambot.telegrambot.settings"
+        "DJANGO_SETTINGS_MODULE", "django_project.telegrambot.telegrambot.settings"
     )
-    os.environ.update({'DJANGO_ALLOW_ASYNC_UNSAFE': "true"})
+    os.environ.update({"DJANGO_ALLOW_ASYNC_UNSAFE": "true"})
     django.setup()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     setup_django()
+    setup_logger("INFO", ["aiogram.bot.api"])
+    # noinspection PyUnresolvedReferences
     import middlewares
+
+    # noinspection PyUnresolvedReferences
     import handlers
 
     scheduler.start()

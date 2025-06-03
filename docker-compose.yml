@@ -1,17 +1,14 @@
 version: '3.1'
 
 services:
-  # Если хотите подключить базу данных
   db:
     container_name: database
-    image: sameersbn/postgresql:10-2
+    image: postgres:14.1-alpine
     env_file:
       - ".env"
-    environment:
-      PG_PASSWORD: $DB_PASS
     restart: always
     ports:
-      - 5432:5432
+      - "5432:5432"
     networks:
       - botnet
     volumes:
@@ -21,7 +18,8 @@ services:
     container_name: bot
     build:
       context: .
-    command: python app.py
+    working_dir: "/src/"
+    command: python3 app.py
     networks:
       - botnet
     restart: always
@@ -31,9 +29,20 @@ services:
       - .:/src
     depends_on:
       - db
+  django_migration:
+    container_name: migrations
+    build:
+      context: .
+    working_dir: "/src/"
+    command: sh -c "python3 django_app.py makemigrations && python3 django_app.py migrate"
+    networks:
+      - botnet
+    restart: "no"
+    depends_on:
+      - db
+    volumes:
+      - .:/src
 
-# указываются используемые сети
 networks:
   botnet:
-    # указывается драйвер сети
     driver: bridge

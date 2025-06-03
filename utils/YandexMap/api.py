@@ -1,6 +1,15 @@
+from typing import (
+    Any,
+    Tuple,
+)
+
 import aiohttp
-from typing import Tuple, Any
-from utils.YandexMap.exceptions import UnexpectedResponse, InvalidKey, NothingFound
+
+from utils.YandexMap.exceptions import (
+    InvalidKey,
+    NothingFound,
+    UnexpectedResponse,
+)
 
 
 class Client:
@@ -12,9 +21,10 @@ class Client:
 
     async def _request(self, address: str) -> Any:
         async with aiohttp.ClientSession() as session:
-            async with session.get(url="https://geocode-maps.yandex.ru/1.x/",
-                                   params=dict(format="json",
-                                               apikey=self.api_key, geocode=address)) as response:
+            async with session.get(
+                url="https://geocode-maps.yandex.ru/1.x/",
+                params=dict(format="json", apikey=self.api_key, geocode=address),
+            ) as response:
                 if response.status == 200:
                     a = await response.json()
                     return a["response"]
@@ -37,14 +47,25 @@ class Client:
         return longitude, latitude
 
     async def address(self, longitude, latitude) -> Any:
-        got = await self._request(f"{longitude},{latitude}")
-        data = got["GeoObjectCollection"]["featureMember"]
+        response = await self._request(f"{longitude},{latitude}")
+        data = response.get("GeoObjectCollection", {}).get("featureMember", [])
 
         if not data:
             raise NothingFound(f'Nothing found for "{longitude} {latitude}"')
+
         try:
-            return data[0]["GeoObject"]["metaDataProperty"]["GeocoderMetaData"]["AddressDetails"]["Country"][
-                "AdministrativeArea"]['Locality']['LocalityName']
+            address_details = data[0]["GeoObject"]["metaDataProperty"][
+                "GeocoderMetaData"
+            ]["AddressDetails"]["Country"]
+            try:
+                locality = address_details["AdministrativeArea"]["Locality"][
+                    "LocalityName"
+                ]
+            except KeyError:
+                locality = address_details["AdministrativeArea"][
+                    "SubAdministrativeArea"
+                ]["Locality"]["LocalityName"]
+
+            return locality
         except KeyError:
-            return data[0]["GeoObject"]["metaDataProperty"]["GeocoderMetaData"]["AddressDetails"]["Country"][
-                "AdministrativeArea"]['SubAdministrativeArea']['Locality']['LocalityName']
+            return None

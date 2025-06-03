@@ -1,11 +1,24 @@
 import random
-from typing import Optional, Union
+from typing import (
+    Optional,
+    Union,
+)
 
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from aiogram.utils.callback_data import CallbackData
+from aiogram.types import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+)
+from aiogram.utils.callback_data import (
+    CallbackData,
+)
 
-from data.config import load_config
-from loader import dp, _
+from data.config import (
+    load_config,
+)
+from loader import (
+    _,
+    dp,
+)
 
 support_callback = CallbackData("ask_support", "messages", "user_id", "as_user")
 cancel_support_callback = CallbackData("cancel_support", "user_id")
@@ -13,9 +26,7 @@ cancel_support_callback = CallbackData("cancel_support", "user_id")
 
 async def check_support_available(support_id) -> Optional[int]:
     state = dp.current_state(chat=support_id, user=support_id)
-    state_str = str(
-        await state.get_state()
-    )
+    state_str = str(await state.get_state())
     if state_str == "in_support":
         return
     else:
@@ -51,10 +62,8 @@ async def support_keyboard(messages, user_id=None) -> Union[bool, InlineKeyboard
         InlineKeyboardButton(
             text=text,
             callback_data=support_callback.new(
-                messages=messages,
-                user_id=contact_id,
-                as_user=as_user
-            )
+                messages=messages, user_id=contact_id, as_user=as_user
+            ),
         )
     )
 
@@ -62,9 +71,7 @@ async def support_keyboard(messages, user_id=None) -> Union[bool, InlineKeyboard
         keyboard.add(
             InlineKeyboardButton(
                 text=_("Завершить сеанс"),
-                callback_data=cancel_support_callback.new(
-                    user_id=contact_id
-                )
+                callback_data=cancel_support_callback.new(user_id=contact_id),
             )
         )
     return keyboard
@@ -76,9 +83,7 @@ def cancel_support(user_id) -> InlineKeyboardMarkup:
             [
                 InlineKeyboardButton(
                     text=_("Завершить сеанс"),
-                    callback_data=cancel_support_callback.new(
-                        user_id=user_id
-                    )
+                    callback_data=cancel_support_callback.new(user_id=user_id),
                 )
             ]
         ]

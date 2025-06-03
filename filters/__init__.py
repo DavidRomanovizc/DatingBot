@@ -1,7 +1,13 @@
-from aiogram import Dispatcher
-from loguru import logger
+from aiogram import (
+    Dispatcher,
+)
 
-from filters.FiltersChat import IsPrivate
+from filters.FiltersChat import (
+    IsPrivate,
+)
+from loader import (
+    logger,
+)
 
 
 def setup(dp: Dispatcher):
@@ -10,5 +16,5 @@ def setup(dp: Dispatcher):
         dp.message_handlers,
         dp.edited_message_handlers,
     ]
-
+    logger.info(text_messages)
     dp.filters_factory.bind(IsPrivate)

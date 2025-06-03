@@ -1,10 +1,24 @@
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+)
 
-from loader import _
+from loader import (
+    _,
+)
 
 
 async def cancel_keyboard() -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup()
-    btn1 = InlineKeyboardButton(text=_("Отмена"), callback_data="cancel")
-    markup.add(btn1)
+    cancel = InlineKeyboardButton(text=_("Отмена"), callback_data="cancel")
+    markup.add(cancel)
+    return markup
+
+
+async def cancel_registration_keyboard() -> InlineKeyboardMarkup:
+    markup = InlineKeyboardMarkup()
+    stopped = InlineKeyboardButton(
+        text=_("❌ Остановить"), callback_data="registration:stopped"
+    )
+    markup.add(stopped)
     return markup
